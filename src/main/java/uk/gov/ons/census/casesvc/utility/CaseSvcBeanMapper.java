@@ -12,11 +12,13 @@ import uk.gov.ons.census.casesvc.model.entity.Event;
 public class CaseSvcBeanMapper extends ConfigurableMapper {
 
   protected final void configure(final MapperFactory factory) {
-    factory.classMap(Case.class, CaseContainerDTO.class)
+    factory
+        .classMap(Case.class, CaseContainerDTO.class)
         .field("caseId", "id")
         .field("addressType", "caseType")
         .field("rgn", "region")
-        .byDefault().register();
+        .byDefault()
+        .register();
 
     factory.classMap(Event.class, EventDTO.class).byDefault().register();
   }

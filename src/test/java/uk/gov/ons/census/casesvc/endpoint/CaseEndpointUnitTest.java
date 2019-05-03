@@ -29,7 +29,7 @@ import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
 public class CaseEndpointUnitTest {
 
-  private static final String METHOD_NAME_FIND_CASE_BY_ID = "findCaseByCaseId";
+  private static final String METHOD_NAME_FIND_CASE_BY_ID = "findByCaseId";
 
   private UUID TEST1_CASE_ID;
 
@@ -59,7 +59,7 @@ public class CaseEndpointUnitTest {
 
     Case testCase = createTestCase();
 
-    when(caseService.findCaseByCaseId(anyObject())).thenReturn(testCase);
+    when(caseService.findByCaseId(anyObject())).thenReturn(testCase);
 
     ResultActions actions =
         mockMvc.perform(getJson(String.format("/cases/%s", TEST1_CASE_ID.toString())));

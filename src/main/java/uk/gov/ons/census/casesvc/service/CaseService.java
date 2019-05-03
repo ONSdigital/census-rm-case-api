@@ -3,7 +3,6 @@ package uk.gov.ons.census.casesvc.service;
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,35 +20,21 @@ public class CaseService {
     this.caseRepo = caseRepo;
   }
 
-  public Case findCaseByCaseId(UUID caseId) {
-    log.debug("Entering findCaseByCaseId");
+  public Case findByCaseId(UUID caseId) {
+    log.debug("Entering findByCaseId");
 
-    Optional<Case> opt = Optional.ofNullable(caseRepo.findByCaseId(caseId));
-
-    if (opt.isPresent()) {
-      return opt.get();
-    } else {
-      return new Case();
-    }
+    return caseRepo.findByCaseId(caseId);
   }
 
-  public List<Case> findCasesByUPRN(String uprn) {
-    log.debug("Entering findCasesByUPRN");
+  public List<Case> findByUPRN(String uprn) {
+    log.debug("Entering findByUPRN");
 
-    List<Case> cazes = caseRepo.findByuprn(uprn);
-
-    return cazes;
+    return caseRepo.findByuprn(uprn);
   }
 
-  public Case findCaseByReference(long reference) {
-    log.debug("Entering findCaseByReference");
+  public Case findByReference(long reference) {
+    log.debug("Entering findByReference");
 
-    Optional<Case> opt = Optional.ofNullable(caseRepo.findByCaseRef(reference));
-
-    if (opt.isPresent()) {
-      return opt.get();
-    } else {
-      return new Case();
-    }
+    return caseRepo.findByCaseRef(reference);
   }
 }

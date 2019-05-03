@@ -17,7 +17,7 @@ import uk.gov.ons.census.casesvc.model.repository.CaseRepository;
 
 public class CaseServiceTest {
 
-  private static final String METHOD_NAME_FIND_CASE_BY_ID = "findCaseByCaseId";
+  private static final String METHOD_NAME_FIND_CASE_BY_ID = "findByCaseId";
 
   private UUID TEST1_CASE_ID;
 
@@ -38,7 +38,7 @@ public class CaseServiceTest {
 
     when(caseRepo.findByCaseId(anyObject())).thenReturn(expectedCase);
 
-    caseService.findCaseByCaseId(TEST1_CASE_ID);
+    caseService.findByCaseId(TEST1_CASE_ID);
 
     ArgumentCaptor<UUID> uuid = ArgumentCaptor.forClass(UUID.class);
     verify(caseRepo).findByCaseId(uuid.capture());
@@ -50,9 +50,9 @@ public class CaseServiceTest {
 
   @Test
   public void shouldReturnNullWhenCaseIdDoesNotExist() {
-    when(caseService.findCaseByCaseId(anyObject())).thenReturn(null);
+    when(caseService.findByCaseId(anyObject())).thenReturn(null);
 
-    Case actualCase = caseService.findCaseByCaseId(TEST1_CASE_ID);
+    Case actualCase = caseService.findByCaseId(TEST1_CASE_ID);
 
     ArgumentCaptor<UUID> uuid = ArgumentCaptor.forClass(UUID.class);
     verify(caseRepo).findByCaseId(uuid.capture());
