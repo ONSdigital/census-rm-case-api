@@ -39,3 +39,9 @@ logging:
         type:
           descriptor:
             sql: trace
+
+endpoints:
+  enabled: true
+  info:
+    enabled: true
+    sensitive: false
