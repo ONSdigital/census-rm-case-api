@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ResponseDTO {
-  private String dateTime = "";
-  private String inboundChannel = "";
+  private String dateTime;
+  private String inboundChannel;
 }

@@ -10,7 +10,7 @@ public class EventDTO {
 
   private UUID id;
 
-  private String category = "";
+  private String category;
 
   @JsonProperty("createdDateTime")
   private Date eventDate;
