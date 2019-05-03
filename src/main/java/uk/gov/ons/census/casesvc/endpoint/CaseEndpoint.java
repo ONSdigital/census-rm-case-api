@@ -58,7 +58,7 @@ public final class CaseEndpoint {
 
     Optional<List<Case>> cazes = Optional.ofNullable(caseService.findByUPRN(uprn));
 
-    if (cazes.get().size() == 0) {
+    if (cazes.isPresent() && cazes.get().size() == 0) {
       return new ResponseEntity(buildCaseNotFoundResponseDTO(), HttpStatus.OK);
     }
 
