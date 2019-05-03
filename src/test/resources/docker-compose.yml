@@ -1,0 +1,7 @@
+version: '2.1'
+services:
+ postgres:
+  container_name: postgres-action-it
+  image: sdcplatform/ras-rm-docker-postgres
+  ports:
+   - "15432:5432"
