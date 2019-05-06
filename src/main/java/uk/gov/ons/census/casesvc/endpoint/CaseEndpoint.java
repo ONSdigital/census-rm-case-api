@@ -1,21 +1,24 @@
 package uk.gov.ons.census.casesvc.endpoint;
 
+import static org.springframework.http.HttpStatus.OK;
+
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.ons.census.casesvc.exception.CaseNotFoundException;
 import uk.gov.ons.census.casesvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.casesvc.model.dto.EmptyResponseDTO;
 import uk.gov.ons.census.casesvc.model.dto.EventDTO;
@@ -43,28 +46,16 @@ public final class CaseEndpoint {
   public ResponseEntity<CaseContainerDTO> findCaseByCaseId(@PathVariable("caseId") UUID caseId) {
     log.debug("Entering findByCaseId");
 
-    Optional<Case> caze = Optional.ofNullable(caseService.findByCaseId(caseId));
-
-    if (caze.isEmpty()) {
-      return new ResponseEntity(buildCaseNotFoundResponseDTO(), HttpStatus.OK);
-    }
-
-    return ResponseEntity.ok(buildCaseFoundResponseDTO(caze.get()));
+    return ResponseEntity.ok(buildCaseFoundResponseDTO(caseService.findByCaseId(caseId)));
   }
 
   @GetMapping(value = "/uprn/{uprn}")
   public ResponseEntity<List<CaseContainerDTO>> findCasesByUPRN(@PathVariable("uprn") String uprn) {
     log.debug("Entering findByUPRN");
 
-    Optional<List<Case>> cazes = Optional.ofNullable(caseService.findByUPRN(uprn));
-
-    if (cazes.isPresent() && cazes.get().size() == 0) {
-      return new ResponseEntity(buildCaseNotFoundResponseDTO(), HttpStatus.OK);
-    }
-
     List<CaseContainerDTO> caseContainerDTOs = new ArrayList<>();
 
-    for (Case caze : cazes.get()) {
+    for (Case caze : caseService.findByUPRN(uprn)) {
       caseContainerDTOs.add(buildCaseFoundResponseDTO(caze));
     }
 
@@ -76,16 +67,14 @@ public final class CaseEndpoint {
       @PathVariable("reference") long reference) {
     log.debug("Entering findByReference");
 
-    Optional<Case> caze = Optional.ofNullable(caseService.findByReference(reference));
-
-    if (caze.isEmpty()) {
-      return new ResponseEntity(buildCaseNotFoundResponseDTO(), HttpStatus.OK);
-    }
-
-    return ResponseEntity.ok(buildCaseFoundResponseDTO(caze.get()));
+    return ResponseEntity.ok(buildCaseFoundResponseDTO(caseService.findByReference(reference)));
   }
 
-  private EmptyResponseDTO buildCaseNotFoundResponseDTO() {
+  @ExceptionHandler(CaseNotFoundException.class)
+  @ResponseStatus(OK)
+  public EmptyResponseDTO handleNotExistsException(CaseNotFoundException cnfe) {
+    log.debug("Entering handleNotExistsException - " + cnfe.getMessage());
+
     return new EmptyResponseDTO();
   }
 
