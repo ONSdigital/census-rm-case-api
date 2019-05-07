@@ -24,21 +24,30 @@ public class CaseService {
   public Case findByCaseId(UUID caseId) {
     log.debug("Entering findByCaseId");
 
-    return caseRepo.findByCaseId(caseId)
-        .orElseThrow(() -> new CaseNotFoundException(String.format("Case Id '%s' not found", caseId.toString())));
+    return caseRepo
+        .findByCaseId(caseId)
+        .orElseThrow(
+            () ->
+                new CaseNotFoundException(
+                    String.format("Case Id '%s' not found", caseId.toString())));
   }
 
   public List<Case> findByUPRN(String uprn) {
     log.debug("Entering findByUPRN");
 
-    return caseRepo.findByuprn(uprn)
+    return caseRepo
+        .findByuprn(uprn)
         .orElseThrow(() -> new CaseNotFoundException(String.format("UPRN '%s' not found", uprn)));
   }
 
-  public Case findByReference(long reference) {
+  public Case findByReference(Long reference) {
     log.debug("Entering findByReference");
 
-    return caseRepo.findByCaseRef(reference)
-        .orElseThrow(() -> new CaseNotFoundException(String.format("Case Reference '%s' not found", reference)));
+    return caseRepo
+        .findByCaseRef(reference)
+        .orElseThrow(
+            () ->
+                new CaseNotFoundException(
+                    String.format("Case Reference '%s' not found", reference)));
   }
 }
