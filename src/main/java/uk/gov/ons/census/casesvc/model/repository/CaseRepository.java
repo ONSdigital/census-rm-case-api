@@ -9,9 +9,9 @@ import uk.gov.ons.census.casesvc.model.entity.Case;
 
 @RestResource(exported = false)
 public interface CaseRepository extends JpaRepository<Case, UUID> {
-  Optional<Case> findByCaseId(UUID caseId);
-
   Optional<List<Case>> findByuprn(String uprn);
 
-  Optional<Case> findByCaseRef(long reference);
+  Optional<Case> findByCaseId(UUID caseId);
+
+  Optional<Case> findByCaseRef(Long reference);
 }

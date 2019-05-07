@@ -1,16 +1,15 @@
 package uk.gov.ons.census.casesvc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static uk.gov.ons.census.casesvc.utility.DataUtils.create1TestCase;
+import static uk.gov.ons.census.casesvc.utility.DataUtils.create3TestCases;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,20 +18,17 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import uk.gov.ons.census.casesvc.exception.CaseNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.ons.census.casesvc.model.entity.Case;
 import uk.gov.ons.census.casesvc.model.repository.CaseRepository;
+import uk.gov.ons.ctp.common.error.CTPException;
+import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
 public class CaseServiceTest {
 
-  private UUID TEST1_CASE_ID = UUID.randomUUID();
+  private UUID TEST1_CASE_ID = UUID.fromString("2e083ab1-41f7-4dea-a3d9-77f48458b5ca");
   private Long TEST1_CASE_REFERENCE_ID = 123L;
-
-  private UUID TEST2_CASE_ID = UUID.randomUUID();
-  private Long TEST2_CASE_REFERENCE_ID = 456L;
-
-  private UUID TEST3_CASE_ID = UUID.randomUUID();
-  private Long TEST3_CASE_REFERENCE_ID = 789L;
 
   private String TEST_UPRN = "123";
 
@@ -46,8 +42,36 @@ public class CaseServiceTest {
   }
 
   @Test
-  public void shouldReturnCaseWhenCaseIdExists() {
+  public void shouldReturnAtLeastOneCaseWhenUPRNExists() throws CTPException {
+    List<Case> expectedCases = create3TestCases();
 
+    when(caseRepo.findByuprn(anyString())).thenReturn(Optional.of(create3TestCases()));
+
+    List<Case> actualCases = caseService.findByUPRN(TEST_UPRN);
+    assertThat(actualCases.size()).isEqualTo(3);
+
+    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+    verify(caseRepo).findByuprn(captor.capture());
+    String actualCaseId = captor.getValue();
+    assertThat(actualCaseId).isEqualTo(TEST_UPRN);
+  }
+
+  @Test
+  public void shouldThrowCaseNotFoundExceptionWhenUPRNDoesNotExist() {
+    when(caseRepo.findByCaseRef(any())).thenReturn(Optional.empty());
+
+    try {
+      caseService.findByUPRN(TEST_UPRN);
+    } catch (HttpClientErrorException hcee) {
+      assertThat(hcee.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+      assertThat(hcee.getStatusText()).isEqualTo(String.format("UPRN '%s' not found", TEST_UPRN));
+    } catch (CTPException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  public void shouldReturnCaseWhenCaseIdExists() throws Exception {
     Case expectedCase = create1TestCase();
 
     when(caseRepo.findByCaseId(any())).thenReturn(Optional.of(expectedCase));
@@ -61,41 +85,21 @@ public class CaseServiceTest {
     assertThat(actualCaseId).isEqualTo(expectedCase.getCaseId());
   }
 
-  @Test(expected = CaseNotFoundException.class)
-  public void shouldThrowCaseNotFoundExceptionWhenCaseIdDoesNotExist() {
-
+  @Test
+  public void shouldThrowCaseNotFoundExceptionWhenCaseIdDoesNotExist() throws Exception {
     when(caseRepo.findByCaseId(any())).thenReturn(Optional.empty());
 
-    caseService.findByCaseId(TEST1_CASE_ID);
+    try {
+      caseService.findByCaseId(TEST1_CASE_ID);
+    } catch (CTPException ctpe) {
+      assertThat(ctpe.getFault()).isEqualTo(Fault.RESOURCE_NOT_FOUND);
+      assertThat(ctpe.getMessage())
+          .isEqualTo(String.format("Case Id '%s' not found", TEST1_CASE_ID));
+    }
   }
 
   @Test
-  public void shouldReturnAtLeastOneCaseWhenUPRNExists() {
-
-    List<Case> expectedCases = create3TestCases();
-
-    when(caseRepo.findByuprn(anyString())).thenReturn(Optional.of(create3TestCases()));
-
-    List<Case> actualCases = caseService.findByUPRN(TEST_UPRN);
-    assertThat(actualCases, is(expectedCases));
-
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(caseRepo).findByuprn(captor.capture());
-    String actualCaseId = captor.getValue();
-    assertThat(actualCaseId).isEqualTo(TEST_UPRN);
-  }
-
-  @Test(expected = CaseNotFoundException.class)
-  public void shouldThrowCaseNotFoundExceptionWhenUPRNDoesNotExist() {
-
-    when(caseRepo.findByCaseId(any())).thenReturn(Optional.empty());
-
-    caseService.findByUPRN(TEST_UPRN);
-  }
-
-  @Test
-  public void shouldReturnCaseWhenCaseReferenceExists() {
-
+  public void shouldReturnCaseWhenCaseReferenceExists() throws CTPException {
     Case expectedCase = create1TestCase();
 
     when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.of(expectedCase));
@@ -109,26 +113,18 @@ public class CaseServiceTest {
     assertThat(actualReference).isEqualTo(TEST1_CASE_REFERENCE_ID);
   }
 
-  @Test(expected = CaseNotFoundException.class)
+  @Test
   public void shouldThrowCaseNotFoundExceptionWhenCaseReferenceDoesNotExist() {
+    when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.empty());
 
-    when(caseRepo.findByCaseId(any())).thenReturn(Optional.empty());
-
-    caseService.findByReference(TEST1_CASE_REFERENCE_ID);
-  }
-
-  private Case create1TestCase() {
-    return createTestCase(TEST1_CASE_ID, TEST_UPRN, TEST1_CASE_REFERENCE_ID);
-  }
-
-  private List<Case> create3TestCases() {
-    return Arrays.asList(
-        createTestCase(TEST1_CASE_ID, TEST_UPRN, TEST1_CASE_REFERENCE_ID),
-        createTestCase(TEST2_CASE_ID, TEST_UPRN, TEST2_CASE_REFERENCE_ID),
-        createTestCase(TEST3_CASE_ID, TEST_UPRN, TEST3_CASE_REFERENCE_ID));
-  }
-
-  private Case createTestCase(UUID caseId, String uprn, Long caseRef) {
-    return Case.builder().caseId(caseId).uprn(uprn).caseRef(caseRef).build();
+    try {
+      caseService.findByReference(TEST1_CASE_REFERENCE_ID);
+    } catch (HttpClientErrorException hcee) {
+      assertThat(hcee.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+      assertThat(hcee.getStatusText())
+          .isEqualTo(String.format("Case Reference '%s' not found", TEST1_CASE_REFERENCE_ID));
+    } catch (CTPException e) {
+      e.printStackTrace();
+    }
   }
 }

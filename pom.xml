@@ -54,6 +54,17 @@
       <artifactId>logging</artifactId>
       <version>1.2.5</version>
     </dependency>
+    <dependency>
+      <groupId>uk.gov.ons.ctp.common</groupId>
+      <artifactId>framework</artifactId>
+      <version>10.49.21</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion><groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <dependency>
       <groupId>uk.gov.ons.ctp.common</groupId>

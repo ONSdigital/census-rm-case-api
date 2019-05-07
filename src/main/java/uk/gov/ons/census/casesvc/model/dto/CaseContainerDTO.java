@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class CaseContainerDTO {
-  private UUID id;
+  private UUID caseId;
   private String caseRef;
   private String caseType;
   private String createdDateTime;
