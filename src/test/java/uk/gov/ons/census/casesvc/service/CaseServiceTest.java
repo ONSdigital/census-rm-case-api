@@ -1,9 +1,11 @@
 package uk.gov.ons.census.casesvc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -23,8 +25,6 @@ import uk.gov.ons.census.casesvc.model.repository.CaseRepository;
 
 public class CaseServiceTest {
 
-  private static final String METHOD_NAME_FIND_CASE_BY_ID = "findByCaseId";
-
   private UUID TEST1_CASE_ID = UUID.randomUUID();
   private Long TEST1_CASE_REFERENCE_ID = 123L;
 
@@ -39,7 +39,6 @@ public class CaseServiceTest {
   @Mock private CaseRepository caseRepo;
 
   @InjectMocks private CaseService caseService;
-  private UUID actualCaseId;
 
   @Before
   public void setUp() {
@@ -51,14 +50,13 @@ public class CaseServiceTest {
 
     Case expectedCase = create1TestCase();
 
-    when(caseRepo.findByCaseId(anyObject())).thenReturn(Optional.ofNullable(expectedCase));
+    when(caseRepo.findByCaseId(any())).thenReturn(Optional.of(expectedCase));
 
     Case actualCase = caseService.findByCaseId(TEST1_CASE_ID);
     assertThat(actualCase).isEqualTo(expectedCase);
 
     ArgumentCaptor<UUID> captor = ArgumentCaptor.forClass(UUID.class);
     verify(caseRepo).findByCaseId(captor.capture());
-
     UUID actualCaseId = captor.getValue();
     assertThat(actualCaseId).isEqualTo(expectedCase.getCaseId());
   }
@@ -66,66 +64,55 @@ public class CaseServiceTest {
   @Test(expected = CaseNotFoundException.class)
   public void shouldThrowCaseNotFoundExceptionWhenCaseIdDoesNotExist() {
 
-    Optional<Case> expectedCase = Optional.empty();
-
-    when(caseRepo.findByCaseId(anyObject())).thenReturn(expectedCase);
+    when(caseRepo.findByCaseId(any())).thenReturn(Optional.empty());
 
     caseService.findByCaseId(TEST1_CASE_ID);
   }
 
-  //  @Test
-  //  public void shouldReturnCasesWhenUPRNExists() {
-  //
-  //    List<Case> expectedCases = create3TestCases();
-  //
-  //    when(caseRepo.findByuprn(anyString())).thenReturn(Optional.ofNullable(expectedCases));
-  //
-  //    List<Case> actualCases = caseService.findByUPRN(TEST_UPRN);
-  //    assertEquals(actualCases, containsInAnyOrder(expectedCases));
-  //
-  //    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-  //
-  //    verify(caseRepo).findByuprn(captor.capture());
-  //
-  //    String actualCaseId = captor.getValue();
-  //    assertThat(actualCaseId).isEqualTo(expectedCase.getCaseId());
-  //  }
-  //
-  //  @Test(expected = CaseNotFoundException.class)
-  //  public void shouldThrowCaseNotFoundExceptionWhenCaseIdDoesNotExist() {
-  //
-  //    Optional<Case> expectedCase = Optional.empty();
-  //
-  //    when(caseRepo.findByCaseId(anyObject())).thenReturn(expectedCase);
-  //
-  //    caseService.findByCaseId(TEST1_CASE_ID);
-  //  }
+  @Test
+  public void shouldReturnAtLeastOneCaseWhenUPRNExists() {
+
+    List<Case> expectedCases = create3TestCases();
+
+    when(caseRepo.findByuprn(anyString())).thenReturn(Optional.of(create3TestCases()));
+
+    List<Case> actualCases = caseService.findByUPRN(TEST_UPRN);
+    assertThat(actualCases, is(expectedCases));
+
+    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+    verify(caseRepo).findByuprn(captor.capture());
+    String actualCaseId = captor.getValue();
+    assertThat(actualCaseId).isEqualTo(TEST_UPRN);
+  }
+
+  @Test(expected = CaseNotFoundException.class)
+  public void shouldThrowCaseNotFoundExceptionWhenUPRNDoesNotExist() {
+
+    when(caseRepo.findByCaseId(any())).thenReturn(Optional.empty());
+
+    caseService.findByUPRN(TEST_UPRN);
+  }
 
   @Test
   public void shouldReturnCaseWhenCaseReferenceExists() {
 
     Case expectedCase = create1TestCase();
 
-    when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.ofNullable(expectedCase));
+    when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.of(expectedCase));
 
     Case actualCase = caseService.findByReference(TEST1_CASE_REFERENCE_ID);
     assertThat(actualCase).isEqualTo(expectedCase);
 
     ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
     verify(caseRepo).findByCaseRef(captor.capture());
-
     Long actualReference = captor.getValue();
     assertThat(actualReference).isEqualTo(TEST1_CASE_REFERENCE_ID);
   }
 
-  Case expectedCase = createTestCase(TEST1_CASE_ID, TEST_UPRN, TEST1_CASE_REFERENCE_ID);
-
   @Test(expected = CaseNotFoundException.class)
   public void shouldThrowCaseNotFoundExceptionWhenCaseReferenceDoesNotExist() {
 
-    Optional<Case> expectedCase = Optional.empty();
-
-    when(caseRepo.findByCaseId(anyObject())).thenReturn(expectedCase);
+    when(caseRepo.findByCaseId(any())).thenReturn(Optional.empty());
 
     caseService.findByReference(TEST1_CASE_REFERENCE_ID);
   }
