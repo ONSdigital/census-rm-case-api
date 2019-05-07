@@ -1,7 +1,5 @@
 package uk.gov.ons.census.casesvc.endpoint;
 
-
-
 public class CaseEndpointUnitTest {
 
   //  private static final String METHOD_NAME_FIND_CASE_BY_ID = "findByCaseId";

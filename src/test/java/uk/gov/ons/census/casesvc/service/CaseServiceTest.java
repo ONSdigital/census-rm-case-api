@@ -1,11 +1,9 @@
 package uk.gov.ons.census.casesvc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyObject;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -75,24 +73,24 @@ public class CaseServiceTest {
     caseService.findByCaseId(TEST1_CASE_ID);
   }
 
-//  @Test
-//  public void shouldReturnCasesWhenUPRNExists() {
-//
-//    List<Case> expectedCases = create3TestCases();
-//
-//    when(caseRepo.findByuprn(anyString())).thenReturn(Optional.ofNullable(expectedCases));
-//
-//    List<Case> actualCases = caseService.findByUPRN(TEST_UPRN);
-//    assertEquals(actualCases, containsInAnyOrder(expectedCases));
-//
-//    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-//
-//    verify(caseRepo).findByuprn(captor.capture());
-//
-//    String actualCaseId = captor.getValue();
-//    assertThat(actualCaseId).isEqualTo(expectedCase.getCaseId());
-//  }
-//
+  //  @Test
+  //  public void shouldReturnCasesWhenUPRNExists() {
+  //
+  //    List<Case> expectedCases = create3TestCases();
+  //
+  //    when(caseRepo.findByuprn(anyString())).thenReturn(Optional.ofNullable(expectedCases));
+  //
+  //    List<Case> actualCases = caseService.findByUPRN(TEST_UPRN);
+  //    assertEquals(actualCases, containsInAnyOrder(expectedCases));
+  //
+  //    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+  //
+  //    verify(caseRepo).findByuprn(captor.capture());
+  //
+  //    String actualCaseId = captor.getValue();
+  //    assertThat(actualCaseId).isEqualTo(expectedCase.getCaseId());
+  //  }
+  //
   //  @Test(expected = CaseNotFoundException.class)
   //  public void shouldThrowCaseNotFoundExceptionWhenCaseIdDoesNotExist() {
   //
