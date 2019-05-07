@@ -1,4 +1,4 @@
-package uk.gov.ons.census.casesvc;
+package uk.gov.ons.census.casesvc.config;
 
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;

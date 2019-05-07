@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.ons.census.casesvc.exception.CaseNotFoundException;
 import uk.gov.ons.census.casesvc.model.entity.Case;
 import uk.gov.ons.census.casesvc.model.repository.CaseRepository;
 
@@ -23,18 +24,21 @@ public class CaseService {
   public Case findByCaseId(UUID caseId) {
     log.debug("Entering findByCaseId");
 
-    return caseRepo.findByCaseId(caseId);
+    return caseRepo.findByCaseId(caseId)
+        .orElseThrow(() -> new CaseNotFoundException(String.format("Case Id '%s' not found", caseId.toString())));
   }
 
   public List<Case> findByUPRN(String uprn) {
     log.debug("Entering findByUPRN");
 
-    return caseRepo.findByuprn(uprn);
+    return caseRepo.findByuprn(uprn)
+        .orElseThrow(() -> new CaseNotFoundException(String.format("UPRN '%s' not found", uprn)));
   }
 
   public Case findByReference(long reference) {
     log.debug("Entering findByReference");
 
-    return caseRepo.findByCaseRef(reference);
+    return caseRepo.findByCaseRef(reference)
+        .orElseThrow(() -> new CaseNotFoundException(String.format("Case Reference '%s' not found", reference)));
   }
 }
