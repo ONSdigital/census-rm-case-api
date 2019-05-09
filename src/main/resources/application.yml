@@ -9,6 +9,7 @@ info:
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
   datasource:
     url: jdbc:postgresql://localhost:6432/postgres
     username: postgres
@@ -28,10 +29,6 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
-
-logging:
-  level:
-    ROOT: INFO
 
 endpoints:
   enabled: true
