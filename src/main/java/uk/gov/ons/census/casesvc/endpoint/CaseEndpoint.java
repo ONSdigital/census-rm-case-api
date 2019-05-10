@@ -4,11 +4,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,9 +30,6 @@ import uk.gov.ons.census.casesvc.service.CaseService;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 @RestController
-@Api(
-    value = "/cases",
-    description = "Provides features and functions required by the Contact Centre.")
 @RequestMapping(value = "/cases", produces = "application/json")
 public final class CaseEndpoint {
   private static final Logger log = LoggerFactory.getLogger(CaseEndpoint.class);
@@ -52,36 +44,10 @@ public final class CaseEndpoint {
     this.mapperFacade = mapperFacade;
   }
 
-  @ApiOperation(
-      value = "Search for a case by address uprn.",
-      notes = "Returns cases",
-      responseContainer = "List",
-      produces = APPLICATION_JSON_VALUE)
-  @ApiResponses(
-      value = {
-        @ApiResponse(code = 200, message = "Success. A json object return of matched cases"),
-        @ApiResponse(
-            code = 400,
-            message =
-                "Bad request. Indicates an issue with the request. Further details are provided in the response."),
-        @ApiResponse(
-            code = 401,
-            message = "Unauthorised. The API key provided with the request is invalid."),
-        @ApiResponse(code = 404, message = "UPRN '{uprn}' not found"),
-        @ApiResponse(
-            code = 429,
-            message = "Server too busy. The ONS API is experiencing exceptional load."),
-        @ApiResponse(
-            code = 500,
-            message =
-                "Internal server error. Failed to process the request due to an internal error.")
-      })
   @GetMapping(value = "/uprn/{uprn}", produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<List<CaseContainerDTO>> findCasesByUPRN(
-      @ApiParam(value = "Lookup a case by the UPRN", required = true) @PathVariable("uprn")
-          String uprn,
-      @ApiParam(value = "true if case events are additionally required")
-          @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
+      @PathVariable("uprn") String uprn,
+      @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           Boolean caseEvents)
       throws CTPException {
     log.debug("Entering findByUPRN");
@@ -95,36 +61,10 @@ public final class CaseEndpoint {
     return ResponseEntity.ok(caseContainerDTOs);
   }
 
-  @ApiOperation(
-      value = "Search for a case by its Id.",
-      notes = "Returns a case",
-      response = CaseContainerDTO.class,
-      produces = APPLICATION_JSON_VALUE)
-  @ApiResponses(
-      value = {
-        @ApiResponse(code = 200, message = "Success. A json object return of matched case."),
-        @ApiResponse(
-            code = 400,
-            message =
-                "Bad request. Indicates an issue with the request. Further details are provided in the response."),
-        @ApiResponse(
-            code = 401,
-            message = "Unauthorised. The API key provided with the request is invalid."),
-        @ApiResponse(code = 404, message = "Case Reference '{CaseId}' not found"),
-        @ApiResponse(
-            code = 429,
-            message = "Server too busy. The ONS API is experiencing exceptional load."),
-        @ApiResponse(
-            code = 500,
-            message =
-                "Internal server error. Failed to process the request due to an internal error.")
-      })
   @GetMapping(value = "/{caseId}", produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<CaseContainerDTO> findCaseByCaseId(
-      @ApiParam(value = "Lookup a case by the case uuid", required = true) @PathVariable("caseId")
-          UUID caseId,
-      @ApiParam(value = "true if case events are additionally required")
-          @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
+      @PathVariable("caseId") UUID caseId,
+      @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           Boolean caseEvents)
       throws Exception {
     log.debug("Entering findByCaseId");
@@ -133,36 +73,10 @@ public final class CaseEndpoint {
         buildCaseFoundResponseDTO(caseService.findByCaseId(caseId), caseEvents));
   }
 
-  @ApiOperation(
-      value = "Search for a case by its reference.",
-      notes = "Returns a case by the case reference if available.",
-      response = CaseContainerDTO.class,
-      produces = APPLICATION_JSON_VALUE)
-  @ApiResponses(
-      value = {
-        @ApiResponse(code = 200, message = "Success. A json object return of matched case."),
-        @ApiResponse(
-            code = 400,
-            message =
-                "Bad request. Indicates an issue with the request. Further details are provided in the response."),
-        @ApiResponse(
-            code = 401,
-            message = "Unauthorised. The API key provided with the request is invalid."),
-        @ApiResponse(code = 404, message = "Case Reference '{reference}' not found"),
-        @ApiResponse(
-            code = 429,
-            message = "Server too busy. The ONS API is experiencing exceptional load."),
-        @ApiResponse(
-            code = 500,
-            message =
-                "Internal server error. Failed to process the request due to an internal error.")
-      })
   @GetMapping(value = "/ref/{reference}", produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<CaseContainerDTO> findCaseByReference(
-      @ApiParam(value = "Case reference e.g 123000001", required = true) @PathVariable("reference")
-          Long reference,
-      @ApiParam(value = "true if case events are additionally required")
-          @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
+      @PathVariable("reference") Long reference,
+      @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           Boolean caseEvents)
       throws CTPException {
     log.debug("Entering findByReference");
