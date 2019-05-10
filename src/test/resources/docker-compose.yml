@@ -4,4 +4,4 @@ services:
   container_name: postgres-action-it
   image: sdcplatform/ras-rm-docker-postgres
   ports:
-   - "15432:5432"
+   - "16432:5432"

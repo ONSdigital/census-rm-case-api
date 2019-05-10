@@ -11,7 +11,7 @@ before_install:
   - mvn fmt:check
   - docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
 
-#script: travis_wait mvn verify jacoco:report
+script: travis_wait mvn verify jacoco:report
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then

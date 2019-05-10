@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,7 +15,6 @@ import static uk.gov.ons.census.casesvc.utility.DataUtils.create3TestCases;
 import static uk.gov.ons.ctp.common.MvcHelper.getJson;
 import static uk.gov.ons.ctp.common.utility.MockMvcControllerAdviceHelper.mockAdviceFor;
 
-import java.util.UUID;
 import ma.glasnost.orika.MapperFacade;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,12 +38,12 @@ public class CaseEndpointUnitTest {
   private final String METHOD_NAME_FIND_CASE_BY_REFERENCE = "findCaseByReference";
   private final String METHOD_NAME_FIND_CASES_BY_UPRN = "findCasesByUPRN";
 
-  private UUID TEST1_CASE_ID = UUID.fromString("2e083ab1-41f7-4dea-a3d9-77f48458b5ca");
-  private Long TEST1_CASE_REFERENCE_ID = 123L;
+  private String TEST1_CASE_ID = "2e083ab1-41f7-4dea-a3d9-77f48458b5ca";
+  private String TEST1_CASE_REFERENCE_ID = "123";
 
-  private UUID TEST2_CASE_ID = UUID.fromString("3e948f6a-00bb-466d-88a7-b0990a827b53");
+  private String TEST2_CASE_ID = "3e948f6a-00bb-466d-88a7-b0990a827b53";
 
-  private UUID TEST3_CASE_ID = UUID.fromString("4ee74fac-e0fd-41ac-8322-414b8d5e978d");
+  private String TEST3_CASE_ID = "4ee74fac-e0fd-41ac-8322-414b8d5e978d";
 
   private String TEST_UPRN = "123";
 
@@ -80,11 +78,11 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASES_BY_UPRN))
-        .andExpect(jsonPath("$[0].caseId", is(TEST1_CASE_ID.toString())))
+        .andExpect(jsonPath("$[0].caseId", is(TEST1_CASE_ID)))
         .andExpect(jsonPath("$[0].caseEvents", hasSize(1)))
-        .andExpect(jsonPath("$[1].caseId", is(TEST2_CASE_ID.toString())))
+        .andExpect(jsonPath("$[1].caseId", is(TEST2_CASE_ID)))
         .andExpect(jsonPath("$[1].caseEvents", hasSize(1)))
-        .andExpect(jsonPath("$[2].caseId", is(TEST3_CASE_ID.toString())))
+        .andExpect(jsonPath("$[2].caseId", is(TEST3_CASE_ID)))
         .andExpect(jsonPath("$[2].caseEvents", hasSize(1)));
   }
 
@@ -96,14 +94,13 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(get(url).accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASES_BY_UPRN))
-        .andExpect(jsonPath("$[0].caseId", is(TEST1_CASE_ID.toString())))
+        .andExpect(jsonPath("$[0].caseId", is(TEST1_CASE_ID)))
         .andExpect(jsonPath("$[0].caseEvents", hasSize(0)))
-        .andExpect(jsonPath("$[1].caseId", is(TEST2_CASE_ID.toString())))
+        .andExpect(jsonPath("$[1].caseId", is(TEST2_CASE_ID)))
         .andExpect(jsonPath("$[1].caseEvents", hasSize(0)))
-        .andExpect(jsonPath("$[2].caseId", is(TEST3_CASE_ID.toString())))
+        .andExpect(jsonPath("$[2].caseId", is(TEST3_CASE_ID)))
         .andExpect(jsonPath("$[2].caseEvents", hasSize(0)));
   }
 
@@ -115,14 +112,13 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(get(url).accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASES_BY_UPRN))
-        .andExpect(jsonPath("$[0].caseId", is(TEST1_CASE_ID.toString())))
+        .andExpect(jsonPath("$[0].caseId", is(TEST1_CASE_ID)))
         .andExpect(jsonPath("$[0].caseEvents", hasSize(0)))
-        .andExpect(jsonPath("$[1].caseId", is(TEST2_CASE_ID.toString())))
+        .andExpect(jsonPath("$[1].caseId", is(TEST2_CASE_ID)))
         .andExpect(jsonPath("$[1].caseEvents", hasSize(0)))
-        .andExpect(jsonPath("$[2].caseId", is(TEST3_CASE_ID.toString())))
+        .andExpect(jsonPath("$[2].caseId", is(TEST3_CASE_ID)))
         .andExpect(jsonPath("$[2].caseEvents", hasSize(0)));
   }
 
@@ -146,15 +142,14 @@ public class CaseEndpointUnitTest {
   public void shouldReturnACaseWithEventsWhenSearchingByCaseId() throws Exception {
     when(caseService.findByCaseId(any())).thenReturn(create1TestCase());
 
-    String url = String.format("/cases/%s?caseEvents=true", TEST1_CASE_ID.toString());
+    String url = String.format("/cases/%s?caseEvents=true", TEST1_CASE_ID);
 
     mockMvc
         .perform(get(url).accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_ID))
-        .andExpect(jsonPath("$.caseId", is(TEST1_CASE_ID.toString())))
+        .andExpect(jsonPath("$.caseId", is(TEST1_CASE_ID)))
         .andExpect(jsonPath("$.caseEvents", hasSize(1)));
   }
 
@@ -162,15 +157,14 @@ public class CaseEndpointUnitTest {
   public void shouldReturnACaseWithoutEventsWhenSearchingByCaseId() throws Exception {
     when(caseService.findByCaseId(any())).thenReturn(create1TestCase());
 
-    String url = String.format("/cases/%s?caseEvents=false", TEST1_CASE_ID.toString());
+    String url = String.format("/cases/%s?caseEvents=false", TEST1_CASE_ID);
 
     mockMvc
         .perform(get(url).accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_ID))
-        .andExpect(jsonPath("$.caseId", is(TEST1_CASE_ID.toString())))
+        .andExpect(jsonPath("$.caseId", is(TEST1_CASE_ID)))
         .andExpect(jsonPath("$.caseEvents", hasSize(0)));
   }
 
@@ -178,15 +172,14 @@ public class CaseEndpointUnitTest {
   public void shouldReturnACaseWithoutEventsByDefaultWhenSearchingByCaseId() throws Exception {
     when(caseService.findByCaseId(any())).thenReturn(create1TestCase());
 
-    String url = String.format("/cases/%s", TEST1_CASE_ID.toString());
+    String url = String.format("/cases/%s", TEST1_CASE_ID);
 
     mockMvc
         .perform(get(url).accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_ID))
-        .andExpect(jsonPath("$.caseId", is(TEST1_CASE_ID.toString())))
+        .andExpect(jsonPath("$.caseId", is(TEST1_CASE_ID)))
         .andExpect(jsonPath("$.caseEvents", hasSize(0)));
   }
 
@@ -195,7 +188,7 @@ public class CaseEndpointUnitTest {
     when(caseService.findByCaseId(any()))
         .thenThrow(new CTPException(Fault.RESOURCE_NOT_FOUND, "test message"));
 
-    String url = String.format("/cases/%s", TEST1_CASE_ID.toString());
+    String url = String.format("/cases/%s", TEST1_CASE_ID);
 
     mockMvc
         .perform(getJson(url).accept(MediaType.APPLICATION_JSON))
@@ -217,7 +210,7 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_REFERENCE))
-        .andExpect(jsonPath("$.caseRef", is(TEST1_CASE_REFERENCE_ID.toString())))
+        .andExpect(jsonPath("$.caseRef", is(TEST1_CASE_REFERENCE_ID)))
         .andExpect(jsonPath("$.caseEvents", hasSize(1)));
   }
 
@@ -229,11 +222,10 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(get(url).accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_REFERENCE))
-        .andExpect(jsonPath("$.caseRef", is(TEST1_CASE_REFERENCE_ID.toString())))
+        .andExpect(jsonPath("$.caseRef", is(TEST1_CASE_REFERENCE_ID)))
         .andExpect(jsonPath("$.caseEvents", hasSize(0)));
   }
 
@@ -246,11 +238,10 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(get(url).accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_REFERENCE))
-        .andExpect(jsonPath("$.caseRef", is(TEST1_CASE_REFERENCE_ID.toString())))
+        .andExpect(jsonPath("$.caseRef", is(TEST1_CASE_REFERENCE_ID)))
         .andExpect(jsonPath("$.caseEvents", hasSize(0)));
   }
 

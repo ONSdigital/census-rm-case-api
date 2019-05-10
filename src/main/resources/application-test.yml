@@ -10,7 +10,7 @@ spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:16432/postgres
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver
@@ -20,7 +20,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         default_schema: casev2
@@ -28,6 +28,6 @@ spring:
           lob:
             non_contextual_creation: true
 
-logging:
+sql:logging:
   level:
     ROOT: INFO
