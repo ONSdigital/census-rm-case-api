@@ -9,7 +9,6 @@ info:
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
-
   datasource:
     url: jdbc:postgresql://localhost:6432/postgres
     username: postgres
@@ -18,7 +17,6 @@ spring:
     initialization-mode: always
     hikari:
       maximumPoolSize: 50
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
     hibernate:
@@ -29,3 +27,7 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+
+logging:
+  level:
+    ROOT: INFO

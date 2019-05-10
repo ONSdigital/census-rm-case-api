@@ -1,4 +1,4 @@
-package uk.gov.ons.census.casesvc.config;
+package uk.gov.ons.census.casesvc.error;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;

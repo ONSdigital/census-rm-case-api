@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
-import uk.gov.ons.census.casesvc.config.ApiError;
+import uk.gov.ons.census.casesvc.error.ApiError;
 import uk.gov.ons.census.casesvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.casesvc.model.dto.EventDTO;
 import uk.gov.ons.census.casesvc.model.entity.Case;

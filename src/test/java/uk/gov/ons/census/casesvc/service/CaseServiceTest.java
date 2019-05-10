@@ -57,7 +57,7 @@ public class CaseServiceTest {
   }
 
   @Test
-  public void shouldThrowCaseNotFoundExceptionWhenUPRNDoesNotExist() {
+  public void shouldThrowNotFoundExceptionWhenUPRNDoesNotExist() {
     when(caseRepo.findByCaseRef(any())).thenReturn(Optional.empty());
 
     try {
@@ -86,7 +86,7 @@ public class CaseServiceTest {
   }
 
   @Test
-  public void shouldThrowCaseNotFoundExceptionWhenCaseIdDoesNotExist() throws Exception {
+  public void shouldThrowNotFoundExceptionWhenCaseIdDoesNotExist() throws Exception {
     when(caseRepo.findByCaseId(any())).thenReturn(Optional.empty());
 
     try {
@@ -114,7 +114,7 @@ public class CaseServiceTest {
   }
 
   @Test
-  public void shouldThrowCaseNotFoundExceptionWhenCaseReferenceDoesNotExist() {
+  public void shouldThrowNotFoundExceptionWhenCaseReferenceDoesNotExist() {
     when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.empty());
 
     try {
