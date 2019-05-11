@@ -1,6 +1,3 @@
-server:
-  port: 8302
-
 info:
   app:
     name: Case API
@@ -28,6 +25,6 @@ spring:
           lob:
             non_contextual_creation: true
 
-sql:logging:
+logging:
   level:
     ROOT: INFO

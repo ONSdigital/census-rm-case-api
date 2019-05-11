@@ -1,5 +1,5 @@
 server:
-  port: 8302
+  port: 8161
 
 info:
   app:
@@ -20,7 +20,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         default_schema: casev2

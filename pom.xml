@@ -55,29 +55,10 @@
       <version>1.2.5</version>
     </dependency>
     <dependency>
-      <groupId>uk.gov.ons.ctp.common</groupId>
-      <artifactId>framework</artifactId>
-      <version>10.49.21</version>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion><groupId>com.sun</groupId>
-          <artifactId>tools</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>com.mashape.unirest</groupId>
+      <artifactId>unirest-java</artifactId>
+      <version>1.4.9</version>
     </dependency>
-
-    <dependency>
-      <groupId>uk.gov.ons.ctp.common</groupId>
-      <artifactId>test-framework</artifactId>
-      <version>10.49.12</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion><groupId>com.sun</groupId>
-          <artifactId>tools</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
     <dependency>
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
@@ -94,8 +75,17 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.skyscreamer</groupId>
+          <artifactId>tools</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>android-json</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -148,7 +138,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <executable>true</executable>
-          <mainClass>uk.gov.ons.census.casesvc.Application</mainClass>
+          <mainClass>uk.gov.ons.census.caseapisvc.Application</mainClass>
         </configuration>
         <executions>
           <execution>
