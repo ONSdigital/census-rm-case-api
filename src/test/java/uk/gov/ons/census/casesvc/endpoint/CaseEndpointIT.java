@@ -3,17 +3,20 @@ package uk.gov.ons.census.casesvc.endpoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.ons.ctp.common.UnirestInitialiser;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,6 +33,13 @@ public class CaseEndpointIT {
   //  private String TEST_UPRN = "123456789012345";
 
   @LocalServerPort private int port;
+
+  @BeforeClass
+  public static void setUp() throws InterruptedException {
+    ObjectMapper value = new ObjectMapper();
+    UnirestInitialiser.initialise(value);
+    Thread.sleep(2000);
+  }
 
   @Test
   public void shouldReturnACaseWithEventsWhenSearchingByCaseId() throws Exception {

@@ -1,7 +1,7 @@
 version: '2.1'
 services:
   postgres-database:
-    container_name: postgres-case-it
+    container_name: postgres-case-api-it
     image: sdcplatform/ras-rm-docker-postgres
     ports:
       - "16432:5432"

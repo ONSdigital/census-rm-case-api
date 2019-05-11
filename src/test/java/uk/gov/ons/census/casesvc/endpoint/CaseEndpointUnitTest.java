@@ -260,4 +260,6 @@ public class CaseEndpointUnitTest {
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_REFERENCE))
         .andExpect(jsonPath("$.error.message", is("test message")));
   }
+
+  //TODO test 400, 401 etc...
 }
