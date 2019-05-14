@@ -16,6 +16,7 @@ import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCases
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
 
 import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -26,7 +27,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
-import uk.gov.ons.census.caseapisvc.utility.CaseSvcBeanMapper;
 
 public class CaseEndpointUnitTest {
 
@@ -45,7 +45,8 @@ public class CaseEndpointUnitTest {
 
   @Mock private CaseService caseService;
 
-  @Spy private MapperFacade mapperFacade = new CaseSvcBeanMapper();
+  @Spy
+  private MapperFacade mapperFacade = new DefaultMapperFactory.Builder().build().getMapperFacade();
 
   @InjectMocks private CaseEndpoint caseEndpoint;
 

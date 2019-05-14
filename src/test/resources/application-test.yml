@@ -4,8 +4,6 @@ info:
     version: 1.0
 
 spring:
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
   datasource:
     url: jdbc:postgresql://localhost:16432/postgres
     username: postgres

@@ -41,13 +41,13 @@ public class CaseServiceTest {
 
   @Test
   public void getMultipleCasesWhenUPRNExists() {
-    when(caseRepo.findByuprn(anyString())).thenReturn(Optional.of(createMultipleCasesWithEvents()));
+    when(caseRepo.findByUprn(anyString())).thenReturn(Optional.of(createMultipleCasesWithEvents()));
 
     List<Case> actualCases = caseService.findByUPRN(TEST_UPRN);
     assertThat(actualCases.size()).isEqualTo(2);
 
     ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(caseRepo).findByuprn(captor.capture());
+    verify(caseRepo).findByUprn(captor.capture());
     String actualCaseId = captor.getValue();
     assertThat(actualCaseId).isEqualTo(TEST_UPRN);
   }

@@ -1,7 +1,5 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.util.ArrayList;
@@ -10,8 +8,6 @@ import java.util.List;
 import java.util.UUID;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +21,7 @@ import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 
 @RestController
-@RequestMapping(value = "/cases", produces = "application/json")
+@RequestMapping(value = "/cases")
 public final class CaseEndpoint {
   private static final Logger log = LoggerFactory.getLogger(CaseEndpoint.class);
 
@@ -33,17 +29,16 @@ public final class CaseEndpoint {
   private final MapperFacade mapperFacade;
 
   @Autowired
-  public CaseEndpoint(
-      CaseService caseService, @Qualifier("caseSvcBeanMapper") MapperFacade mapperFacade) {
+  public CaseEndpoint(CaseService caseService, MapperFacade mapperFacade) {
     this.caseService = caseService;
     this.mapperFacade = mapperFacade;
   }
 
-  @GetMapping(value = "/uprn/{uprn}", produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<CaseContainerDTO>> findCasesByUPRN(
+  @GetMapping(value = "/uprn/{uprn}")
+  public List<CaseContainerDTO> findCasesByUPRN(
       @PathVariable("uprn") String uprn,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
-          Boolean caseEvents) {
+          boolean caseEvents) {
     log.debug("Entering findByUPRN");
 
     List<CaseContainerDTO> caseContainerDTOs = new ArrayList<>();
@@ -52,32 +47,30 @@ public final class CaseEndpoint {
       caseContainerDTOs.add(buildCaseFoundResponseDTO(caze, caseEvents));
     }
 
-    return ResponseEntity.ok(caseContainerDTOs);
+    return caseContainerDTOs;
   }
 
-  @GetMapping(value = "/{caseId}", produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<CaseContainerDTO> findCaseByCaseId(
+  @GetMapping(value = "/{caseId}")
+  public CaseContainerDTO findCaseByCaseId(
       @PathVariable("caseId") UUID caseId,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
-          Boolean caseEvents) {
+          boolean caseEvents) {
     log.debug("Entering findByCaseId");
 
-    return ResponseEntity.ok(
-        buildCaseFoundResponseDTO(caseService.findByCaseId(caseId), caseEvents));
+    return buildCaseFoundResponseDTO(caseService.findByCaseId(caseId), caseEvents);
   }
 
-  @GetMapping(value = "/ref/{reference}", produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<CaseContainerDTO> findCaseByReference(
+  @GetMapping(value = "/ref/{reference}")
+  public CaseContainerDTO findCaseByReference(
       @PathVariable("reference") Long reference,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
-          Boolean caseEvents) {
+          boolean caseEvents) {
     log.debug("Entering findByReference");
 
-    return ResponseEntity.ok(
-        buildCaseFoundResponseDTO(caseService.findByReference(reference), caseEvents));
+    return buildCaseFoundResponseDTO(caseService.findByReference(reference), caseEvents);
   }
 
-  private CaseContainerDTO buildCaseFoundResponseDTO(Case caze, Boolean includeCaseEvents) {
+  private CaseContainerDTO buildCaseFoundResponseDTO(Case caze, boolean includeCaseEvents) {
 
     CaseContainerDTO caseContainerDTO = this.mapperFacade.map(caze, CaseContainerDTO.class);
     List<EventDTO> caseEvents = new LinkedList<>();

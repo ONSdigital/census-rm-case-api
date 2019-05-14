@@ -27,7 +27,7 @@ public class CaseService {
     log.debug("Entering findByUPRN");
 
     return caseRepo
-        .findByuprn(uprn)
+        .findByUprn(uprn)
         .orElseThrow(
             () ->
                 new HttpClientErrorException(

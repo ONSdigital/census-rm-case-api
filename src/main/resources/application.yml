@@ -7,10 +7,8 @@ info:
     version: 1.0
 
 spring:
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
   datasource:
-    url: jdbc:postgresql://localhost:6432/postgres
+    url: jdbc:postgresql://localhost:6432/postgres?readOnly=true
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver
