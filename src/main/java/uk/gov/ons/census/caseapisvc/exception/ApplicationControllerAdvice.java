@@ -42,8 +42,8 @@ public class ApplicationControllerAdvice {
   @ResponseStatus(INTERNAL_SERVER_ERROR)
   @ExceptionHandler(Exception.class)
   @ResponseBody
-  public String handleInternalServerError(final Exception e) throws Exception {
-    // todo log etc... here
+  public String handleUnexpectedException(final Exception e) throws Exception {
+    // TODO log etc... here
     throw e;
   }
 

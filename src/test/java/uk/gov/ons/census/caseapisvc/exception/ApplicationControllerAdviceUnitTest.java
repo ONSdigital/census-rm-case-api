@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.PAYMENT_REQUIRED;
 import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
@@ -69,12 +70,21 @@ public class ApplicationControllerAdviceUnitTest {
   }
 
   @Test
-  public void handleUnexpectedException() {
+  public void handleUnexpectedHttpClientErrorException() {
     ResponseEntity response =
         applicationControllerAdvice.handleHttpClientErrorException(
             new HttpClientErrorException(PAYMENT_REQUIRED, "anything"));
 
     assertThat(response.getStatusCode()).isEqualTo(PAYMENT_REQUIRED);
     assertThat(response.getBody().toString()).contains(EXPECTED_UNEXPECTED_EXCEPTION_MESSAGE);
+  }
+
+  @Test
+  public void handleUnexpectedException() throws Exception {
+    try {
+      applicationControllerAdvice.handleUnexpectedException(new IOException("anything"));
+    } catch (Exception e) {
+      assertThat(e.getMessage()).isEqualTo("anything");
+    }
   }
 }

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
@@ -44,8 +43,7 @@ public final class CaseEndpoint {
   public ResponseEntity<List<CaseContainerDTO>> findCasesByUPRN(
       @PathVariable("uprn") String uprn,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
-          Boolean caseEvents)
-      throws HttpClientErrorException {
+          Boolean caseEvents) {
     log.debug("Entering findByUPRN");
 
     List<CaseContainerDTO> caseContainerDTOs = new ArrayList<>();
@@ -72,8 +70,7 @@ public final class CaseEndpoint {
   public ResponseEntity<CaseContainerDTO> findCaseByReference(
       @PathVariable("reference") Long reference,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
-          Boolean caseEvents)
-      throws HttpClientErrorException {
+          Boolean caseEvents) {
     log.debug("Entering findByReference");
 
     return ResponseEntity.ok(
