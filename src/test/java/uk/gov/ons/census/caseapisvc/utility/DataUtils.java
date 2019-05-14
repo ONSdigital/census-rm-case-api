@@ -4,12 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.json.JSONArray;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
@@ -27,17 +32,17 @@ public class DataUtils {
 
   private static String TEST_UPRN = "123";
 
-  private static String TEST_RESPONSE1_WITH_EVENTS_AS_JSON =
-      "{\"id\":\"c0d4f87d-9d19-4393-80c9-9eb94f69c460\",\"caseRef\":\"10000000\",\"caseType\":\"HH\",\"createdDateTime\":null,\"addressLine1\":\"Flat 56 Francombe House\",\"addressLine2\":\"Commercial Road\",\"addressLine3\":\"any addressLine3\",\"addressLine4\":null,\"townName\":\"Windleybury\",\"region\":\"E12000009\",\"postcode\":\"XX1 0XX\",\"responses\":[],\"caseEvents\":[{\"id\":\"401ac27a-5896-462e-a935-54d871c13b17\",\"category\":null,\"createdDateTime\":\"2019-05-01T12:17:13.033+0000\",\"description\":\"Case created\"}]}";
+  private static String TEST_RESPONSE1_WITH_EVENTS_AS_JSON;
+  private static String TEST_RESPONSE1_WITHOUT_EVENTS_AS_JSON;
+  private static String TEST_RESPONSE2_WITH_EVENTS_AS_JSON;
+  private static String TEST_RESPONSE2_WITHOUT_EVENTS_AS_JSON;
 
-  private static String TEST_RESPONSE1_WITHOUT_EVENTS_AS_JSON =
-      "{\"id\":\"c0d4f87d-9d19-4393-80c9-9eb94f69c460\",\"caseRef\":\"10000000\",\"caseType\":\"HH\",\"createdDateTime\":null,\"addressLine1\":\"Flat 56 Francombe House\",\"addressLine2\":\"Commercial Road\",\"addressLine3\":\"any addressLine3\",\"addressLine4\":null,\"townName\":\"Windleybury\",\"region\":\"E12000009\",\"postcode\":\"XX1 0XX\",\"responses\":[],\"caseEvents\":[]}";
-
-  private static String TEST_RESPONSE2_WITH_EVENTS_AS_JSON =
-      "{\"id\":\"16d79007-9224-448a-9e59-944d9d153fa1\",\"caseRef\":\"10000001\",\"caseType\":\"HH\",\"createdDateTime\":null,\"addressLine1\":\"First And Second Floor Flat\",\"addressLine2\":\"39 Cranbrook Road\",\"addressLine3\":\"any addressLine3\",\"addressLine4\":null,\"townName\":\"Windleybury\",\"region\":\"E12000009\",\"postcode\":\"XX1 0XX\",\"responses\":[],\"caseEvents\":[{\"id\":\"cc23f012-2bfa-4067-9aef-9e97d9979882\",\"category\":null,\"createdDateTime\":\"2019-05-01T12:17:13.089+0000\",\"description\":\"Case created\"}]}";
-
-  private static String TEST_RESPONSE2_WITHOUT_EVENTS_AS_JSON =
-      "{\"id\":\"16d79007-9224-448a-9e59-944d9d153fa1\",\"caseRef\":\"10000001\",\"caseType\":\"HH\",\"createdDateTime\":null,\"addressLine1\":\"First And Second Floor Flat\",\"addressLine2\":\"39 Cranbrook Road\",\"addressLine3\":\"any addressLine3\",\"addressLine4\":null,\"townName\":\"Windleybury\",\"region\":\"E12000009\",\"postcode\":\"XX1 0XX\",\"responses\":[],\"caseEvents\":[]}";
+  static {
+    TEST_RESPONSE1_WITH_EVENTS_AS_JSON = loadTestFile("test1_with_events.json");
+    TEST_RESPONSE1_WITHOUT_EVENTS_AS_JSON = loadTestFile("test1_without_events.json");
+    TEST_RESPONSE2_WITH_EVENTS_AS_JSON = loadTestFile("test2_with_events.json");
+    TEST_RESPONSE2_WITHOUT_EVENTS_AS_JSON = loadTestFile("test2_without_events.json");
+  }
 
   public static CaseContainerDTO createSingleCaseContainerDTOWithEvents1() throws IOException {
     return createObjectFromJson(TEST_RESPONSE1_WITH_EVENTS_AS_JSON, CaseContainerDTO.class);
@@ -130,6 +135,24 @@ public class DataUtils {
         .state(CaseState.ACTIONABLE)
         .uacQidLinks(uacQidLinks)
         .build();
+  }
+
+  private static String loadTestFile(String filename) {
+    String data = null;
+    Stream<String> lines = null;
+
+    try {
+      Path path = Paths.get(DataUtils.class.getClassLoader().getResource(filename).toURI());
+      lines = Files.lines(path);
+
+      data = lines.collect(Collectors.joining("\n"));
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      lines.close();
+    }
+
+    return data;
   }
 
   public static String prettyPrintJsonString(JsonNode jsonNode) {

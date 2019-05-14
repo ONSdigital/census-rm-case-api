@@ -1,6 +1,9 @@
-# census-rm-action-scheduler
-Rewritten Action Service for Census - has backwards compatibility with legacy XML format for message output.
+# census-rm-case-api
+This service is for use by the Contact Centre and provides a read-only API into the new (v2) case service.
 
-The Action Scheduler consumes the CaseCreatedEvent and UacUpdated events from the fanout exchange.
+# How to run
+The Case Api service requires a Postgres instance to be running which contains the new casev2 schema.
+Postgres can be started using either census-rm-docker-dev or "docker-compose up -d postgres-database"
 
-The Action Scheduler exposes a RESTful API to allow new Action Plans, Action Rules and Action Types to be set up - this is only used by the Ops tool and acceptance tests.
+# How to test
+make test

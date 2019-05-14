@@ -1,2 +1,2 @@
 test:
-	mvn verify jacoco:report
+	mvn clean verify jacoco:report

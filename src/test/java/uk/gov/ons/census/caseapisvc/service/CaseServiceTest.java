@@ -40,9 +40,7 @@ public class CaseServiceTest {
   }
 
   @Test
-  public void getMultipleCasesWhenUPRNExists() throws Exception {
-    List<Case> expectedCases = createMultipleCasesWithEvents();
-
+  public void getMultipleCasesWhenUPRNExists() {
     when(caseRepo.findByuprn(anyString())).thenReturn(Optional.of(createMultipleCasesWithEvents()));
 
     List<Case> actualCases = caseService.findByUPRN(TEST_UPRN);
@@ -67,7 +65,7 @@ public class CaseServiceTest {
   }
 
   @Test
-  public void getCaseWhenCaseIdExists() throws Exception {
+  public void getCaseWhenCaseIdExists() {
     Case expectedCase = createSingleCaseWithEvents();
 
     when(caseRepo.findByCaseId(any())).thenReturn(Optional.of(expectedCase));
@@ -95,7 +93,7 @@ public class CaseServiceTest {
   }
 
   @Test
-  public void getCaseWhenCaseReferenceExists() throws Exception {
+  public void getCaseWhenCaseReferenceExists() {
     Case expectedCase = createSingleCaseWithEvents();
 
     when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.of(expectedCase));

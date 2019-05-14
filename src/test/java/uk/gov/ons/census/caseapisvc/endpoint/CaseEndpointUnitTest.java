@@ -240,5 +240,4 @@ public class CaseEndpointUnitTest {
   private String createUrl(String urlFormat, String param1) {
     return String.format(urlFormat, param1);
   }
-  // TODO test 400, 401 etc...
 }
