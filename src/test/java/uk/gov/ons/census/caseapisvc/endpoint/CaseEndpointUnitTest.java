@@ -1,13 +1,13 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -17,6 +17,7 @@ import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWit
 
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -25,21 +26,23 @@ import org.mockito.Spy;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 
 public class CaseEndpointUnitTest {
 
-  private final String METHOD_NAME_FIND_CASE_BY_ID = "findCaseByCaseId";
-  private final String METHOD_NAME_FIND_CASE_BY_REFERENCE = "findCaseByReference";
-  private final String METHOD_NAME_FIND_CASES_BY_UPRN = "findCasesByUPRN";
+  private static final String METHOD_NAME_FIND_CASE_BY_ID = "findCaseByCaseId";
+  private static final String METHOD_NAME_FIND_CASE_BY_REFERENCE = "findCaseByReference";
+  private static final String METHOD_NAME_FIND_CASES_BY_UPRN = "findCasesByUPRN";
 
-  private String TEST1_CASE_ID = "2e083ab1-41f7-4dea-a3d9-77f48458b5ca";
-  private String TEST1_CASE_REFERENCE_ID = "123";
+  private static final String TEST1_CASE_ID = "2e083ab1-41f7-4dea-a3d9-77f48458b5ca";
+  private static final String TEST1_CASE_REFERENCE_ID = "123";
 
-  private String TEST2_CASE_ID = "3e948f6a-00bb-466d-88a7-b0990a827b53";
+  private static final String TEST2_CASE_ID = "3e948f6a-00bb-466d-88a7-b0990a827b53";
 
-  private String TEST_UPRN = "123";
+  private static final String TEST_UPRN = "123";
 
   private MockMvc mockMvc;
 
@@ -57,8 +60,13 @@ public class CaseEndpointUnitTest {
     this.mockMvc = MockMvcBuilders.standaloneSetup(caseEndpoint).build();
   }
 
+  @After
+  public void tearDown() {
+    reset(caseService);
+  }
+
   @Test
-  public void getMultipleCasesWithEventsWhenSearchingByUPRN() throws Exception {
+  public void getMultipleCasesWithEventsByUPRN() throws Exception {
     when(caseService.findByUPRN(anyString())).thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
@@ -76,7 +84,7 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getACaseWithoutEventsWhenSearchingByUPRN() throws Exception {
+  public void getMultipleCasesWithoutEventsByUPRN() throws Exception {
     when(caseService.findByUPRN(anyString())).thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
@@ -93,7 +101,7 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getACaseWithoutEventsByDefaultWhenSearchingByUPRN() throws Exception {
+  public void getMultipleCasesWithoutEventsByDefaultByUPRN() throws Exception {
     when(caseService.findByUPRN(anyString())).thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
@@ -107,20 +115,16 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void receiveNotFoundExceptionWhenUPRNDoesNotExist() {
-    when(caseService.findByUPRN(any()))
-        .thenThrow(new HttpClientErrorException(NOT_FOUND, "test message"));
+  public void receiveNotFoundExceptionWhenUPRNDoesNotExist() throws Exception {
+    when(caseService.findByUPRN(any())).thenThrow(new UPRNNotFoundException("a uprn"));
 
-    try {
-      mockMvc.perform(
-          get(createUrl("/cases/uprn/%s", TEST_UPRN)).accept(MediaType.APPLICATION_JSON));
-    } catch (Exception e) {
-      assertThat(((HttpClientErrorException) e.getCause()).getStatusCode()).isEqualTo(NOT_FOUND);
-    }
+    mockMvc
+        .perform(get(createUrl("/cases/uprn/%s", TEST_UPRN)).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
   }
 
   @Test
-  public void getACaseWithEventsWhenSearchingByCaseId() throws Exception {
+  public void getACaseWithEventsByCaseId() throws Exception {
     when(caseService.findByCaseId(any())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
@@ -136,7 +140,7 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getACaseWithoutEventsWhenSearchingByCaseId() throws Exception {
+  public void getACaseWithoutEventsByCaseId() throws Exception {
     when(caseService.findByCaseId(any())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
@@ -152,7 +156,7 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getACaseWithoutEventsByDefaultWhenSearchingByCaseId() throws Exception {
+  public void getACaseWithoutEventsByDefaultByCaseId() throws Exception {
     when(caseService.findByCaseId(any())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
@@ -165,21 +169,17 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void receiveNotFoundExceptionWhenCaseDoesNotExist() {
-    when(caseService.findByCaseId(any()))
-        .thenThrow(new HttpClientErrorException(NOT_FOUND, "test message"));
+  public void receiveNotFoundExceptionWhenCaseIdDoesNotExist() throws Exception {
+    when(caseService.findByCaseId(any())).thenThrow(new CaseIdNotFoundException("a case id"));
 
-    try {
-      mockMvc.perform(
-          get(createUrl("/cases/%s", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON));
-    } catch (Exception e) {
-      assertThat(((HttpClientErrorException) e.getCause()).getStatusCode()).isEqualTo(NOT_FOUND);
-    }
+    mockMvc
+        .perform(get(createUrl("/cases/%s", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
   }
 
   @Test
-  public void getACaseWithEventsWhenSearchingByCaseReference() throws Exception {
-    when(caseService.findByReference(any())).thenReturn(createSingleCaseWithEvents());
+  public void getACaseWithEventsByCaseReference() throws Exception {
+    when(caseService.findByReference(anyLong())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(
@@ -194,8 +194,8 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getACaseWithoutEventsWhenSearchingByCaseReference() throws Exception {
-    when(caseService.findByReference(any())).thenReturn(createSingleCaseWithEvents());
+  public void getACaseWithoutEventsByCaseReference() throws Exception {
+    when(caseService.findByReference(anyLong())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(
@@ -210,8 +210,8 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getACaseWithoutEventsByDefaultWhenSearchingByCaseReference() throws Exception {
-    when(caseService.findByReference(any())).thenReturn(createSingleCaseWithEvents());
+  public void getACaseWithoutEventsByDefaultByCaseReference() throws Exception {
+    when(caseService.findByReference(anyLong())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(
@@ -225,17 +225,14 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void receiveNotFoundExceptionWhenCaseReferenceDoesNotExist() {
-    when(caseService.findByReference(any()))
-        .thenThrow(new HttpClientErrorException(NOT_FOUND, "test message"));
+  public void receiveNotFoundExceptionWhenCaseReferenceDoesNotExist() throws Exception {
+    when(caseService.findByReference(anyLong())).thenThrow(new CaseReferenceNotFoundException(0L));
 
-    try {
-      mockMvc.perform(
-          get(createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
-              .accept(MediaType.APPLICATION_JSON));
-    } catch (Exception e) {
-      assertThat(((HttpClientErrorException) e.getCause()).getStatusCode()).isEqualTo(NOT_FOUND);
-    }
+    mockMvc
+        .perform(
+            get(createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
   }
 
   private String createUrl(String urlFormat, String param1) {

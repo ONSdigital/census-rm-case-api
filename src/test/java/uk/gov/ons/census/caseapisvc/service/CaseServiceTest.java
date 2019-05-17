@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
 
@@ -19,16 +18,22 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
+import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 
 public class CaseServiceTest {
 
-  private UUID TEST1_CASE_ID = UUID.fromString("2e083ab1-41f7-4dea-a3d9-77f48458b5ca");
-  private Long TEST1_CASE_REFERENCE_ID = 123L;
+  private static final long TEST_CASE_REFERENCE_ID_EXISTS = 123L;
 
-  private String TEST_UPRN = "123";
+  private static final String TEST_CASE_ID_EXISTS = "2e083ab1-41f7-4dea-a3d9-77f48458b5ca";
+  private static final String TEST_CASE_ID_DOES_NOT_EXIST = "590179eb-f8ce-4e2d-8cb6-ca4013a2ccf0";
+  private static final String TEST_INVALID_CASE_ID = "anything";
+
+  private static final String TEST_UPRN = "123";
 
   @Mock private CaseRepository caseRepo;
 
@@ -52,16 +57,11 @@ public class CaseServiceTest {
     assertThat(actualCaseId).isEqualTo(TEST_UPRN);
   }
 
-  @Test
-  public void shouldThrowNotFoundExceptionWhenUPRNDoesNotExist() {
-    when(caseRepo.findByCaseRef(any())).thenReturn(Optional.empty());
+  @Test(expected = UPRNNotFoundException.class)
+  public void shouldThrowUPRNNotFoundExceptionWhenUPRNDoesNotExist() {
+    when(caseRepo.findByUprn(any())).thenReturn(Optional.empty());
 
-    try {
-      caseService.findByUPRN(TEST_UPRN);
-    } catch (HttpClientErrorException hcee) {
-      assertThat(hcee.getStatusCode()).isEqualTo(NOT_FOUND);
-      assertThat(hcee.getMessage()).contains(String.format("UPRN '%s' not found", TEST_UPRN));
-    }
+    caseService.findByUPRN(TEST_UPRN);
   }
 
   @Test
@@ -70,26 +70,25 @@ public class CaseServiceTest {
 
     when(caseRepo.findByCaseId(any())).thenReturn(Optional.of(expectedCase));
 
-    Case actualCase = caseService.findByCaseId(TEST1_CASE_ID);
+    Case actualCase = caseService.findByCaseId(TEST_CASE_ID_EXISTS);
     assertThat(actualCase).isEqualTo(expectedCase);
 
     ArgumentCaptor<UUID> captor = ArgumentCaptor.forClass(UUID.class);
     verify(caseRepo).findByCaseId(captor.capture());
     UUID actualCaseId = captor.getValue();
-    assertThat(actualCaseId).isEqualTo(expectedCase.getCaseId());
+    assertThat(actualCaseId).isEqualTo(UUID.fromString(TEST_CASE_ID_EXISTS));
   }
 
-  @Test
-  public void shouldThrowNotFoundExceptionWhenCaseIdDoesNotExist() throws Exception {
+  @Test(expected = CaseIdNotFoundException.class)
+  public void shouldThrowCaseIdNotFoundExceptionWhenCaseIdDoesNotExist() {
     when(caseRepo.findByCaseId(any())).thenReturn(Optional.empty());
 
-    try {
-      caseService.findByCaseId(TEST1_CASE_ID);
-    } catch (HttpClientErrorException hcee) {
-      assertThat(hcee.getStatusCode()).isEqualTo(NOT_FOUND);
-      assertThat(hcee.getMessage())
-          .contains(String.format("Case Id '%s' not found", TEST1_CASE_ID));
-    }
+    caseService.findByCaseId(TEST_CASE_ID_DOES_NOT_EXIST);
+  }
+
+  @Test(expected = CaseIdInvalidException.class)
+  public void shouldThrowCaseIdInvalidExceptionWhenCaseIdDoesNotExist() {
+    caseService.findByCaseId(TEST_INVALID_CASE_ID);
   }
 
   @Test
@@ -98,25 +97,19 @@ public class CaseServiceTest {
 
     when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.of(expectedCase));
 
-    Case actualCase = caseService.findByReference(TEST1_CASE_REFERENCE_ID);
+    Case actualCase = caseService.findByReference(TEST_CASE_REFERENCE_ID_EXISTS);
     assertThat(actualCase).isEqualTo(expectedCase);
 
     ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
     verify(caseRepo).findByCaseRef(captor.capture());
     Long actualReference = captor.getValue();
-    assertThat(actualReference).isEqualTo(TEST1_CASE_REFERENCE_ID);
+    assertThat(actualReference).isEqualTo(TEST_CASE_REFERENCE_ID_EXISTS);
   }
 
-  @Test
-  public void shouldThrowNotFoundExceptionWhenCaseReferenceDoesNotExist() {
+  @Test(expected = CaseReferenceNotFoundException.class)
+  public void shouldThrowCaseReferenceNotFoundExceptionWhenCaseReferenceDoesNotExist() {
     when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.empty());
 
-    try {
-      caseService.findByReference(TEST1_CASE_REFERENCE_ID);
-    } catch (HttpClientErrorException hcee) {
-      assertThat(hcee.getStatusCode()).isEqualTo(NOT_FOUND);
-      assertThat(hcee.getMessage())
-          .contains(String.format("Case Reference '%s' not found", TEST1_CASE_REFERENCE_ID));
-    }
+    caseService.findByReference(TEST_CASE_REFERENCE_ID_EXISTS);
   }
 }

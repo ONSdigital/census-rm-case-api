@@ -12,13 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,17 +35,15 @@ public class Case {
 
   @Column private String estabArid;
 
-  @Column private String uprn;
-
-  @Column private String addressType;
-
   @Column private String estabType;
 
-  @Column private String addressLevel;
+  @Column private String uprn;
 
-  @Column private String abpCode;
+  // TODO remove @Transient when field in schema
+  @Column @Transient private String caseType;
 
-  @Column private String organisationName;
+  // TODO remove @Transient when field in schema
+  @Column @Transient private String createdDateTime;
 
   @Column private String addressLine1;
 
@@ -57,6 +54,14 @@ public class Case {
   @Column private String townName;
 
   @Column private String postcode;
+
+  @Column private String organisationName;
+
+  @Column private String addressLevel;
+
+  @Column private String abpCode;
+
+  @Column private String rgn;
 
   @Column private String latitude;
 
@@ -69,18 +74,6 @@ public class Case {
   @Column private String msoa;
 
   @Column private String lad;
-
-  @Column private String rgn;
-
-  @Column private String htcWillingness;
-
-  @Column private String htcDigital;
-
-  @Column private String treatmentCode;
-
-  @Column private String collectionExerciseId;
-
-  @Column private String actionPlanId;
 
   @Column
   @Enumerated(EnumType.STRING)

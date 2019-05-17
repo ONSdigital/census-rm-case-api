@@ -8,11 +8,11 @@ public class EventDTO {
 
   private String id;
 
-  private String category;
-
-  @JsonProperty("createdDateTime")
-  private String eventDate;
+  private String eventType;
 
   @JsonProperty("description")
   private String eventDescription;
+
+  @JsonProperty("createdDateTime")
+  private String eventDate;
 }

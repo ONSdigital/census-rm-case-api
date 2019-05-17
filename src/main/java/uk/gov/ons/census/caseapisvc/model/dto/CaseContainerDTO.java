@@ -1,20 +1,26 @@
 package uk.gov.ons.census.caseapisvc.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import lombok.Data;
 
 @Data
 public class CaseContainerDTO {
-  @JsonProperty("id")
-  private UUID caseId;
 
   private String caseRef;
 
-  @JsonProperty("caseType")
-  private String addressType;
+  @JsonProperty("id")
+  private String caseId;
+
+  private String arid;
+
+  private String estabArid;
+
+  private String estabType;
+
+  private String uprn;
+
+  private String caseType;
 
   private String createdDateTime;
 
@@ -24,16 +30,32 @@ public class CaseContainerDTO {
 
   private String addressLine3;
 
-  private String addressLine4;
-
   private String townName;
+
+  private String postcode;
+
+  private String organisationName;
+
+  private String addressLevel;
+
+  private String abpCode;
 
   @JsonProperty("region")
   private String rgn;
 
-  private String postcode;
+  private String latitude;
 
-  private List<ResponseDTO> responses = new ArrayList<>();
+  private String longitude;
+
+  private String oa;
+
+  private String lsoa;
+
+  private String msoa;
+
+  private String lad;
+
+  private String state;
 
   private List<EventDTO> caseEvents;
 }

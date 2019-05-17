@@ -1,0 +1,34 @@
+{
+  "caseRef": "10000001",
+  "id": "16d79007-9224-448a-9e59-944d9d153fa1",
+  "arid": "DDR190314000000239595",
+  "estabArid": "DDR190314000000060908",
+  "estabType": "Household",
+  "uprn": "123456789012345",
+  "caseType": null,
+  "createdDateTime": null,
+  "addressLine1": "First And Second Floor Flat",
+  "addressLine2": "39 Cranbrook Road",
+  "addressLine3": "any addressLine3",
+  "townName": "Windleybury",
+  "postcode": "XX1 0XX",
+  "organisationName": null,
+  "addressLevel": "U",
+  "abpCode": "RD06",
+  "region": "E12000009",
+  "latitude": "51.4721166",
+  "longitude": "-2.5970579",
+  "oa": "E00074083",
+  "lsoa": "E01014669",
+  "msoa": "E02003031",
+  "lad": "E06000023",
+  "state": "ACTIONABLE",
+  "caseEvents": [
+    {
+      "id": "cc23f012-2bfa-4067-9aef-9e97d9979882",
+      "eventType": null,
+      "createdDateTime": "2019-05-01 13:17:20.022",
+      "description": "Case created"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ package uk.gov.ons.census.caseapisvc.model.dto;
 import lombok.Data;
 
 @Data
-public class UacDTO {
+class UacDTO {
   private String uacHash;
   private String uac;
   private boolean active;

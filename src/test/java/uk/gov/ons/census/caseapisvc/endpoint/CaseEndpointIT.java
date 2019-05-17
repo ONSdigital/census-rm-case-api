@@ -13,6 +13,7 @@ import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContaine
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,15 +30,15 @@ import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 @Sql("/data-test.sql")
 public class CaseEndpointIT {
 
-  private String TEST_GOOD_CASE_ID = "c0d4f87d-9d19-4393-80c9-9eb94f69c460";
-  private String TEST_GOOD_CASE_REFERENCE_ID = "10000000";
-  private String TEST_GOOD_UPRN = "123456789012345";
+  private static final String TEST_UPRN_EXISTS = "123456789012345";
+  private static final String TEST_UPRN_DOES_NOT_EXIST = "999999999999999";
 
-  private String TEST_BAD_CASE_ID = "590179eb-f8ce-4e2d-8cb6-ca4013a2ccf0";
-  private String TEST_BAD_CASE_REFERENCE_ID = "99999999";
-  private String TEST_BAD_UPRN = "999999999999999";
+  private static final String TEST_CASE_ID_EXISTS = "c0d4f87d-9d19-4393-80c9-9eb94f69c460";
+  private static final String TEST_CASE_ID_DOES_NOT_EXIST = "590179eb-f8ce-4e2d-8cb6-ca4013a2ccf0";
+  private static final String TEST_INVALID_CASE_ID = "anything";
 
-  private String EMPTY_JSON = "{}";
+  private static final String TEST_REFERENCE_ID_EXISTS = "10000000";
+  private static final String TEST_REFERENCE_DOES_NOT_EXIST = "99999999";
 
   @LocalServerPort private int port;
 
@@ -46,7 +47,7 @@ public class CaseEndpointIT {
     List<CaseContainerDTO> expectedData = createMultipleCaseContainerDTOsWithEvents();
 
     HttpResponse<JsonNode> response =
-        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_GOOD_UPRN))
+        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_EXISTS))
             .header("accept", "application/json")
             .queryString("caseEvents", "true")
             .asJson();
@@ -63,7 +64,7 @@ public class CaseEndpointIT {
     List<CaseContainerDTO> expectedData = createMultipleCaseContainerDTOWithoutEvents();
 
     HttpResponse<JsonNode> response =
-        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_GOOD_UPRN))
+        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_EXISTS))
             .header("accept", "application/json")
             .queryString("caseEvents", "false")
             .asJson();
@@ -81,7 +82,7 @@ public class CaseEndpointIT {
     List<CaseContainerDTO> expectedData = createMultipleCaseContainerDTOWithoutEvents();
 
     HttpResponse<JsonNode> response =
-        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_GOOD_UPRN))
+        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_EXISTS))
             .header("accept", "application/json")
             .asJson();
 
@@ -93,13 +94,12 @@ public class CaseEndpointIT {
   }
 
   @Test
-  public void shouldReturn404WithEmptyJsonBodyWhenUPRNNotFound() throws Exception {
+  public void shouldReturn404WhenUPRNNotFound() throws Exception {
     HttpResponse<JsonNode> jsonResponse =
-        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_BAD_UPRN))
+        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_DOES_NOT_EXIST))
             .header("accept", "application/json")
             .asJson();
 
-    assertThat(jsonResponse.getBody().toString()).isEqualTo(EMPTY_JSON);
     assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
   }
 
@@ -108,7 +108,7 @@ public class CaseEndpointIT {
     CaseContainerDTO expectedData = createSingleCaseContainerDTOWithEvents1();
 
     HttpResponse<JsonNode> response =
-        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_GOOD_CASE_ID))
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_EXISTS))
             .header("accept", "application/json")
             .queryString("caseEvents", "true")
             .asJson();
@@ -125,7 +125,7 @@ public class CaseEndpointIT {
     CaseContainerDTO expectedData = createSingleCaseContainerDTOWithoutEvents1();
 
     HttpResponse<JsonNode> response =
-        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_GOOD_CASE_ID))
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_EXISTS))
             .header("accept", "application/json")
             .queryString("caseEvents", "false")
             .asJson();
@@ -142,7 +142,7 @@ public class CaseEndpointIT {
     CaseContainerDTO expectedData = createSingleCaseContainerDTOWithoutEvents1();
 
     HttpResponse<JsonNode> response =
-        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_GOOD_CASE_ID))
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_EXISTS))
             .header("accept", "application/json")
             .queryString("caseEvents", "false")
             .asJson();
@@ -155,14 +155,22 @@ public class CaseEndpointIT {
   }
 
   @Test
-  public void shouldReturn404WithEmptyJsonBodyWhenCaseNotFound() throws Exception {
+  public void shouldReturn404WhenCaseIdNotFound() throws UnirestException {
     HttpResponse<JsonNode> jsonResponse =
-        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_BAD_CASE_ID))
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_DOES_NOT_EXIST))
             .header("accept", "application/json")
-            .queryString("caseEvents", "false")
             .asJson();
 
-    assertThat(jsonResponse.getBody().toString()).isEqualTo(EMPTY_JSON);
+    assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
+  }
+
+  @Test
+  public void shouldReturn404WhenInvalidCaseId() throws UnirestException {
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_INVALID_CASE_ID))
+            .header("accept", "application/json")
+            .asJson();
+
     assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
   }
 
@@ -171,8 +179,7 @@ public class CaseEndpointIT {
     CaseContainerDTO expectedData = createSingleCaseContainerDTOWithEvents1();
 
     HttpResponse<JsonNode> response =
-        Unirest.get(
-                createUrl("http://localhost:%d/cases/ref/%s", port, TEST_GOOD_CASE_REFERENCE_ID))
+        Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, TEST_REFERENCE_ID_EXISTS))
             .header("accept", "application/json")
             .queryString("caseEvents", "true")
             .asJson();
@@ -189,8 +196,7 @@ public class CaseEndpointIT {
     CaseContainerDTO expectedData = createSingleCaseContainerDTOWithoutEvents1();
 
     HttpResponse<JsonNode> response =
-        Unirest.get(
-                createUrl("http://localhost:%d/cases/ref/%s", port, TEST_GOOD_CASE_REFERENCE_ID))
+        Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, TEST_REFERENCE_ID_EXISTS))
             .header("accept", "application/json")
             .queryString("caseEvents", "false")
             .asJson();
@@ -208,8 +214,7 @@ public class CaseEndpointIT {
     CaseContainerDTO expectedData = createSingleCaseContainerDTOWithoutEvents1();
 
     HttpResponse<JsonNode> response =
-        Unirest.get(
-                createUrl("http://localhost:%d/cases/ref/%s", port, TEST_GOOD_CASE_REFERENCE_ID))
+        Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, TEST_REFERENCE_ID_EXISTS))
             .header("accept", "application/json")
             .queryString("caseEvents", "false")
             .asJson();
@@ -222,14 +227,13 @@ public class CaseEndpointIT {
   }
 
   @Test
-  public void shouldReturn404WithEmptyJsonBodyWhenCaseReferenceNotFound() throws Exception {
+  public void shouldReturn404WhenCaseReferenceNotFound() throws Exception {
     HttpResponse<JsonNode> jsonResponse =
-        Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, TEST_BAD_CASE_REFERENCE_ID))
+        Unirest.get(
+                createUrl("http://localhost:%d/cases/ref/%s", port, TEST_REFERENCE_DOES_NOT_EXIST))
             .header("accept", "application/json")
-            .queryString("caseEvents", "false")
             .asJson();
 
-    assertThat(jsonResponse.getBody().toString()).isEqualTo(EMPTY_JSON);
     assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
   }
 

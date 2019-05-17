@@ -1,14 +1,15 @@
 package uk.gov.ons.census.caseapisvc.service;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
+import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 
@@ -23,36 +24,39 @@ public class CaseService {
     this.caseRepo = caseRepo;
   }
 
-  public List<Case> findByUPRN(String uprn) throws HttpClientErrorException {
+  public List<Case> findByUPRN(String uprn) {
     log.debug("Entering findByUPRN");
 
-    return caseRepo
-        .findByUprn(uprn)
-        .orElseThrow(
-            () ->
-                new HttpClientErrorException(
-                    NOT_FOUND, String.format("UPRN '%s' not found", uprn)));
+    return caseRepo.findByUprn(uprn).orElseThrow(() -> new UPRNNotFoundException(uprn));
   }
 
-  public Case findByCaseId(UUID caseId) throws HttpClientErrorException {
+  public Case findByCaseId(String caseId) {
     log.debug("Entering findByCaseId");
 
+    UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
+
     return caseRepo
-        .findByCaseId(caseId)
-        .orElseThrow(
-            () ->
-                new HttpClientErrorException(
-                    NOT_FOUND, String.format("Case Id '%s' not found", caseId.toString())));
+        .findByCaseId(caseIdUUID)
+        .orElseThrow(() -> new CaseIdNotFoundException(caseIdUUID.toString()));
   }
 
-  public Case findByReference(Long reference) throws HttpClientErrorException {
+  public Case findByReference(long reference) {
     log.debug("Entering findByReference");
 
     return caseRepo
         .findByCaseRef(reference)
-        .orElseThrow(
-            () ->
-                new HttpClientErrorException(
-                    NOT_FOUND, String.format("Case Reference '%s' not found", reference)));
+        .orElseThrow(() -> new CaseReferenceNotFoundException(reference));
+  }
+
+  private UUID validateAndConvertCaseIdToUUID(String caseId) {
+    UUID caseIdUUID;
+
+    try {
+      caseIdUUID = UUID.fromString(caseId);
+    } catch (IllegalArgumentException iae) {
+      throw new CaseIdInvalidException(caseId);
+    }
+
+    return caseIdUUID;
   }
 }

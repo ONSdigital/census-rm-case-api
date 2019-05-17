@@ -1,18 +1,26 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
+import javax.servlet.http.HttpServletResponse;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
+import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
@@ -44,7 +52,7 @@ public final class CaseEndpoint {
     List<CaseContainerDTO> caseContainerDTOs = new ArrayList<>();
 
     for (Case caze : caseService.findByUPRN(uprn)) {
-      caseContainerDTOs.add(buildCaseFoundResponseDTO(caze, caseEvents));
+      caseContainerDTOs.add(buildCaseContainerDTO(caze, caseEvents));
     }
 
     return caseContainerDTOs;
@@ -52,25 +60,35 @@ public final class CaseEndpoint {
 
   @GetMapping(value = "/{caseId}")
   public CaseContainerDTO findCaseByCaseId(
-      @PathVariable("caseId") UUID caseId,
+      @PathVariable("caseId") String caseId,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           boolean caseEvents) {
     log.debug("Entering findByCaseId");
 
-    return buildCaseFoundResponseDTO(caseService.findByCaseId(caseId), caseEvents);
+    return buildCaseContainerDTO(caseService.findByCaseId(caseId), caseEvents);
   }
 
   @GetMapping(value = "/ref/{reference}")
   public CaseContainerDTO findCaseByReference(
-      @PathVariable("reference") Long reference,
+      @PathVariable("reference") long reference,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           boolean caseEvents) {
     log.debug("Entering findByReference");
 
-    return buildCaseFoundResponseDTO(caseService.findByReference(reference), caseEvents);
+    return buildCaseContainerDTO(caseService.findByReference(reference), caseEvents);
   }
 
-  private CaseContainerDTO buildCaseFoundResponseDTO(Case caze, boolean includeCaseEvents) {
+  @ExceptionHandler({
+    UPRNNotFoundException.class,
+    CaseIdNotFoundException.class,
+    CaseIdInvalidException.class,
+    CaseReferenceNotFoundException.class
+  })
+  public void handleCaseIdNotFoundAndInvalid(HttpServletResponse response) throws IOException {
+    response.sendError(NOT_FOUND.value());
+  }
+
+  private CaseContainerDTO buildCaseContainerDTO(Case caze, boolean includeCaseEvents) {
 
     CaseContainerDTO caseContainerDTO = this.mapperFacade.map(caze, CaseContainerDTO.class);
     List<EventDTO> caseEvents = new LinkedList<>();
