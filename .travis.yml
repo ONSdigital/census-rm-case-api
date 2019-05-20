@@ -18,11 +18,6 @@ after_success:
     docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
     docker push "eu.gcr.io/census-rm-ci/rm/census-rm-case-api";
     fi
-  - if [ "$TRAVIS_BRANCH" == "contact-centre-case-lookup" ] ; then
-    docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
-    docker tag "eu.gcr.io/census-rm-ci/rm/census-rm-case-api" "eu.gcr.io/census-rm-ci/rm/census-rm-case-api:ade_test";
-    docker push "eu.gcr.io/census-rm-ci/rm/census-rm-case-api:ade_test";
-    fi
   - bash <(curl -s https://codecov.io/bash)
 
 cache:
@@ -32,4 +27,3 @@ cache:
 branches:
   only:
     - master
-    - contact-centre-case-lookup
