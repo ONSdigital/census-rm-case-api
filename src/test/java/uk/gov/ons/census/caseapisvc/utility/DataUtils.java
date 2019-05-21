@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -142,7 +141,7 @@ public class DataUtils {
 
   public static List<CaseContainerDTO> extractCaseContainerDTOsFromResponse(
       HttpResponse<JsonNode> response) throws IOException {
-    List<CaseContainerDTO> dtos = new ArrayList<>();
+    List<CaseContainerDTO> dtos = new LinkedList<>();
     JSONArray elements = response.getBody().getArray();
     ObjectMapper mapper = new ObjectMapper();
 

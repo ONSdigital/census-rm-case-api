@@ -1,5 +1,5 @@
 # census-rm-case-api
-This service is for use by the Contact Centre and provides a read-only API into the new (v2) case service.
+This service provides a read-only API for case details.
 
 # How to run
 The Case Api service requires a Postgres instance to be running which contains the new casev2 schema.

@@ -1,8 +1,6 @@
-delete from casev2.event;
-
-delete from casev2.uac_qid_link;
-
-delete from casev2.cases;
+truncate casev2.event cascade;
+truncate casev2.uac_qid_link cascade;
+truncate casev2.cases cascade;
 
 
 INSERT INTO casev2.cases (case_ref, abp_code, address_level, address_line1, address_line2,

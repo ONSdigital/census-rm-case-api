@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import lombok.Data;
+import uk.gov.ons.census.caseapisvc.model.dto.EventType;
 
 @Data
 @Entity
@@ -17,7 +18,7 @@ public class Event {
   @ManyToOne private UacQidLink uacQidLink;
 
   // TODO remove @Transient when field in schema
-  @Column @Transient private String eventType;
+  @Column @Transient private EventType eventType;
 
   @Column private Date eventDate;
 

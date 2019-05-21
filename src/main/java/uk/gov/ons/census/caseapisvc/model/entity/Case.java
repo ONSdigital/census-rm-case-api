@@ -39,8 +39,7 @@ public class Case {
 
   @Column private String uprn;
 
-  // TODO remove @Transient when field in schema
-  @Column @Transient private String caseType;
+  @Column private String addressType;
 
   // TODO remove @Transient when field in schema
   @Column @Transient private String createdDateTime;

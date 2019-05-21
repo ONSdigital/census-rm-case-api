@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +48,7 @@ public final class CaseEndpoint {
           boolean caseEvents) {
     log.debug("Entering findByUPRN");
 
-    List<CaseContainerDTO> caseContainerDTOs = new ArrayList<>();
+    List<CaseContainerDTO> caseContainerDTOs = new LinkedList<>();
 
     for (Case caze : caseService.findByUPRN(uprn)) {
       caseContainerDTOs.add(buildCaseContainerDTO(caze, caseEvents));
