@@ -8,9 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 import lombok.Data;
-import uk.gov.ons.census.caseapisvc.model.dto.EventType;
 
 @Data
 @Entity
