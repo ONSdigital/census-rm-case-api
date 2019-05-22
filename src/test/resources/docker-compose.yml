@@ -1,0 +1,49 @@
+version: '2.1'
+services:
+  postgres-database:
+    container_name: postgres-case-api-it
+    image: sdcplatform/ras-rm-docker-postgres
+    ports:
+      - "16432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    container_name: rabbitmq-case-it
+    image: rabbitmq:3.6.10-management
+    ports:
+      - "34369:4369"
+      - "55672:25672"
+      - "35671:5671"
+      - "35672:5672"
+      - "46671:15671"
+      - "46672:15672"
+
+  case-processor:
+    container_name: case-processor-it
+    image: eu.gcr.io/census-rm-ci/rm/census-rm-case-processor
+    external_links:
+      - postgres-case-api-it
+      - rabbitmq-case-it
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-case-api-it:5432/postgres?sslmode=disable
+      - SPRING_RABBITMQ_HOST=rabbitmq-case-it
+      - SPRING_RABBITMQ_PORT=5672
+      - JAVA_OPTS=-Xmx128m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5121 -Dspring.profiles.active=dev
+    healthcheck:
+      test: ["CMD", "cat", "/tmp/case-service-healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      postgres-database:
+        condition: service_healthy
+
+  start_dependencies:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      case-processor:
+        condition: service_healthy

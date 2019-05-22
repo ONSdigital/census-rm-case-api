@@ -1,0 +1,28 @@
+info:
+  app:
+    name: Case API
+    version: 1.0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:16432/postgres
+    username: postgres
+    password: postgres
+    driverClassName: org.postgresql.Driver
+    initialization-mode: always
+    hikari:
+      maximumPoolSize: 50
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: casev2
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+logging:
+  level:
+    ROOT: INFO
