@@ -25,6 +25,7 @@ import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
+import uk.gov.ons.census.caseapisvc.service.AddressTypeToCaseTypeMapper;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 
 @RestController
@@ -90,6 +91,11 @@ public final class CaseEndpoint {
   private CaseContainerDTO buildCaseContainerDTO(Case caze, boolean includeCaseEvents) {
 
     CaseContainerDTO caseContainerDTO = this.mapperFacade.map(caze, CaseContainerDTO.class);
+
+    String caseType =
+        AddressTypeToCaseTypeMapper.mapFromAddressTypeToCaseType(caze.getAddressType());
+    caseContainerDTO.setCaseType(caseType);
+
     List<EventDTO> caseEvents = new LinkedList<>();
 
     if (includeCaseEvents) {

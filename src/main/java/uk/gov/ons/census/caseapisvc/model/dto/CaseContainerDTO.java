@@ -20,8 +20,7 @@ public class CaseContainerDTO {
 
   private String uprn;
 
-  @JsonProperty("caseType")
-  private String addressType;
+  private String caseType;
 
   private String createdDateTime;
 

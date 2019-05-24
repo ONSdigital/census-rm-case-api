@@ -108,6 +108,7 @@ public class DataUtils {
     caze.setCaseId(caseId);
     caze.setUprn(TEST_UPRN);
     caze.setUacQidLinks(uacQidLinks);
+    caze.setAddressType("HH");
 
     return caze;
   }
