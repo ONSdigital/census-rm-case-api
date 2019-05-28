@@ -7,23 +7,23 @@ INSERT INTO casev2.cases (case_ref, abp_code, address_level, address_line1, addr
                           address_line3, arid, case_id,
                           estab_arid, estab_type, lad, latitude, longitude,
                           lsoa, msoa, oa, organisation_name, postcode, rgn, state,
-                          town_name, uprn)
+                          town_name, created_date_time, uprn)
 VALUES (10000000, 'RD06', 'U', 'Flat 56 Francombe House', 'Commercial Road',
         'any addressLine3', 'DDR190314000000195675', 'c0d4f87d-9d19-4393-80c9-9eb94f69c460',
         'DDR190314000000113740', 'Household', 'E06000023','51.4463421', '-2.5924477',
         'E01014540', 'E02003043', 'E00073438', null, 'XX1 0XX', 'E12000009', 'ACTIONABLE',
-        'Windleybury', '123456789012345');
+        'Windleybury', '2019-05-28 14:19:00.204', '123456789012345');
 
 INSERT INTO casev2.cases (case_ref, abp_code, address_level, address_line1, address_line2,
                           address_line3, arid, case_id,
                           estab_arid, estab_type, lad, latitude, longitude,
                           lsoa, msoa, oa, organisation_name, postcode, rgn, state,
-                          town_name, uprn)
+                          town_name, created_date_time, uprn)
 VALUES (10000001, 'RD06', 'U', 'First And Second Floor Flat',
         '39 Cranbrook Road', 'any addressLine3', 'DDR190314000000239595', '16d79007-9224-448a-9e59-944d9d153fa1',
         'DDR190314000000060908', 'Household', 'E06000023',
         '51.4721166', '-2.5970579', 'E01014669', 'E02003031', 'E00074083', null, 'XX1 0XX', 'E12000009', 'ACTIONABLE',
-        'Windleybury', '123456789012345');
+        'Windleybury', '2019-05-28 14:19:00.204', '123456789012345');
 
 
 
