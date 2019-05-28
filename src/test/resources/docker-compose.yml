@@ -24,7 +24,7 @@ services:
 
   case-processor:
     container_name: case-processor-it
-    image: eu.gcr.io/census-rm-ci/rm/census-rm-case-processor
+    image: eu.gcr.io/census-rm-ci/rm/census-rm-case-processor:ade_test
     external_links:
       - postgres-case-api-it
       - rabbitmq-case-it
