@@ -6,7 +6,7 @@
   "estabType": "Household",
   "uprn": "123456789012345",
   "caseType": null,
-  "createdDateTime": "2019-05-28 14:19:00.204",
+  "createdDateTime": "2019-05-28T14:19:00.204+0000",
   "addressLine1": "Flat 56 Francombe House",
   "addressLine2": "Commercial Road",
   "addressLine3": "any addressLine3",
