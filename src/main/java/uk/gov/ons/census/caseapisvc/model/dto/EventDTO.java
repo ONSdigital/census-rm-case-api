@@ -1,9 +1,10 @@
 package uk.gov.ons.census.caseapisvc.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.time.OffsetDateTime;
 import lombok.Data;
+import uk.gov.ons.census.caseapisvc.serialization.CustomOffsetDateTimeSerializer;
 
 @Data
 public class EventDTO {
@@ -16,6 +17,6 @@ public class EventDTO {
   private String eventDescription;
 
   @JsonProperty("createdDateTime")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-  private Date eventDate;
+  @JsonSerialize(using = CustomOffsetDateTimeSerializer.class)
+  private OffsetDateTime eventDate;
 }

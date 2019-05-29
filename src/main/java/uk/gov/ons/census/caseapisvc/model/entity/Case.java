@@ -1,6 +1,6 @@
 package uk.gov.ons.census.caseapisvc.model.entity;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -41,8 +41,7 @@ public class Case {
 
   @Column private String addressType;
 
-  @Column(columnDefinition = "timestamp with time zone")
-  private Date createdDateTime;
+  @Column private OffsetDateTime createdDateTime;
 
   @Column private String addressLine1;
 
