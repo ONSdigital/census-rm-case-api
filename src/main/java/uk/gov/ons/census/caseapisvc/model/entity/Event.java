@@ -17,7 +17,7 @@ public class Event {
 
   @ManyToOne private UacQidLink uacQidLink;
 
-  private OffsetDateTime eventDate;
+  @Column private OffsetDateTime eventDate;
 
   @Column private String eventDescription;
 
