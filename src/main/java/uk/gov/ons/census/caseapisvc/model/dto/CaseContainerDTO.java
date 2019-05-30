@@ -41,8 +41,7 @@ public class CaseContainerDTO {
 
   private String abpCode;
 
-  @JsonProperty("region")
-  private String rgn;
+  private String region;
 
   private String latitude;
 

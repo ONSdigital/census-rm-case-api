@@ -60,7 +60,7 @@ public class Case {
 
   @Column private String abpCode;
 
-  @Column private String rgn;
+  @Column private String region;
 
   @Column private String latitude;
 
@@ -73,6 +73,14 @@ public class Case {
   @Column private String msoa;
 
   @Column private String lad;
+
+  @Column private String fieldCoordinatorId;
+
+  @Column private String fieldOfficerId;
+
+  @Column private String treatmentCode;
+
+  @Column private String ceExpectedCapacity;
 
   @Column
   @Enumerated(EnumType.STRING)
