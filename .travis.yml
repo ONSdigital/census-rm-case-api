@@ -25,4 +25,3 @@ cache:
 branches:
   only:
     - master
-    - stamp_created_date
