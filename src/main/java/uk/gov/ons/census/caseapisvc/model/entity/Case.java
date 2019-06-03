@@ -41,7 +41,8 @@ public class Case {
 
   @Column private String addressType;
 
-  @Column private OffsetDateTime createdDateTime;
+  @Column(columnDefinition = "timestamp with time zone")
+  private OffsetDateTime createdDateTime;
 
   @Column private String addressLine1;
 
