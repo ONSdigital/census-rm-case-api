@@ -6,7 +6,7 @@ truncate casev2.cases cascade;
 INSERT INTO casev2.cases (case_ref, abp_code, address_level, address_line1, address_line2,
                           address_line3, arid, case_id,
                           estab_arid, estab_type, lad, latitude, longitude,
-                          lsoa, msoa, oa, organisation_name, postcode, rgn, state,
+                          lsoa, msoa, oa, organisation_name, postcode, region, state,
                           town_name, created_date_time, uprn)
 VALUES (10000000, 'RD06', 'U', 'Flat 56 Francombe House', 'Commercial Road',
         'any addressLine3', 'DDR190314000000195675', 'c0d4f87d-9d19-4393-80c9-9eb94f69c460',
@@ -17,7 +17,7 @@ VALUES (10000000, 'RD06', 'U', 'Flat 56 Francombe House', 'Commercial Road',
 INSERT INTO casev2.cases (case_ref, abp_code, address_level, address_line1, address_line2,
                           address_line3, arid, case_id,
                           estab_arid, estab_type, lad, latitude, longitude,
-                          lsoa, msoa, oa, organisation_name, postcode, rgn, state,
+                          lsoa, msoa, oa, organisation_name, postcode, region, state,
                           town_name, created_date_time, uprn)
 VALUES (10000001, 'RD06', 'U', 'First And Second Floor Flat',
         '39 Cranbrook Road', 'any addressLine3', 'DDR190314000000239595', '16d79007-9224-448a-9e59-944d9d153fa1',

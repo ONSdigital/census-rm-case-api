@@ -59,7 +59,7 @@ public class Case {
 
   @Column private String abpCode;
 
-  @Column private String rgn;
+  @Column private String region;
 
   @Column private String latitude;
 
