@@ -30,8 +30,9 @@ logging:
   level:
     ROOT: INFO
 
-endpoints:
-  enabled: true
-  info:
-    enabled: true
-    sensitive: false
+management:
+  endpoints:
+    enabled-by-default: true
+  endpoint:
+    info:
+      enabled: true

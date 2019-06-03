@@ -1,6 +1,7 @@
 package uk.gov.ons.census.caseapisvc.utility;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import java.io.IOException;
@@ -36,7 +37,11 @@ public class DataUtils {
   private static final String TEST_RESPONSE2_WITH_EVENTS_AS_JSON;
   private static final String TEST_RESPONSE2_WITHOUT_EVENTS_AS_JSON;
 
+  private static final ObjectMapper mapper;
+
   static {
+    mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
     TEST_RESPONSE1_WITH_EVENTS_AS_JSON = loadTestFile("test_response1_with_events.json");
     TEST_RESPONSE1_WITHOUT_EVENTS_AS_JSON = loadTestFile("test_response1_without_events.json");
     TEST_RESPONSE2_WITH_EVENTS_AS_JSON = loadTestFile("test_response2_with_events.json");
@@ -82,7 +87,7 @@ public class DataUtils {
   }
 
   private static CaseContainerDTO createCaseContainerDTOFromJson(String json) throws IOException {
-    return new ObjectMapper().readValue(json, CaseContainerDTO.class);
+    return mapper.readValue(json, CaseContainerDTO.class);
   }
 
   private static Case createCase(UUID caseId, Long caseRef) {
@@ -135,15 +140,13 @@ public class DataUtils {
 
   public static CaseContainerDTO extractCaseContainerDTOFromResponse(
       HttpResponse<JsonNode> response) throws IOException {
-    return new ObjectMapper()
-        .readValue(response.getBody().getObject().toString(), CaseContainerDTO.class);
+    return mapper.readValue(response.getBody().getObject().toString(), CaseContainerDTO.class);
   }
 
   public static List<CaseContainerDTO> extractCaseContainerDTOsFromResponse(
       HttpResponse<JsonNode> response) throws IOException {
     List<CaseContainerDTO> dtos = new LinkedList<>();
     JSONArray elements = response.getBody().getArray();
-    ObjectMapper mapper = new ObjectMapper();
 
     for (int i = 0; i < elements.length(); i++) {
       dtos.add(mapper.readValue(elements.get(i).toString(), CaseContainerDTO.class));
