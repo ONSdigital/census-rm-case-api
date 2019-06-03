@@ -1,5 +1,6 @@
 package uk.gov.ons.census.caseapisvc.model.entity;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -12,7 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,8 +41,8 @@ public class Case {
 
   @Column private String addressType;
 
-  // TODO remove @Transient when field in schema
-  @Column @Transient private String createdDateTime;
+  @Column(columnDefinition = "timestamp with time zone")
+  private OffsetDateTime createdDateTime;
 
   @Column private String addressLine1;
 

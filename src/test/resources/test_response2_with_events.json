@@ -6,7 +6,7 @@
   "estabType": "Household",
   "uprn": "123456789012345",
   "caseType": null,
-  "createdDateTime": null,
+  "createdDateTime": "2019-05-28T14:19:00.204+0000",
   "addressLine1": "First And Second Floor Flat",
   "addressLine2": "39 Cranbrook Road",
   "addressLine3": "any addressLine3",
@@ -27,7 +27,7 @@
     {
       "id": "cc23f012-2bfa-4067-9aef-9e97d9979882",
       "eventType": null,
-      "createdDateTime": "2019-05-01 13:17:20.022",
+      "createdDateTime": "2019-05-01T14:17:20.022+0000",
       "description": "Case created"
     }
   ]

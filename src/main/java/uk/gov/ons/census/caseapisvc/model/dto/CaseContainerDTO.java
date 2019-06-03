@@ -1,8 +1,11 @@
 package uk.gov.ons.census.caseapisvc.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Data;
+import uk.gov.ons.census.caseapisvc.serialization.CustomOffsetDateTimeSerializer;
 
 @Data
 public class CaseContainerDTO {
@@ -23,7 +26,8 @@ public class CaseContainerDTO {
   @JsonProperty("caseType")
   private String addressType;
 
-  private String createdDateTime;
+  @JsonSerialize(using = CustomOffsetDateTimeSerializer.class)
+  private OffsetDateTime createdDateTime;
 
   private String addressLine1;
 
