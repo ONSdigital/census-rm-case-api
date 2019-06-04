@@ -1,8 +1,5 @@
 package uk.gov.ons.census.caseapisvc.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 import ma.glasnost.orika.MapperFacade;
@@ -18,14 +15,6 @@ public class AppConfig {
     MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     return mapperFactory.getMapperFacade();
-  }
-
-  @Bean
-  ObjectMapper objectMapper() {
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
-    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    return objectMapper;
   }
 
   @PostConstruct

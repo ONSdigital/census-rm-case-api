@@ -13,7 +13,7 @@ services:
       retries: 5
 
   rabbitmq:
-    container_name: rabbitmq-case-it
+    container_name: rabbitmq-case-api-it
     image: rabbitmq:3.6.10-management
     ports:
       - "34369:4369"
@@ -28,7 +28,7 @@ services:
     image: eu.gcr.io/census-rm-ci/rm/census-rm-case-processor
     external_links:
       - postgres-case-api-it
-      - rabbitmq-case-it
+      - rabbitmq-case-api-it
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-case-api-it:5432/postgres?sslmode=disable
       - SPRING_RABBITMQ_HOST=rabbitmq-case-it
