@@ -88,4 +88,6 @@ public class Case {
 
   @OneToMany(mappedBy = "caze")
   List<UacQidLink> uacQidLinks;
+
+  @Column private boolean receiptReceived;
 }
