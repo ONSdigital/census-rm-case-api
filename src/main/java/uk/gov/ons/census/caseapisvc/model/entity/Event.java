@@ -22,6 +22,9 @@ public class Event {
 
   @Column private String eventDescription;
 
+  @Column(columnDefinition = "timestamp with time zone")
+  private OffsetDateTime rmEventProcessed;
+
   @Column
   @Enumerated(EnumType.STRING)
   private EventType eventType;
