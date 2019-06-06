@@ -13,14 +13,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "cases")
 public class Case {
 
@@ -35,14 +31,17 @@ public class Case {
 
   @Column private String estabArid;
 
-  @Column private String estabType;
-
   @Column private String uprn;
 
   @Column private String addressType;
 
-  @Column(columnDefinition = "timestamp with time zone")
-  private OffsetDateTime createdDateTime;
+  @Column private String estabType;
+
+  @Column private String addressLevel;
+
+  @Column private String abpCode;
+
+  @Column private String organisationName;
 
   @Column private String addressLine1;
 
@@ -53,14 +52,6 @@ public class Case {
   @Column private String townName;
 
   @Column private String postcode;
-
-  @Column private String organisationName;
-
-  @Column private String addressLevel;
-
-  @Column private String abpCode;
-
-  @Column private String region;
 
   @Column private String latitude;
 
@@ -74,6 +65,12 @@ public class Case {
 
   @Column private String lad;
 
+  @Column private String region;
+
+  @Column private String htcWillingness;
+
+  @Column private String htcDigital;
+
   @Column private String fieldCoordinatorId;
 
   @Column private String fieldOfficerId;
@@ -81,6 +78,13 @@ public class Case {
   @Column private String treatmentCode;
 
   @Column private String ceExpectedCapacity;
+
+  @Column private String collectionExerciseId;
+
+  @Column private String actionPlanId;
+
+  @Column(columnDefinition = "timestamp with time zone")
+  private OffsetDateTime createdDateTime;
 
   @Column
   @Enumerated(EnumType.STRING)
