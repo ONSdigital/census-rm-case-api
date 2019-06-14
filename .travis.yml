@@ -10,19 +10,14 @@ before_install:
   - mvn fmt:check
   - docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
 
-script: travis_wait mvn package
-  - if [ "$TRAVIS_BRANCH" == "update-entities" ] ; then
-  docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
-  docker tag "eu.gcr.io/census-rm-ci/rm/census-rm-case-api" "eu.gcr.io/census-rm-ci/rm/census-rm-case-api:ade_test";
-  docker push "eu.gcr.io/census-rm-ci/rm/census-rm-case-api:ade_test";
-  fi
-#  travis_wait mvn verify jacoco:report
+script: travis_wait mvn verify jacoco:report
 
-#after_success:
-#  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-#    docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
-#    docker push "eu.gcr.io/census-rm-ci/rm/census-rm-case-api";
-#    fi
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
+    docker push "eu.gcr.io/census-rm-ci/rm/census-rm-case-api";
+    fi
+
 cache:
   directories:
     - $HOME/.m2
@@ -30,4 +25,3 @@ cache:
 branches:
   only:
     - master
-    - update-entities
