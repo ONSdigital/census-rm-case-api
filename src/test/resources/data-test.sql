@@ -27,11 +27,11 @@ VALUES (10000001, 'RD06', 'U', 'First And Second Floor Flat',
 
 
 
-INSERT INTO casev2.uac_qid_link (id, qid, uac, unique_number, caze_case_ref)
-VALUES ('3ee075b6-5e94-4c91-9b34-a64f22228b91', '0120000000000100', 'qhb6c2vx7mdf6m9l', 1, 10000000);
+INSERT INTO casev2.uac_qid_link (id, qid, uac, unique_number, caze_case_ref, active)
+VALUES ('3ee075b6-5e94-4c91-9b34-a64f22228b91', '0120000000000100', 'qhb6c2vx7mdf6m9l', 1, 10000000, true);
 
-INSERT INTO casev2.uac_qid_link (id, qid, uac, unique_number, caze_case_ref)
-VALUES ('48bcbef4-3f9e-42fb-b403-63766d47189f', '0120000000000200', 'ngcpbr3qxlsqxh4c', 2, 10000001);
+INSERT INTO casev2.uac_qid_link (id, qid, uac, unique_number, caze_case_ref, active)
+VALUES ('48bcbef4-3f9e-42fb-b403-63766d47189f', '0120000000000200', 'ngcpbr3qxlsqxh4c', 2, 10000001, true);
 
 
 
