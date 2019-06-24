@@ -3,6 +3,7 @@ package uk.gov.ons.census.caseapisvc.model.entity;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -90,7 +91,9 @@ public class Case {
   @Enumerated(EnumType.STRING)
   private CaseState state;
 
-  @OneToMany(mappedBy = "caze")
+  @OneToMany(
+      mappedBy = "caze",
+      cascade = {CascadeType.ALL})
   List<UacQidLink> uacQidLinks;
 
   @Column private boolean receiptReceived;
