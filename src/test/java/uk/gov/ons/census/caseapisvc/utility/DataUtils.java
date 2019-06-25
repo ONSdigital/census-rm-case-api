@@ -5,17 +5,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.json.JSONArray;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
@@ -32,44 +26,10 @@ public class DataUtils {
 
   private static final String TEST_UPRN = "123";
 
-  private static final String TEST_RESPONSE1_WITH_EVENTS_AS_JSON;
-  private static final String TEST_RESPONSE1_WITHOUT_EVENTS_AS_JSON;
-  private static final String TEST_RESPONSE2_WITH_EVENTS_AS_JSON;
-  private static final String TEST_RESPONSE2_WITHOUT_EVENTS_AS_JSON;
-
   private static final ObjectMapper mapper;
 
   static {
     mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
-    TEST_RESPONSE1_WITH_EVENTS_AS_JSON = loadTestFile("test_response1_with_events.json");
-    TEST_RESPONSE1_WITHOUT_EVENTS_AS_JSON = loadTestFile("test_response1_without_events.json");
-    TEST_RESPONSE2_WITH_EVENTS_AS_JSON = loadTestFile("test_response2_with_events.json");
-    TEST_RESPONSE2_WITHOUT_EVENTS_AS_JSON = loadTestFile("test_response2_without_events.json");
-  }
-
-  public static CaseContainerDTO createSingleCaseContainerDTOWithEvents1() throws IOException {
-    return createCaseContainerDTOFromJson(TEST_RESPONSE1_WITH_EVENTS_AS_JSON);
-  }
-
-  public static CaseContainerDTO createSingleCaseContainerDTOWithoutEvents1() throws IOException {
-    return createCaseContainerDTOFromJson(TEST_RESPONSE1_WITHOUT_EVENTS_AS_JSON);
-  }
-
-  private static CaseContainerDTO createCaseContainerDTOWithoutEvents2() throws IOException {
-    return createCaseContainerDTOFromJson(TEST_RESPONSE2_WITHOUT_EVENTS_AS_JSON);
-  }
-
-  public static List<CaseContainerDTO> createMultipleCaseContainerDTOsWithEvents()
-      throws IOException {
-    return Arrays.asList(
-        createSingleCaseContainerDTOWithEvents1(), createSingleCaseContainerDTOWithEvents2());
-  }
-
-  public static List<CaseContainerDTO> createMultipleCaseContainerDTOWithoutEvents()
-      throws IOException {
-    return Arrays.asList(
-        createSingleCaseContainerDTOWithoutEvents1(), createCaseContainerDTOWithoutEvents2());
   }
 
   public static Case createSingleCaseWithEvents() {
@@ -80,14 +40,6 @@ public class DataUtils {
     return Arrays.asList(
         createCase(TEST1_CASE_ID, TEST1_CASE_REFERENCE_ID),
         createCase(TEST2_CASE_ID, TEST2_CASE_REFERENCE_ID));
-  }
-
-  private static CaseContainerDTO createSingleCaseContainerDTOWithEvents2() throws IOException {
-    return createCaseContainerDTOFromJson(TEST_RESPONSE2_WITH_EVENTS_AS_JSON);
-  }
-
-  private static CaseContainerDTO createCaseContainerDTOFromJson(String json) throws IOException {
-    return mapper.readValue(json, CaseContainerDTO.class);
   }
 
   private static Case createCase(UUID caseId, Long caseRef) {
@@ -115,27 +67,6 @@ public class DataUtils {
     caze.setUacQidLinks(uacQidLinks);
 
     return caze;
-  }
-
-  private static String loadTestFile(String filename) {
-    String data = null;
-    Stream<String> lines = null;
-
-    try {
-      Path path =
-          Paths.get(
-              Objects.requireNonNull(DataUtils.class.getClassLoader().getResource(filename))
-                  .toURI());
-      lines = Files.lines(path);
-
-      data = lines.collect(Collectors.joining("\n"));
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      Objects.requireNonNull(lines).close();
-    }
-
-    return data;
   }
 
   public static CaseContainerDTO extractCaseContainerDTOFromResponse(
