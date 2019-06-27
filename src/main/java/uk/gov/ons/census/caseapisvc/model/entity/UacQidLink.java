@@ -17,10 +17,6 @@ import org.hibernate.annotations.GenerationTime;
 public class UacQidLink {
   @Id private UUID id;
 
-  @Column(columnDefinition = "serial")
-  @Generated(GenerationTime.INSERT)
-  private Long uniqueNumber;
-
   @Column private String qid;
 
   @Column private String uac;

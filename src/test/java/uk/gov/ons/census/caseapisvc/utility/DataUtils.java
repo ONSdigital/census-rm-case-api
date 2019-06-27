@@ -48,7 +48,6 @@ public class DataUtils {
 
     UacQidLink uacQidLink = new UacQidLink();
     uacQidLink.setId(UUID.randomUUID());
-    uacQidLink.setUniqueNumber(new Random().nextLong());
     uacQidLink.setUac("any iac");
 
     Event event = new Event();
