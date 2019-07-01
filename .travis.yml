@@ -17,6 +17,11 @@ after_success:
     docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
     docker push "eu.gcr.io/census-rm-ci/rm/census-rm-case-api";
     fi
+  - if [ "$TRAVIS_BRANCH" == "model-update" ] ; then
+    docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
+    docker tag "eu.gcr.io/census-rm-ci/rm/census-rm-case-api" "eu.gcr.io/census-rm-ci/rm/census-rm-case-api:ade_test";
+    docker push "eu.gcr.io/census-rm-ci/rm/census-rm-case-api:ade_test";
+    fi
 
 cache:
   directories:
@@ -25,3 +30,4 @@ cache:
 branches:
   only:
     - master
+    - model-update
