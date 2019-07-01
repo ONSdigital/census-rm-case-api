@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import org.json.JSONArray;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
@@ -48,7 +47,6 @@ public class DataUtils {
 
     UacQidLink uacQidLink = new UacQidLink();
     uacQidLink.setId(UUID.randomUUID());
-    uacQidLink.setUniqueNumber(new Random().nextLong());
     uacQidLink.setUac("any iac");
 
     Event event = new Event();
