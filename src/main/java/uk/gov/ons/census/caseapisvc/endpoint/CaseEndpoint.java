@@ -69,7 +69,7 @@ public final class CaseEndpoint {
 
   @GetMapping(value = "/ref/{reference}")
   public CaseContainerDTO findCaseByReference(
-      @PathVariable("reference") long reference,
+      @PathVariable("reference") int reference,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           boolean caseEvents) {
     log.debug("Entering findByReference");
@@ -99,6 +99,11 @@ public final class CaseEndpoint {
         List<Event> events = uacQidLink.getEvents();
 
         for (Event event : events) {
+          caseEvents.add(this.mapperFacade.map(event, EventDTO.class));
+        }
+      }
+      if (caze.getEvents() != null) {
+        for (Event event : caze.getEvents()) {
           caseEvents.add(this.mapperFacade.map(event, EventDTO.class));
         }
       }

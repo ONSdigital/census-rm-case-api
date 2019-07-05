@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,7 +224,7 @@ public class CaseEndpointIT {
   @Test
   public void shouldRetrieveACaseWithEventsWhenSearchingByCaseReference() throws Exception {
     Case expectedCase = createOneTestCaseWithEvent();
-    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
+    String expectedCaseRef = Integer.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
@@ -242,7 +243,7 @@ public class CaseEndpointIT {
   @Test
   public void shouldRetrieveACaseWithoutEventsWhenSearchingByCaseReference() throws Exception {
     Case expectedCase = createOneTestCaseWithoutEvents();
-    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
+    String expectedCaseRef = Integer.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
@@ -262,7 +263,7 @@ public class CaseEndpointIT {
   public void shouldRetrieveACaseWithoutEventsByDefaultWhenSearchingByCaseReference()
       throws Exception {
     Case expectedCase = createOneTestCaseWithoutEvents();
-    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
+    String expectedCaseRef = Integer.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
@@ -309,6 +310,7 @@ public class CaseEndpointIT {
   private Case setupTestCaseWithEvent(String caseId) {
     Case caze = easyRandom.nextObject(Case.class);
     caze.setCaseId(UUID.fromString(caseId));
+    caze.setEvents(null);
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
 
@@ -316,6 +318,8 @@ public class CaseEndpointIT {
     uacQidLink.setActive(true);
 
     Event event = easyRandom.nextObject(Event.class);
+    event.setCaze(null);
+    event.setEventPayload(null);
     event.setEventType(EventType.CASE_CREATED);
     event.setUacQidLink(uacQidLink);
 
@@ -334,6 +338,7 @@ public class CaseEndpointIT {
   private Case setupTestCaseWithoutEvents(String caseId) {
     Case caze = easyRandom.nextObject(Case.class);
     caze.setCaseId(UUID.fromString(caseId));
+    caze.setEvents(null);
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
 
