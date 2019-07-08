@@ -59,31 +59,31 @@ public class CaseEndpointIT {
     this.easyRandom = new EasyRandom(new EasyRandomParameters().randomizationDepth(1));
   }
 
-//TODO  @Test
-//  public void shouldRetrieveMultipleCasesWithEventsWhenSearchingByUPRN() throws Exception {
-//    createTwoTestCasesWithEvents();
-//
-//    HttpResponse<JsonNode> response =
-//        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_EXISTS))
-//            .header("accept", "application/json")
-//            .queryString("caseEvents", "true")
-//            .asJson();
-//
-//    assertThat(response.getStatus()).isEqualTo(OK.value());
-//
-//    List<CaseContainerDTO> actualData = extractCaseContainerDTOsFromResponse(response);
-//
-//    assertThat(actualData.size()).isEqualTo(2);
-//
-//    CaseContainerDTO case1 = actualData.get(0);
-//    CaseContainerDTO case2 = actualData.get(1);
-//
-//    assertThat(case1.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
-//    assertThat(case1.getCaseEvents().size()).isEqualTo(1);
-//
-//    assertThat(case2.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
-//    assertThat(case2.getCaseEvents().size()).isEqualTo(1);
-//  }
+  @Test
+  public void shouldRetrieveMultipleCasesWithEventsWhenSearchingByUPRN() throws Exception {
+    createTwoTestCasesWithEvents();
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_EXISTS))
+            .header("accept", "application/json")
+            .queryString("caseEvents", "true")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    List<CaseContainerDTO> actualData = extractCaseContainerDTOsFromResponse(response);
+
+    assertThat(actualData.size()).isEqualTo(2);
+
+    CaseContainerDTO case1 = actualData.get(0);
+    CaseContainerDTO case2 = actualData.get(1);
+
+    assertThat(case1.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
+    assertThat(case1.getCaseEvents().size()).isEqualTo(1);
+
+    assertThat(case2.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
+    assertThat(case2.getCaseEvents().size()).isEqualTo(1);
+  }
 
   @Test
   public void shouldRetrieveMultipleCasesWithoutEventsWhenSearchingByUPRN() throws Exception {
@@ -147,23 +147,23 @@ public class CaseEndpointIT {
     assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
   }
 
-//TODO  @Test
-//  public void shouldRetrieveACaseWithEventsWhenSearchingByCaseId() throws Exception {
-//    createOneTestCaseWithEvent();
-//
-//    HttpResponse<JsonNode> response =
-//        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_1_EXISTS))
-//            .header("accept", "application/json")
-//            .queryString("caseEvents", "true")
-//            .asJson();
-//
-//    assertThat(response.getStatus()).isEqualTo(OK.value());
-//
-//    CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
-//
-//    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
-//    assertThat(actualData.getCaseEvents().size()).isEqualTo(1);
-//  }
+  @Test
+  public void shouldRetrieveACaseWithEventsWhenSearchingByCaseId() throws Exception {
+    createOneTestCaseWithEvent();
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .queryString("caseEvents", "true")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
+
+    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseEvents().size()).isEqualTo(1);
+  }
 
   @Test
   public void shouldRetrieveACaseWithoutEventsWhenSearchingByCaseId() throws Exception {
@@ -220,24 +220,24 @@ public class CaseEndpointIT {
     assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
   }
 
-//TODO  @Test
-//  public void shouldRetrieveACaseWithEventsWhenSearchingByCaseReference() throws Exception {
-//    Case expectedCase = createOneTestCaseWithEvent();
-//    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
-//
-//    HttpResponse<JsonNode> response =
-//        Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
-//            .header("accept", "application/json")
-//            .queryString("caseEvents", "true")
-//            .asJson();
-//
-//    assertThat(response.getStatus()).isEqualTo(OK.value());
-//
-//    CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
-//
-//    assertThat(actualData.getCaseRef()).isEqualTo(expectedCaseRef);
-//    assertThat(actualData.getCaseEvents().size()).isEqualTo(1);
-//  }
+  @Test
+  public void shouldRetrieveACaseWithEventsWhenSearchingByCaseReference() throws Exception {
+    Case expectedCase = createOneTestCaseWithEvent();
+    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
+            .header("accept", "application/json")
+            .queryString("caseEvents", "true")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
+
+    assertThat(actualData.getCaseRef()).isEqualTo(expectedCaseRef);
+    assertThat(actualData.getCaseEvents().size()).isEqualTo(1);
+  }
 
   @Test
   public void shouldRetrieveACaseWithoutEventsWhenSearchingByCaseReference() throws Exception {
@@ -318,6 +318,7 @@ public class CaseEndpointIT {
     Event event = easyRandom.nextObject(Event.class);
     event.setEventType(EventType.CASE_CREATED);
     event.setUacQidLink(uacQidLink);
+    event.setEventPayload("{}");
 
     uacQidLink.setCaze(caze);
     uacQidLink.setEvents(Collections.singletonList(event));
