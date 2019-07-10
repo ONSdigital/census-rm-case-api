@@ -2,7 +2,7 @@ package uk.gov.ons.census.caseapisvc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,7 +27,7 @@ import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 
 public class CaseServiceTest {
 
-  private static final long TEST_CASE_REFERENCE_ID_EXISTS = 123L;
+  private static final int TEST_CASE_REFERENCE_ID_EXISTS = 123;
 
   private static final String TEST_CASE_ID_EXISTS = "2e083ab1-41f7-4dea-a3d9-77f48458b5ca";
   private static final String TEST_CASE_ID_DOES_NOT_EXIST = "590179eb-f8ce-4e2d-8cb6-ca4013a2ccf0";
@@ -95,20 +95,20 @@ public class CaseServiceTest {
   public void getCaseWhenCaseReferenceExists() {
     Case expectedCase = createSingleCaseWithEvents();
 
-    when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.of(expectedCase));
+    when(caseRepo.findByCaseRef(anyInt())).thenReturn(Optional.of(expectedCase));
 
     Case actualCase = caseService.findByReference(TEST_CASE_REFERENCE_ID_EXISTS);
     assertThat(actualCase).isEqualTo(expectedCase);
 
-    ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
+    ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
     verify(caseRepo).findByCaseRef(captor.capture());
-    Long actualReference = captor.getValue();
+    Integer actualReference = captor.getValue();
     assertThat(actualReference).isEqualTo(TEST_CASE_REFERENCE_ID_EXISTS);
   }
 
   @Test(expected = CaseReferenceNotFoundException.class)
   public void shouldThrowCaseReferenceNotFoundExceptionWhenCaseReferenceDoesNotExist() {
-    when(caseRepo.findByCaseRef(anyLong())).thenReturn(Optional.empty());
+    when(caseRepo.findByCaseRef(anyInt())).thenReturn(Optional.empty());
 
     caseService.findByReference(TEST_CASE_REFERENCE_ID_EXISTS);
   }

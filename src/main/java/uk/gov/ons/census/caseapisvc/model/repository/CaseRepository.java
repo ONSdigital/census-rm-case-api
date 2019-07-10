@@ -11,5 +11,5 @@ public interface CaseRepository extends JpaRepository<Case, UUID> {
 
   Optional<Case> findByCaseId(UUID caseId);
 
-  Optional<Case> findByCaseRef(long reference);
+  Optional<Case> findByCaseRef(int reference);
 }
