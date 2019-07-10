@@ -3,7 +3,7 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -179,7 +179,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getACaseWithEventsByCaseReference() throws Exception {
-    when(caseService.findByReference(anyLong())).thenReturn(createSingleCaseWithEvents());
+    when(caseService.findByReference(anyInt())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(
@@ -195,7 +195,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getACaseWithoutEventsByCaseReference() throws Exception {
-    when(caseService.findByReference(anyLong())).thenReturn(createSingleCaseWithEvents());
+    when(caseService.findByReference(anyInt())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(
@@ -211,7 +211,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getACaseWithoutEventsByDefaultByCaseReference() throws Exception {
-    when(caseService.findByReference(anyLong())).thenReturn(createSingleCaseWithEvents());
+    when(caseService.findByReference(anyInt())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(
@@ -226,7 +226,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void receiveNotFoundExceptionWhenCaseReferenceDoesNotExist() throws Exception {
-    when(caseService.findByReference(anyLong())).thenThrow(new CaseReferenceNotFoundException(0L));
+    when(caseService.findByReference(anyInt())).thenThrow(new CaseReferenceNotFoundException(0));
 
     mockMvc
         .perform(
