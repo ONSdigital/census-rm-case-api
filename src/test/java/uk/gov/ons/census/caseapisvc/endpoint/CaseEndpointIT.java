@@ -318,6 +318,7 @@ public class CaseEndpointIT {
     Event event = easyRandom.nextObject(Event.class);
     event.setEventType(EventType.CASE_CREATED);
     event.setUacQidLink(uacQidLink);
+    event.setEventPayload("{}");
 
     uacQidLink.setCaze(caze);
     uacQidLink.setEvents(Collections.singletonList(event));
