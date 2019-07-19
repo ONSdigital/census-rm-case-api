@@ -45,6 +45,7 @@ public class CaseEndpointIT {
   private static final String TEST_INVALID_CASE_ID = "anything";
 
   private static final String TEST_REFERENCE_DOES_NOT_EXIST = "99999999";
+  public static final String TEST_QID = "test_qid";
 
   @LocalServerPort private int port;
 
@@ -288,6 +289,19 @@ public class CaseEndpointIT {
     assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
   }
 
+  @Test
+  public void testCorrectCaseReturnedWhenRequestedByQid() throws UnirestException {
+    Case caze = setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestUacQidLink(TEST_QID, caze);
+
+    HttpResponse<JsonNode> jsonResponse = Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, "test_qid"))
+            .header("accept", "application/json")
+            .asJson();
+
+
+    int a = 1;
+  }
+
   private Case createOneTestCaseWithEvent() {
     return setupTestCaseWithEvent(TEST_CASE_ID_1_EXISTS);
   }
@@ -349,6 +363,14 @@ public class CaseEndpointIT {
     return caseRepo
         .findByCaseId(UUID.fromString(TEST_CASE_ID_1_EXISTS))
         .orElseThrow(() -> new RuntimeException("Case not found!"));
+  }
+
+  private UacQidLink setupTestUacQidLink(String qid, Case caze) {
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setCaze(caze);
+    uacQidLink.setQid(qid);
+
+    return uacQidLink;
   }
 
   private String createUrl(String urlFormat, int port, String param1) {

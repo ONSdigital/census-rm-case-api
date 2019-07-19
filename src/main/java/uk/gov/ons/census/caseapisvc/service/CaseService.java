@@ -3,25 +3,32 @@ package uk.gov.ons.census.caseapisvc.service;
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.UacQidLinkWithNoCaseException;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
+import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
+import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 
 @Service
 public class CaseService {
   private static final Logger log = LoggerFactory.getLogger(CaseService.class);
 
   private final CaseRepository caseRepo;
+  private final UacQidLinkRepository uacQidLinkRepository;
 
   @Autowired
-  public CaseService(CaseRepository caseRepo) {
+  public CaseService(CaseRepository caseRepo, UacQidLinkRepository uacQidLinkRepository) {
     this.caseRepo = caseRepo;
+    this.uacQidLinkRepository = uacQidLinkRepository;
   }
 
   public List<Case> findByUPRN(String uprn) {
@@ -46,6 +53,16 @@ public class CaseService {
     return caseRepo
         .findByCaseRef(reference)
         .orElseThrow(() -> new CaseReferenceNotFoundException(reference));
+  }
+
+  public Case findCaseByQid(String qid) {
+    UacQidLink uacQidLink = uacQidLinkRepository.findByQid(qid).orElseThrow(() -> new QidNotFoundException(qid));
+
+    if( uacQidLink.getCaze() == null ) {
+      throw new UacQidLinkWithNoCaseException(qid);
+    }
+
+    return uacQidLink.getCaze();
   }
 
   private UUID validateAndConvertCaseIdToUUID(String caseId) {
