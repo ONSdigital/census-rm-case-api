@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 import org.json.JSONArray;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.CaseIdDto;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
@@ -70,6 +71,10 @@ public class DataUtils {
   public static CaseContainerDTO extractCaseContainerDTOFromResponse(
       HttpResponse<JsonNode> response) throws IOException {
     return mapper.readValue(response.getBody().getObject().toString(), CaseContainerDTO.class);
+  }
+
+  public static CaseIdDto extractCaseIdDtoFromResponse( HttpResponse<JsonNode> response) throws IOException {
+    return mapper.readValue(response.getBody().getObject().toString(), CaseIdDto.class);
   }
 
   public static List<CaseContainerDTO> extractCaseContainerDTOsFromResponse(

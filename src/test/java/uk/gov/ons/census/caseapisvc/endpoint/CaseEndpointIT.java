@@ -10,6 +10,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -24,11 +26,14 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.CaseIdDto;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.EventType;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
+import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
+import uk.gov.ons.census.caseapisvc.utility.DataUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,6 +55,7 @@ public class CaseEndpointIT {
   @LocalServerPort private int port;
 
   @Autowired private CaseRepository caseRepo;
+  @Autowired private UacQidLinkRepository uacQidLinkRepository;
 
   private EasyRandom easyRandom;
 
@@ -290,16 +296,16 @@ public class CaseEndpointIT {
   }
 
   @Test
-  public void testCorrectCaseReturnedWhenRequestedByQid() throws UnirestException {
+  public void testCorrectCaseReturnedWhenRequestedByQid() throws UnirestException, IOException {
     Case caze = setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
     setupTestUacQidLink(TEST_QID, caze);
 
-    HttpResponse<JsonNode> jsonResponse = Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, "test_qid"))
+    HttpResponse<JsonNode> jsonResponse = Unirest.get(createUrl("http://localhost:%d/cases/qid/%s", port, TEST_QID))
             .header("accept", "application/json")
             .asJson();
 
-
-    int a = 1;
+    CaseIdDto caseIdDto = DataUtils.extractCaseIdDtoFromResponse(jsonResponse);
+    assertThat(caseIdDto.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
   }
 
   private Case createOneTestCaseWithEvent() {
@@ -365,12 +371,13 @@ public class CaseEndpointIT {
         .orElseThrow(() -> new RuntimeException("Case not found!"));
   }
 
-  private UacQidLink setupTestUacQidLink(String qid, Case caze) {
+  private void setupTestUacQidLink(String qid, Case caze) {
     UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setId(UUID.randomUUID());
     uacQidLink.setCaze(caze);
     uacQidLink.setQid(qid);
 
-    return uacQidLink;
+    uacQidLinkRepository.saveAndFlush(uacQidLink);
   }
 
   private String createUrl(String urlFormat, int port, String param1) {

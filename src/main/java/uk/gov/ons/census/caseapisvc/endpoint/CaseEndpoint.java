@@ -68,15 +68,15 @@ public final class CaseEndpoint {
     return buildCaseContainerDTO(caseService.findByCaseId(caseId), caseEvents);
   }
 
-//  @GetMapping(value = "/qid/{qid}")
-//  public CaseIdDto findCaseByQid(@PathVariable("qid") String qid) {
-//    log.debug("Entering findByQid");
-//    Case caze = caseService.findCaseByQid(qid);
-//    CaseIdDto caseIdDto = new CaseIdDto();
-//    caseIdDto.setCaseId(caze.getCaseId().toString());
-//
-//    return caseIdDto;
-//  }
+  @GetMapping(value = "/qid/{qid}")
+  public CaseIdDto findCaseByQid(@PathVariable("qid") String qid) {
+    log.debug("Entering findByQid");
+    Case caze = caseService.findCaseByQid(qid);
+    CaseIdDto caseIdDto = new CaseIdDto();
+    caseIdDto.setCaseId(caze.getCaseId().toString());
+
+    return caseIdDto;
+  }
 
   @GetMapping(value = "/ref/{reference}")
   public CaseContainerDTO findCaseByReference(
