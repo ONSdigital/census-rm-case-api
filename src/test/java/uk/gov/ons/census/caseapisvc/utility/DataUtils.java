@@ -73,7 +73,8 @@ public class DataUtils {
     return mapper.readValue(response.getBody().getObject().toString(), CaseContainerDTO.class);
   }
 
-  public static CaseIdDto extractCaseIdDtoFromResponse( HttpResponse<JsonNode> response) throws IOException {
+  public static CaseIdDto extractCaseIdDtoFromResponse(HttpResponse<JsonNode> response)
+      throws IOException {
     return mapper.readValue(response.getBody().getObject().toString(), CaseIdDto.class);
   }
 

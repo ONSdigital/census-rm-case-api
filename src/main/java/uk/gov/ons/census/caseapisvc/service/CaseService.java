@@ -3,7 +3,6 @@ package uk.gov.ons.census.caseapisvc.service;
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,9 +55,10 @@ public class CaseService {
   }
 
   public Case findCaseByQid(String qid) {
-    UacQidLink uacQidLink = uacQidLinkRepository.findByQid(qid).orElseThrow(() -> new QidNotFoundException(qid));
+    UacQidLink uacQidLink =
+        uacQidLinkRepository.findByQid(qid).orElseThrow(() -> new QidNotFoundException(qid));
 
-    if( uacQidLink.getCaze() == null ) {
+    if (uacQidLink.getCaze() == null) {
       throw new UacQidLinkWithNoCaseException(qid);
     }
 

@@ -10,7 +10,6 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -300,7 +299,8 @@ public class CaseEndpointIT {
     Case caze = setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
     setupTestUacQidLink(TEST_QID, caze);
 
-    HttpResponse<JsonNode> jsonResponse = Unirest.get(createUrl("http://localhost:%d/cases/qid/%s", port, TEST_QID))
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/qid/%s", port, TEST_QID))
             .header("accept", "application/json")
             .asJson();
 

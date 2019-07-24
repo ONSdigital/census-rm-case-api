@@ -29,8 +29,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
-import uk.gov.ons.census.caseapisvc.model.dto.CaseIdDto;
-import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 
 public class CaseEndpointUnitTest {
