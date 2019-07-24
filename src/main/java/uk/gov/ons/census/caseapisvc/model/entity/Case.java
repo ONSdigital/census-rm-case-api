@@ -91,4 +91,6 @@ public class Case {
   List<UacQidLink> uacQidLinks;
 
   @Column private boolean receiptReceived;
+
+  @Column private boolean refusalReceived;
 }
