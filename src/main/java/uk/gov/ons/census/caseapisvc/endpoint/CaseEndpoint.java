@@ -102,6 +102,11 @@ public final class CaseEndpoint {
           caseEvents.add(this.mapperFacade.map(event, EventDTO.class));
         }
       }
+      if (caze.getEvents() != null) {
+        for (Event event : caze.getEvents()) {
+          caseEvents.add(this.mapperFacade.map(event, EventDTO.class));
+        }
+      }
     }
 
     caseContainerDTO.setCaseEvents(caseEvents);

@@ -309,6 +309,7 @@ public class CaseEndpointIT {
   private Case setupTestCaseWithEvent(String caseId) {
     Case caze = easyRandom.nextObject(Case.class);
     caze.setCaseId(UUID.fromString(caseId));
+    caze.setEvents(null);
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
 
@@ -316,8 +317,11 @@ public class CaseEndpointIT {
     uacQidLink.setActive(true);
 
     Event event = easyRandom.nextObject(Event.class);
+    event.setCaze(null);
+    event.setEventPayload(null);
     event.setEventType(EventType.CASE_CREATED);
     event.setUacQidLink(uacQidLink);
+    event.setEventPayload("{}");
 
     uacQidLink.setCaze(caze);
     uacQidLink.setEvents(Collections.singletonList(event));
@@ -334,6 +338,7 @@ public class CaseEndpointIT {
   private Case setupTestCaseWithoutEvents(String caseId) {
     Case caze = easyRandom.nextObject(Case.class);
     caze.setCaseId(UUID.fromString(caseId));
+    caze.setEvents(null);
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
 
