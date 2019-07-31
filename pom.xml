@@ -173,6 +173,17 @@
               </buildArgs>
             </configuration>
           </execution>
+          <execution>
+            <id>tag me</id>
+            <phase>package</phase>
+            <goals>
+              <goal>tag</goal>
+            </goals>
+            <configuration>
+              <tag>ade_test</tag>
+              <repository>eu.gcr.io/census-rm-ci/rm/${project.artifactId}</repository>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
