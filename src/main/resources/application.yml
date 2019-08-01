@@ -36,3 +36,9 @@ management:
   endpoint:
     info:
       enabled: true
+
+uacservice:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8164
