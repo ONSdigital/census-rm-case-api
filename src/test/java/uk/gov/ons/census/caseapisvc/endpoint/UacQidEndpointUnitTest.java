@@ -24,7 +24,7 @@ public class UacQidEndpointUnitTest {
   private MockMvc mockMvc;
 
   @Mock private UacQidServiceClient uacQidServiceClient;
-  
+
   @InjectMocks private UacQidEndpoint uacQidEndpoint;
 
   @Before
