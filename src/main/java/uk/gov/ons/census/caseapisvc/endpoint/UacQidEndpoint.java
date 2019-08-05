@@ -6,25 +6,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.ons.census.caseapisvc.model.dto.CaseDetailsDTO;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
+import uk.gov.ons.census.caseapisvc.model.dto.CaseDetailsDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
 
 @RestController
 @RequestMapping(value = "/uacqid")
 public class UacQidEndpoint {
 
-    private final UacQidServiceClient uacQidServiceClient;
+  private final UacQidServiceClient uacQidServiceClient;
 
-    public UacQidEndpoint(UacQidServiceClient uacQidServiceClient) {
-        this.uacQidServiceClient = uacQidServiceClient;
-    }
+  public UacQidEndpoint(UacQidServiceClient uacQidServiceClient) {
+    this.uacQidServiceClient = uacQidServiceClient;
+  }
 
-    @PostMapping(path = "/create", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<UacQidDTO> createAndLinkUacQid(@RequestBody CaseDetailsDTO caseDetails) {
-        String questionnaireType = caseDetails.getQuestionnaireId();
-        int qid = Integer.parseInt(questionnaireType);
-        UacQidDTO uacQid = uacQidServiceClient.generateUacQid(qid);
-        return ResponseEntity.status(HttpStatus.CREATED).body(uacQid);
-    }
+  @PostMapping(path = "/create", consumes = "application/json", produces = "application/json")
+  public ResponseEntity<UacQidDTO> createAndLinkUacQid(@RequestBody CaseDetailsDTO caseDetails) {
+    String questionnaireType = caseDetails.getQuestionnaireId();
+    int qid = Integer.parseInt(questionnaireType);
+    UacQidDTO uacQid = uacQidServiceClient.generateUacQid(qid);
+    return ResponseEntity.status(HttpStatus.CREATED).body(uacQid);
+  }
 }

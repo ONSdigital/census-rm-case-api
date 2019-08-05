@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class CaseDetailsDTO {
 
-    @JsonProperty("questionnaire_id")
-    private String questionnaireId;
+  @JsonProperty("questionnaire_id")
+  private String questionnaireId;
 }

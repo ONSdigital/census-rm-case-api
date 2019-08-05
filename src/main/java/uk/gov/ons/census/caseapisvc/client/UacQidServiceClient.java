@@ -12,32 +12,31 @@ import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
 @Component
 public class UacQidServiceClient {
 
-    @Value("${uacservice.connection.scheme}")
-    private String scheme;
+  @Value("${uacservice.connection.scheme}")
+  private String scheme;
 
-    @Value("${uacservice.connection.host}")
-    private String host;
+  @Value("${uacservice.connection.host}")
+  private String host;
 
-    @Value("${uacservice.connection.port}")
-    private String port;
+  @Value("${uacservice.connection.port}")
+  private String port;
 
-    public UacQidDTO generateUacQid(int questionnaireType) {
+  public UacQidDTO generateUacQid(int questionnaireType) {
 
-        RestTemplate restTemplate = new RestTemplate();
-        UriComponents uriComponents = createUriComponents(questionnaireType);
-        ResponseEntity<UacQidDTO> responseEntity =
-                restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, null, UacQidDTO.class);
-        return responseEntity.getBody();
-    }
+    RestTemplate restTemplate = new RestTemplate();
+    UriComponents uriComponents = createUriComponents(questionnaireType);
+    ResponseEntity<UacQidDTO> responseEntity =
+        restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, null, UacQidDTO.class);
+    return responseEntity.getBody();
+  }
 
-    private UriComponents createUriComponents(int questionnaireType) {
-        return UriComponentsBuilder.newInstance()
-                .scheme(scheme)
-                .host(host)
-                .port(port)
-                .queryParam("questionnaireType", questionnaireType)
-                .build()
-                .encode();
-    }
+  private UriComponents createUriComponents(int questionnaireType) {
+    return UriComponentsBuilder.newInstance()
+        .scheme(scheme)
+        .host(host)
+        .port(port)
+        .queryParam("questionnaireType", questionnaireType)
+        .build()
+        .encode();
+  }
 }
-

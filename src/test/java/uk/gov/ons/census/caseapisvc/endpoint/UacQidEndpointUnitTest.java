@@ -1,5 +1,10 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,11 +16,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
-
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UacQidEndpointUnitTest {
 
@@ -47,11 +47,11 @@ public class UacQidEndpointUnitTest {
     when(uacQidServiceClient.generateUacQid(1)).thenReturn(uacQidDto);
 
     mockMvc
-        .perform(MockMvcRequestBuilders.post("/uacqid/create")
+        .perform(
+            MockMvcRequestBuilders.post("/uacqid/create")
                 .content("{\"questionnaire_id\":\"1\"}")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+        .andExpect(status().isCreated());
   }
-
 }
