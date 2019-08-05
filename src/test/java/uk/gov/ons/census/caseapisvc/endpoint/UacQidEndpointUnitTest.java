@@ -48,16 +48,10 @@ public class UacQidEndpointUnitTest {
 
     mockMvc
         .perform(MockMvcRequestBuilders.post("/uacqid/create")
-                .content("{\"id\":\"1234\"}")
+                .content("{\"questionnaire_id\":\"1\"}")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-//        .andExpect(handler().handlerType(CaseEndpoint.class))
-//        .andExpect(handler().methodName(METHOD_NAME_FIND_CASES_BY_UPRN))
-//        .andExpect(jsonPath("$[0].id", is(TEST1_CASE_ID)))
-//        .andExpect(jsonPath("$[0].caseEvents", hasSize(1)))
-//        .andExpect(jsonPath("$[1].id", is(TEST2_CASE_ID)))
-//        .andExpect(jsonPath("$[1].caseEvents", hasSize(1)));
   }
 
 }
