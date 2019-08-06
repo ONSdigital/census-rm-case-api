@@ -49,7 +49,7 @@ public class UacQidEndpointUnitTest {
     mockMvc
         .perform(
             MockMvcRequestBuilders.post("/uacqid/create")
-                .content("{\"questionnaire_id\":\"1\"}")
+                .content("{\"questionnaireType\":\"1\"}")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated());

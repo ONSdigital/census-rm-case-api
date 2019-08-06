@@ -22,9 +22,8 @@ public class UacQidEndpoint {
 
   @PostMapping(path = "/create", consumes = "application/json", produces = "application/json")
   public ResponseEntity<UacQidDTO> createAndLinkUacQid(@RequestBody CaseDetailsDTO caseDetails) {
-    String questionnaireType = caseDetails.getQuestionnaireId();
-    int qid = Integer.parseInt(questionnaireType);
-    UacQidDTO uacQid = uacQidServiceClient.generateUacQid(qid);
+    int questionnaireType = Integer.parseInt(caseDetails.getQuestionnaireType());
+    UacQidDTO uacQid = uacQidServiceClient.generateUacQid(questionnaireType);
     return ResponseEntity.status(HttpStatus.CREATED).body(uacQid);
   }
 }

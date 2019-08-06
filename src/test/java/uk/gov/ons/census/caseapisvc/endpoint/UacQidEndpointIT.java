@@ -29,7 +29,7 @@ public class UacQidEndpointIT {
     headers.put("accept", "application/json");
     headers.put("Content-Type", "application/json");
     HttpResponse<JsonNode> response =
-        Unirest.post(url).headers(headers).body("{\"questionnaire_id\":\"1\"}").asJson();
+        Unirest.post(url).headers(headers).body("{\"questionnaireType\":\"1\"}").asJson();
 
     assertThat(response.getStatus()).isEqualTo(CREATED.value());
   }
