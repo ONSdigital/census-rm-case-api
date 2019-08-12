@@ -24,6 +24,8 @@ public class UacQidEndpointIT {
 
   @Test
   public void shouldRetrieveUacQidPair() throws Exception {
+    // TODO: Send case ID and check it is returned
+
     String url = String.format("http://localhost:%d/uacqid/create", port);
     Map<String, String> headers = new HashMap<>();
     headers.put("accept", "application/json");

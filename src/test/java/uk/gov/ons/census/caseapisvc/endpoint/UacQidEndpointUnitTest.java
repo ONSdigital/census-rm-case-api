@@ -1,10 +1,5 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,15 +10,28 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
+import uk.gov.ons.census.caseapisvc.service.UacQidDistributor;
+
+import java.util.UUID;
+
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UacQidEndpointUnitTest {
 
-  private static final String CREATE_UACQID_PAIR = "uacqid/create";
+  private static final String CREATE_UACQID_PAIR = "/uacqid/create";
 
   private MockMvc mockMvc;
 
   @Mock private UacQidServiceClient uacQidServiceClient;
+
+  @Mock
+  @SuppressWarnings("unused")
+  private UacQidDistributor uacQidDistributor;
 
   @InjectMocks private UacQidEndpoint uacQidEndpoint;
 
@@ -41,17 +49,24 @@ public class UacQidEndpointUnitTest {
 
   @Test
   public void createUacQidPair() throws Exception {
-    UacQidDTO uacQidDto = new UacQidDTO();
-    uacQidDto.setQid("0220000000005700");
-    uacQidDto.setUac("6ghnj22s5bp8r6rd");
-    when(uacQidServiceClient.generateUacQid(1)).thenReturn(uacQidDto);
+    UUID caseId = UUID.randomUUID();
+    UacQidCreatedDTO uacQidCreatedDTO = new UacQidCreatedDTO();
+    uacQidCreatedDTO.setQid("0120000000005700");
+    uacQidCreatedDTO.setUac("6ghnj22s5bp8r6rd");
+    uacQidCreatedDTO.setCaseId(caseId.toString());
+    when(uacQidServiceClient.generateUacQid(1)).thenReturn(uacQidCreatedDTO);
 
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post("/uacqid/create")
-                .content("{\"questionnaireType\":\"1\"}")
+            MockMvcRequestBuilders.post(CREATE_UACQID_PAIR)
+                .content(
+                    String.format(
+                        "{\"questionnaireType\":\"1\", \"caseId\":\"%s\"}", caseId.toString()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isCreated());
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.uac").value(uacQidCreatedDTO.getUac()))
+        .andExpect(jsonPath("$.qid").value(uacQidCreatedDTO.getQid()))
+        .andExpect(jsonPath("$.caseId").value(uacQidCreatedDTO.getCaseId()));
   }
 }
