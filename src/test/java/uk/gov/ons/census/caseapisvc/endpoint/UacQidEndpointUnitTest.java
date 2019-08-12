@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.service.UacQidDistributor;
 
 import java.util.UUID;
@@ -50,11 +50,11 @@ public class UacQidEndpointUnitTest {
   @Test
   public void createUacQidPair() throws Exception {
     UUID caseId = UUID.randomUUID();
-    UacQidCreatedDTO uacQidCreatedDTO = new UacQidCreatedDTO();
-    uacQidCreatedDTO.setQid("0120000000005700");
-    uacQidCreatedDTO.setUac("6ghnj22s5bp8r6rd");
-    uacQidCreatedDTO.setCaseId(caseId.toString());
-    when(uacQidServiceClient.generateUacQid(1)).thenReturn(uacQidCreatedDTO);
+    UacQidCreatedPayloadDTO uacQidCreatedPayloadDTO = new UacQidCreatedPayloadDTO();
+    uacQidCreatedPayloadDTO.setQid("0120000000005700");
+    uacQidCreatedPayloadDTO.setUac("6ghnj22s5bp8r6rd");
+    uacQidCreatedPayloadDTO.setCaseId(caseId.toString());
+    when(uacQidServiceClient.generateUacQid(1)).thenReturn(uacQidCreatedPayloadDTO);
 
     mockMvc
         .perform(
@@ -65,8 +65,8 @@ public class UacQidEndpointUnitTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.uac").value(uacQidCreatedDTO.getUac()))
-        .andExpect(jsonPath("$.qid").value(uacQidCreatedDTO.getQid()))
-        .andExpect(jsonPath("$.caseId").value(uacQidCreatedDTO.getCaseId()));
+        .andExpect(jsonPath("$.uac").value(uacQidCreatedPayloadDTO.getUac()))
+        .andExpect(jsonPath("$.qid").value(uacQidCreatedPayloadDTO.getQid()))
+        .andExpect(jsonPath("$.caseId").value(uacQidCreatedPayloadDTO.getCaseId()));
   }
 }
