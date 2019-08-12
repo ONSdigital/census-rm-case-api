@@ -43,6 +43,7 @@ public class CaseEndpointUnitTest {
   private static final String TEST2_CASE_ID = "3e948f6a-00bb-466d-88a7-b0990a827b53";
 
   private static final String TEST_UPRN = "123";
+  public static final String TEST_QID = "test_qid";
 
   private MockMvc mockMvc;
 
@@ -166,6 +167,17 @@ public class CaseEndpointUnitTest {
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_ID))
         .andExpect(jsonPath("$.id", is(TEST1_CASE_ID)))
         .andExpect(jsonPath("$.caseEvents", hasSize(0)));
+  }
+
+  @Test
+  public void getCaseIdDtoFromQidId() throws Exception {
+    when(caseService.findCaseByQid(TEST_QID)).thenReturn(createSingleCaseWithEvents());
+
+    mockMvc
+        .perform(get(createUrl("/cases/qid/%s", TEST_QID)).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$.caseId", is(TEST1_CASE_ID)));
   }
 
   @Test
