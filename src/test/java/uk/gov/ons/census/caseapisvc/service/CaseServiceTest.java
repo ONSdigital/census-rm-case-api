@@ -21,9 +21,13 @@ import org.mockito.Mock;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.UacQidLinkWithNoCaseException;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
+import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
+import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 
 public class CaseServiceTest {
 
@@ -34,8 +38,10 @@ public class CaseServiceTest {
   private static final String TEST_INVALID_CASE_ID = "anything";
 
   private static final String TEST_UPRN = "123";
+  public static final String TEST_QID = "test_qid";
 
   @Mock private CaseRepository caseRepo;
+  @Mock private UacQidLinkRepository uacQidLinkRepository;
 
   @InjectMocks private CaseService caseService;
 
@@ -111,5 +117,32 @@ public class CaseServiceTest {
     when(caseRepo.findByCaseRef(anyInt())).thenReturn(Optional.empty());
 
     caseService.findByReference(TEST_CASE_REFERENCE_ID_EXISTS);
+  }
+
+  @Test
+  public void testGetCaseViaQid() {
+    Case expectedCase = createSingleCaseWithEvents();
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setCaze(expectedCase);
+    Optional<UacQidLink> uacQidLinkOptional = Optional.of(uacQidLink);
+    when(uacQidLinkRepository.findByQid(TEST_QID)).thenReturn(uacQidLinkOptional);
+
+    Case actualCase = caseService.findCaseByQid(TEST_QID);
+    assertThat(actualCase).isEqualToComparingFieldByField(expectedCase);
+  }
+
+  @Test(expected = QidNotFoundException.class)
+  public void testQidNotFound() {
+    when(uacQidLinkRepository.findByQid(TEST_QID)).thenReturn(Optional.empty());
+    caseService.findCaseByQid(TEST_QID);
+  }
+
+  @Test(expected = UacQidLinkWithNoCaseException.class)
+  public void testCaseMissingForUacQidLink() {
+    UacQidLink uacQidLink = new UacQidLink();
+    Optional<UacQidLink> uacQidLinkOptional = Optional.of(uacQidLink);
+    when(uacQidLinkRepository.findByQid(TEST_QID)).thenReturn(uacQidLinkOptional);
+
+    caseService.findCaseByQid(TEST_QID);
   }
 }
