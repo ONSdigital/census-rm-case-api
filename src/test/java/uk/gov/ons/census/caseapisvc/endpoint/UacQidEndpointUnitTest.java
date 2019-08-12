@@ -1,5 +1,12 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.UUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,14 +19,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.service.UacQidDistributor;
-
-import java.util.UUID;
-
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UacQidEndpointUnitTest {
 

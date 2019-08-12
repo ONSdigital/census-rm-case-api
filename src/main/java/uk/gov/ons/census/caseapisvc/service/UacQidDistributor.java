@@ -2,6 +2,8 @@ package uk.gov.ons.census.caseapisvc.service;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,9 +11,6 @@ import uk.gov.ons.census.caseapisvc.model.dto.PayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedEventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Service
 public class UacQidDistributor {
@@ -28,8 +27,7 @@ public class UacQidDistributor {
 
   public void sendUacQidCreatedEvent(UacQidCreatedPayloadDTO uacQidPayload) {
     UacQidCreatedEventDTO uacQidCreatedEventDTO = buildUacQidCreatedEventDTO();
-    UacQidCreatedDTO uacQidCreatedDTO =
-        buildUacQidCreatedDTO(uacQidCreatedEventDTO, uacQidPayload);
+    UacQidCreatedDTO uacQidCreatedDTO = buildUacQidCreatedDTO(uacQidCreatedEventDTO, uacQidPayload);
     log.with("caseId", uacQidPayload.getCaseId())
         .with("transactionId", uacQidCreatedEventDTO.getTransactionId())
         .debug("Sending UAC QID created event");

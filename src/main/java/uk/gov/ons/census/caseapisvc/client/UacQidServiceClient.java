@@ -26,7 +26,8 @@ public class UacQidServiceClient {
     RestTemplate restTemplate = new RestTemplate();
     UriComponents uriComponents = createUriComponents(questionnaireType);
     ResponseEntity<UacQidCreatedPayloadDTO> responseEntity =
-        restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, null, UacQidCreatedPayloadDTO.class);
+        restTemplate.exchange(
+            uriComponents.toUri(), HttpMethod.GET, null, UacQidCreatedPayloadDTO.class);
     return responseEntity.getBody();
   }
 

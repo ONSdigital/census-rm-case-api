@@ -1,8 +1,7 @@
 package uk.gov.ons.census.caseapisvc.model.dto;
 
-import lombok.Data;
-
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class CaseDetailsDTO {
