@@ -44,7 +44,7 @@ public class UacQidEndpointUnitTest {
     UacQidDTO uacQidDto = new UacQidDTO();
     uacQidDto.setQid("0220000000005700");
     uacQidDto.setUac("6ghnj22s5bp8r6rd");
-    when(uacQidServiceClient.generateUacQid(1)).thenReturn(uacQidDto);
+    when(uacQidServiceClient.generateUacQid(null)).thenReturn(uacQidDto);
 
     mockMvc
         .perform(
