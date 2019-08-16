@@ -25,7 +25,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.CaseIdAddressTypeDto;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.EventType;
@@ -305,10 +304,9 @@ public class CaseEndpointIT {
             .header("accept", "application/json")
             .asJson();
 
-    CaseIdAddressTypeDto caseIdAddressTypeDto =
-        DataUtils.extractCaseIdDtoFromResponse(jsonResponse);
-    assertThat(caseIdAddressTypeDto.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
-    assertThat(caseIdAddressTypeDto.getAddressType()).isEqualTo(ADDRESS_TYPE_TEST);
+    CaseContainerDTO caseContainerDTO = DataUtils.extractCaseIdDtoFromResponse(jsonResponse);
+    assertThat(caseContainerDTO.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(caseContainerDTO.getAddressType()).isEqualTo(ADDRESS_TYPE_TEST);
   }
 
   private Case createOneTestCaseWithEvent() {
