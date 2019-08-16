@@ -25,6 +25,12 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+  rabbitmq:
+    username: guest
+    password: guest
+    host: localhost
+    port: 6672
+    virtualhost: /
 
 logging:
   level:
@@ -42,3 +48,7 @@ uacservice:
     scheme: http
     host: localhost
     port: 8164
+
+queueconfig:
+  uac-qid-created-exchange: uac-qid-created-exchange
+  uac-qid-created-queue: case.uac-qid-created

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 
 @Component
 public class UacQidServiceClient {
@@ -21,12 +21,13 @@ public class UacQidServiceClient {
   @Value("${uacservice.connection.port}")
   private String port;
 
-  public UacQidDTO generateUacQid(int questionnaireType) {
+  public UacQidCreatedPayloadDTO generateUacQid(int questionnaireType) {
 
     RestTemplate restTemplate = new RestTemplate();
     UriComponents uriComponents = createUriComponents(questionnaireType);
-    ResponseEntity<UacQidDTO> responseEntity =
-        restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, null, UacQidDTO.class);
+    ResponseEntity<UacQidCreatedPayloadDTO> responseEntity =
+        restTemplate.exchange(
+            uriComponents.toUri(), HttpMethod.GET, null, UacQidCreatedPayloadDTO.class);
     return responseEntity.getBody();
   }
 
