@@ -21,7 +21,7 @@ import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.CaseIdDto;
+import uk.gov.ons.census.caseapisvc.model.dto.CaseIdAddressTypeDto;
 import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
@@ -69,13 +69,14 @@ public final class CaseEndpoint {
   }
 
   @GetMapping(value = "/qid/{qid}")
-  public CaseIdDto findCaseByQid(@PathVariable("qid") String qid) {
+  public CaseIdAddressTypeDto findCaseByQid(@PathVariable("qid") String qid) {
     log.debug("Entering findByQid");
     Case caze = caseService.findCaseByQid(qid);
-    CaseIdDto caseIdDto = new CaseIdDto();
-    caseIdDto.setCaseId(caze.getCaseId().toString());
+    CaseIdAddressTypeDto caseIdAddressTypeDto = new CaseIdAddressTypeDto();
+    caseIdAddressTypeDto.setCaseId(caze.getCaseId().toString());
+    caseIdAddressTypeDto.setAddressType(caze.getAddressType());
 
-    return caseIdDto;
+    return caseIdAddressTypeDto;
   }
 
   @GetMapping(value = "/ref/{reference}")

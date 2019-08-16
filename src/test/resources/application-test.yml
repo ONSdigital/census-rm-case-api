@@ -1,7 +1,12 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:16432/postgres
+  rabbitmq:
+    port: 35672
 
 uacservice:
   connection:
     port: 18164
+
+queueconfig:
+  uac-qid-created-queue: case.uac-qid-created
