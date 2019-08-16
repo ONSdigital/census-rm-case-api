@@ -25,7 +25,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.CaseIdDto;
+import uk.gov.ons.census.caseapisvc.model.dto.CaseIdAddressTypeDto;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.EventType;
@@ -50,6 +50,7 @@ public class CaseEndpointIT {
 
   private static final String TEST_REFERENCE_DOES_NOT_EXIST = "99999999";
   public static final String TEST_QID = "test_qid";
+  public static final String ADDRESS_TYPE_TEST = "addressTypeTest";
 
   @LocalServerPort private int port;
 
@@ -304,8 +305,10 @@ public class CaseEndpointIT {
             .header("accept", "application/json")
             .asJson();
 
-    CaseIdDto caseIdDto = DataUtils.extractCaseIdDtoFromResponse(jsonResponse);
-    assertThat(caseIdDto.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    CaseIdAddressTypeDto caseIdAddressTypeDto =
+        DataUtils.extractCaseIdDtoFromResponse(jsonResponse);
+    assertThat(caseIdAddressTypeDto.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(caseIdAddressTypeDto.getAddressType()).isEqualTo(ADDRESS_TYPE_TEST);
   }
 
   private Case createOneTestCaseWithEvent() {
@@ -361,6 +364,7 @@ public class CaseEndpointIT {
     caze.setEvents(null);
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
+    caze.setAddressType(ADDRESS_TYPE_TEST);
 
     caze.setUacQidLinks(null);
 
