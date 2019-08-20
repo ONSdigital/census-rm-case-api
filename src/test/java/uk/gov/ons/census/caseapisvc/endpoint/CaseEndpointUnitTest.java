@@ -170,14 +170,14 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getCaseIdDtoFromQidId() throws Exception {
+  public void getCaseFromQidId() throws Exception {
     when(caseService.findCaseByQid(TEST_QID)).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(get(createUrl("/cases/qid/%s", TEST_QID)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
-        .andExpect(jsonPath("$.caseId", is(TEST1_CASE_ID)));
+        .andExpect(jsonPath("$.id", is(TEST1_CASE_ID)));
   }
 
   @Test
