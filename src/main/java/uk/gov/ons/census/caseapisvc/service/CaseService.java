@@ -47,7 +47,7 @@ public class CaseService {
         .orElseThrow(() -> new CaseIdNotFoundException(caseIdUUID.toString()));
   }
 
-  public Case findCCSCaseByCaseId(String caseId) {
+  private Case findCCSCaseByCaseId(String caseId) {
     log.debug("Entering findByCaseId");
 
     UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
@@ -76,12 +76,13 @@ public class CaseService {
     return uacQidLink.getCaze();
   }
 
-  public UacQidLink findCCSQidByCaseId(String caseId) {
+  public String findCCSQidByCaseId(String caseId) {
     Case ccsCase = findCCSCaseByCaseId(caseId);
     return ccsCase.getUacQidLinks().stream()
         .filter(UacQidLink::isCcsCase)
         .findFirst()
-        .orElseThrow(() -> new CCSQidNotFoundException(caseId));
+        .orElseThrow(() -> new CCSQidNotFoundException(caseId))
+        .getQid();
   }
 
   private UUID validateAndConvertCaseIdToUUID(String caseId) {

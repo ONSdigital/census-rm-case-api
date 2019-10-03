@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createCcsUacQidLink;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
 
@@ -251,15 +251,14 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getCcsQidByCaseId() throws Exception {
-    String ccsQid = "7120000000005700";
-    when(caseService.findCCSQidByCaseId(any())).thenReturn(createCcsUacQidLink(ccsQid));
+    when(caseService.findCCSQidByCaseId(any())).thenReturn(TEST_CCS_QID);
 
     mockMvc
         .perform(
             get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
-        .andExpect(jsonPath("$.qid", is(ccsQid)));
+        .andExpect(jsonPath("$.qid", is(TEST_CCS_QID)));
   }
 
   @Test
