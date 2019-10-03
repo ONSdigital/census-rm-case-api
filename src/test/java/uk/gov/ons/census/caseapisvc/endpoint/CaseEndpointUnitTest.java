@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createCcsUacQidLink;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
 
@@ -26,6 +27,7 @@ import org.mockito.Spy;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import uk.gov.ons.census.caseapisvc.exception.CCSQidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
@@ -243,6 +245,41 @@ public class CaseEndpointUnitTest {
     mockMvc
         .perform(
             get(createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void getCcsQidByCaseId() throws Exception {
+    String ccsQid = "7120000000005700";
+    when(caseService.findCCSQidByCaseId(any())).thenReturn(createCcsUacQidLink(ccsQid));
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$.qid", is(ccsQid)));
+  }
+
+  @Test
+  public void getCcsQidByCaseIdCcsCaseNotFound() throws Exception {
+    when(caseService.findCCSQidByCaseId(any())).thenThrow(new CaseIdNotFoundException("test"));
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_REFERENCE_ID))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void getCcsQidByCaseIdCcsQIDNotFound() throws Exception {
+    when(caseService.findCCSQidByCaseId(any())).thenThrow(new CCSQidNotFoundException("test"));
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_REFERENCE_ID))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }

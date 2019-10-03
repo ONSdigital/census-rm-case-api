@@ -47,7 +47,7 @@ public class DataUtils {
 
     UacQidLink uacQidLink = new UacQidLink();
     uacQidLink.setId(UUID.randomUUID());
-    uacQidLink.setUac("any iac");
+    uacQidLink.setUac("any UAC");
 
     Event event = new Event();
     event.setId(UUID.randomUUID());
@@ -65,6 +65,14 @@ public class DataUtils {
     caze.setUacQidLinks(uacQidLinks);
 
     return caze;
+  }
+
+  public static UacQidLink createCcsUacQidLink(String qid) {
+    UacQidLink ccsUacQidLink = new UacQidLink();
+    ccsUacQidLink.setId(UUID.randomUUID());
+    ccsUacQidLink.setUac("any UAC");
+    ccsUacQidLink.setQid(qid);
+    return ccsUacQidLink;
   }
 
   public static CaseContainerDTO extractCaseContainerDTOFromResponse(
