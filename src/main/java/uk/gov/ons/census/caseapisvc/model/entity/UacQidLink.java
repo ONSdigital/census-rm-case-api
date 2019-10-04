@@ -29,4 +29,6 @@ public class UacQidLink {
   @Column private UUID batchId;
 
   @Column private boolean active;
+
+  @Column private boolean ccsCase;
 }
