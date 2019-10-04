@@ -77,8 +77,7 @@ public class CaseService {
   }
 
   public String findCCSQidByCaseId(String caseId) {
-    Case ccsCase = findCCSCaseByCaseId(caseId);
-    return ccsCase.getUacQidLinks().stream()
+    return findCCSCaseByCaseId(caseId).getUacQidLinks().stream()
         .filter(UacQidLink::isCcsCase)
         .findFirst()
         .orElseThrow(() -> new CCSQidNotFoundException(caseId))
