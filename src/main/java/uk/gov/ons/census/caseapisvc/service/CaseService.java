@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.ons.census.caseapisvc.exception.CCSQidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
@@ -47,16 +46,6 @@ public class CaseService {
         .orElseThrow(() -> new CaseIdNotFoundException(caseIdUUID.toString()));
   }
 
-  private Case findCCSCaseByCaseId(String caseId) {
-    log.debug("Entering findByCaseId");
-
-    UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
-
-    return caseRepo
-        .findByCaseIdAndCcsCase(caseIdUUID, true)
-        .orElseThrow(() -> new CaseIdNotFoundException(caseIdUUID.toString()));
-  }
-
   public Case findByReference(int reference) {
     log.debug("Entering findByReference");
 
@@ -76,11 +65,11 @@ public class CaseService {
     return uacQidLink.getCaze();
   }
 
-  public String findCCSQidByCaseId(String caseId) {
-    return findCCSCaseByCaseId(caseId).getUacQidLinks().stream()
-        .filter(UacQidLink::isCcsCase)
-        .findFirst()
-        .orElseThrow(() -> new CCSQidNotFoundException(caseId))
+  public String findCcsQidByCaseId(String caseId) {
+    UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
+    return uacQidLinkRepository
+        .findOneByCazeCaseIdAndCcsCaseIsTrue(caseIdUUID)
+        .orElseThrow(() -> new QidNotFoundException(caseId))
         .getQid();
   }
 

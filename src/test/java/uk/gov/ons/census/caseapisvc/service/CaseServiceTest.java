@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import uk.gov.ons.census.caseapisvc.exception.CCSQidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
@@ -152,25 +151,20 @@ public class CaseServiceTest {
   @Test
   public void testFindCcsQidByCaseId() {
     Case ccsCase = createSingleCcsCaseWithCcsQid();
-    when(caseRepo.findByCaseIdAndCcsCase(UUID.fromString(TEST_CASE_ID_EXISTS), true))
-        .thenReturn(Optional.of(ccsCase));
+    UacQidLink ccsUacQidLink = ccsCase.getUacQidLinks().get(0);
+    when(uacQidLinkRepository.findOneByCazeCaseIdAndCcsCaseIsTrue(
+            UUID.fromString(TEST_CASE_ID_EXISTS)))
+        .thenReturn(Optional.of(ccsUacQidLink));
 
-    String actualCcsQid = caseService.findCCSQidByCaseId(ccsCase.getCaseId().toString());
+    String actualCcsQid = caseService.findCcsQidByCaseId(ccsCase.getCaseId().toString());
     assertThat(actualCcsQid).isEqualTo(TEST_CCS_QID);
   }
 
-  @Test(expected = CaseIdNotFoundException.class)
-  public void testFindCcsQidByCaseIdNoCcsCaseFound() {
-    when(caseRepo.findByCaseIdAndCcsCase(UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST), true))
-        .thenReturn(Optional.empty());
-    caseService.findCCSQidByCaseId(TEST_CASE_ID_DOES_NOT_EXIST);
-  }
-
-  @Test(expected = CCSQidNotFoundException.class)
+  @Test(expected = QidNotFoundException.class)
   public void testFindCcsQidByCaseIdNoCcsQidFound() {
-    Case nonCcsCase = createSingleCaseWithEvents();
-    when(caseRepo.findByCaseIdAndCcsCase(UUID.fromString(TEST_CASE_ID_EXISTS), true))
-        .thenReturn(Optional.of(nonCcsCase));
-    caseService.findCCSQidByCaseId(TEST_CASE_ID_EXISTS);
+    when(uacQidLinkRepository.findOneByCazeCaseIdAndCcsCaseIsTrue(
+            UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST)))
+        .thenReturn(Optional.empty());
+    caseService.findCcsQidByCaseId(TEST_CASE_ID_EXISTS);
   }
 }

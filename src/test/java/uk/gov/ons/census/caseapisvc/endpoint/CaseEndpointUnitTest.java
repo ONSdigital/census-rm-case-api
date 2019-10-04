@@ -27,9 +27,9 @@ import org.mockito.Spy;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import uk.gov.ons.census.caseapisvc.exception.CCSQidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 
@@ -251,7 +251,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getCcsQidByCaseId() throws Exception {
-    when(caseService.findCCSQidByCaseId(any())).thenReturn(TEST_CCS_QID);
+    when(caseService.findCcsQidByCaseId(any())).thenReturn(TEST_CCS_QID);
 
     mockMvc
         .perform(
@@ -263,7 +263,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getCcsQidByCaseIdCcsCaseNotFound() throws Exception {
-    when(caseService.findCCSQidByCaseId(any())).thenThrow(new CaseIdNotFoundException("test"));
+    when(caseService.findCcsQidByCaseId(any())).thenThrow(new CaseIdNotFoundException("test"));
 
     mockMvc
         .perform(
@@ -274,7 +274,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getCcsQidByCaseIdCcsQIDNotFound() throws Exception {
-    when(caseService.findCCSQidByCaseId(any())).thenThrow(new CCSQidNotFoundException("test"));
+    when(caseService.findCcsQidByCaseId(any())).thenThrow(new QidNotFoundException("test"));
 
     mockMvc
         .perform(
