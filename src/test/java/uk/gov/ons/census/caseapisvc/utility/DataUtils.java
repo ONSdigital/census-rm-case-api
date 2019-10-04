@@ -25,9 +25,9 @@ public class DataUtils {
 
   private static final String TEST_UPRN = "123";
 
-  public static final String TEST_CCS_QID = "7120000000005700";
+  public static final String TEST_CCS_QID = "7120000000000000";
 
-  private static final ObjectMapper mapper;
+  public static final ObjectMapper mapper;
 
   static {
     mapper = new ObjectMapper().registerModule(new JavaTimeModule());
