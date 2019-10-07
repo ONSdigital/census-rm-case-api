@@ -3,6 +3,7 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOFromResponse;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOsFromResponse;
 
@@ -25,6 +26,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.EventType;
@@ -309,6 +311,70 @@ public class CaseEndpointIT {
     assertThat(caseContainerDTO.getAddressType()).isEqualTo(ADDRESS_TYPE_TEST);
   }
 
+  @Test
+  public void testCorrectCcsQidReturnedWhenRequestedByCaseId()
+      throws UnirestException, IOException {
+    Case ccsCase = setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestCcsUacQidLink(DataUtils.TEST_CCS_QID, ccsCase);
+
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    QidDTO actualQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), QidDTO.class);
+    assertThat(actualQidDTO.getQid()).isEqualTo(DataUtils.TEST_CCS_QID);
+  }
+
+  @Test
+  public void testShouldReturn404WhenCcsCaseNotFound() throws UnirestException {
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(
+                createUrl(
+                    "http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_DOES_NOT_EXIST))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
+  }
+
+  @Test
+  public void testShouldReturn404WhenCaseIsNotCcsWithCcsQid() throws UnirestException {
+    Case nonCcsCase = setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestCcsUacQidLink(TEST_CCS_QID, nonCcsCase);
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
+  }
+
+  @Test
+  public void testShouldReturn404WhenCcsCaseExistsWithNoCcsQid() throws UnirestException {
+    Case ccsCase = setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestUacQidLink(TEST_QID, ccsCase);
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
+  }
+
+  @Test
+  public void testShouldReturn404CcsCaseExistsWithNoQids() throws UnirestException {
+    Case ccsCase = setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestUacQidLink(TEST_QID, ccsCase);
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
+  }
+
   private Case createOneTestCaseWithEvent() {
     return setupTestCaseWithEvent(TEST_CASE_ID_1_EXISTS);
   }
@@ -357,6 +423,14 @@ public class CaseEndpointIT {
   }
 
   private Case setupTestCaseWithoutEvents(String caseId) {
+    return setupTestCaseWithoutEvents(caseId, false);
+  }
+
+  private Case setupTestCcsCaseWithoutEvents(String caseId) {
+    return setupTestCaseWithoutEvents(caseId, true);
+  }
+
+  private Case getaCase(String caseId) {
     Case caze = easyRandom.nextObject(Case.class);
     caze.setCaseId(UUID.fromString(caseId));
     caze.setEvents(null);
@@ -365,12 +439,7 @@ public class CaseEndpointIT {
     caze.setAddressType(ADDRESS_TYPE_TEST);
 
     caze.setUacQidLinks(null);
-
-    caseRepo.saveAndFlush(caze);
-
-    return caseRepo
-        .findByCaseId(UUID.fromString(TEST_CASE_ID_1_EXISTS))
-        .orElseThrow(() -> new RuntimeException("Case not found!"));
+    return caze;
   }
 
   private void setupTestUacQidLink(String qid, Case caze) {
@@ -380,6 +449,27 @@ public class CaseEndpointIT {
     uacQidLink.setQid(qid);
 
     uacQidLinkRepository.saveAndFlush(uacQidLink);
+  }
+
+  private void setupTestCcsUacQidLink(String qid, Case caze) {
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setId(UUID.randomUUID());
+    uacQidLink.setCaze(caze);
+    uacQidLink.setQid(qid);
+    uacQidLink.setCcsCase(true);
+
+    uacQidLinkRepository.saveAndFlush(uacQidLink);
+  }
+
+  private Case setupTestCaseWithoutEvents(String caseId, boolean ccsCase) {
+    Case caze = getaCase(caseId);
+    caze.setCcsCase(ccsCase);
+
+    caseRepo.saveAndFlush(caze);
+
+    return caseRepo
+        .findByCaseId(UUID.fromString(TEST_CASE_ID_1_EXISTS))
+        .orElseThrow(() -> new RuntimeException("Case not found!"));
   }
 
   private String createUrl(String urlFormat, int port, String param1) {

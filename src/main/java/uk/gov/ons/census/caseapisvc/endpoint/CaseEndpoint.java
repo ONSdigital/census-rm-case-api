@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
+import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
@@ -88,11 +90,21 @@ public final class CaseEndpoint {
     return buildCaseContainerDTO(caseService.findByReference(reference), caseEvents);
   }
 
+  @GetMapping(value = "/ccs/{caseId}/qid")
+  public QidDTO findCCSQidByCaseId(@PathVariable("caseId") String caseId) {
+    log.debug("Entering findByCaseId");
+    String ccsQid = caseService.findCcsQidByCaseId(caseId);
+    QidDTO qidDTO = new QidDTO();
+    qidDTO.setQid(ccsQid);
+    return qidDTO;
+  }
+
   @ExceptionHandler({
     UPRNNotFoundException.class,
     CaseIdNotFoundException.class,
     CaseIdInvalidException.class,
-    CaseReferenceNotFoundException.class
+    CaseReferenceNotFoundException.class,
+    QidNotFoundException.class
   })
   public void handleCaseIdNotFoundAndInvalid(HttpServletResponse response) throws IOException {
     response.sendError(NOT_FOUND.value());

@@ -25,7 +25,9 @@ public class DataUtils {
 
   private static final String TEST_UPRN = "123";
 
-  private static final ObjectMapper mapper;
+  public static final String TEST_CCS_QID = "7120000000000000";
+
+  public static final ObjectMapper mapper;
 
   static {
     mapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -33,6 +35,10 @@ public class DataUtils {
 
   public static Case createSingleCaseWithEvents() {
     return createCase(TEST1_CASE_ID, TEST1_CASE_REFERENCE_ID);
+  }
+
+  public static Case createSingleCcsCaseWithCcsQid() {
+    return createCcsCase(TEST1_CASE_ID, TEST1_CASE_REFERENCE_ID, TEST_CCS_QID);
   }
 
   public static List<Case> createMultipleCasesWithEvents() {
@@ -47,7 +53,7 @@ public class DataUtils {
 
     UacQidLink uacQidLink = new UacQidLink();
     uacQidLink.setId(UUID.randomUUID());
-    uacQidLink.setUac("any iac");
+    uacQidLink.setUac("any UAC");
 
     Event event = new Event();
     event.setId(UUID.randomUUID());
@@ -65,6 +71,29 @@ public class DataUtils {
     caze.setUacQidLinks(uacQidLinks);
 
     return caze;
+  }
+
+  public static Case createCcsCase(UUID caseId, int caseRef, String qid) {
+    List<UacQidLink> uacQidLinks = new LinkedList<>();
+
+    UacQidLink uacQidLink = createCcsUacQidLink(qid);
+    uacQidLinks.add(uacQidLink);
+
+    Case caze = new Case();
+    caze.setCaseRef(caseRef);
+    caze.setCaseId(caseId);
+    caze.setUacQidLinks(uacQidLinks);
+
+    return caze;
+  }
+
+  public static UacQidLink createCcsUacQidLink(String qid) {
+    UacQidLink ccsUacQidLink = new UacQidLink();
+    ccsUacQidLink.setId(UUID.randomUUID());
+    ccsUacQidLink.setUac("any UAC");
+    ccsUacQidLink.setQid(qid);
+    ccsUacQidLink.setCcsCase(true);
+    return ccsUacQidLink;
   }
 
   public static CaseContainerDTO extractCaseContainerDTOFromResponse(

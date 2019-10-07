@@ -7,8 +7,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCcsCaseWithCcsQid;
 
 import java.util.List;
 import java.util.Optional;
@@ -144,5 +146,25 @@ public class CaseServiceTest {
     when(uacQidLinkRepository.findByQid(TEST_QID)).thenReturn(uacQidLinkOptional);
 
     caseService.findCaseByQid(TEST_QID);
+  }
+
+  @Test
+  public void testFindCcsQidByCaseId() {
+    Case ccsCase = createSingleCcsCaseWithCcsQid();
+    UacQidLink ccsUacQidLink = ccsCase.getUacQidLinks().get(0);
+    when(uacQidLinkRepository.findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeCcsCaseIsTrue(
+            UUID.fromString(TEST_CASE_ID_EXISTS)))
+        .thenReturn(Optional.of(ccsUacQidLink));
+
+    String actualCcsQid = caseService.findCcsQidByCaseId(ccsCase.getCaseId().toString());
+    assertThat(actualCcsQid).isEqualTo(TEST_CCS_QID);
+  }
+
+  @Test(expected = QidNotFoundException.class)
+  public void testFindCcsQidByCaseIdNoCcsQidFound() {
+    when(uacQidLinkRepository.findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeCcsCaseIsTrue(
+            UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST)))
+        .thenReturn(Optional.empty());
+    caseService.findCcsQidByCaseId(TEST_CASE_ID_EXISTS);
   }
 }
