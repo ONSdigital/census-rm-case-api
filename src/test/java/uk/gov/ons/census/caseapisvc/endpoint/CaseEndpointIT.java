@@ -331,8 +331,8 @@ public class CaseEndpointIT {
   public void testShouldReturn404WhenCcsCaseNotFound() throws UnirestException {
     HttpResponse<JsonNode> jsonResponse =
         Unirest.get(
-            createUrl(
-                "http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_DOES_NOT_EXIST))
+                createUrl(
+                    "http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_DOES_NOT_EXIST))
             .header("accept", "application/json")
             .asJson();
 
@@ -344,9 +344,7 @@ public class CaseEndpointIT {
     Case nonCcsCase = setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
     setupTestCcsUacQidLink(TEST_CCS_QID, nonCcsCase);
     HttpResponse<JsonNode> jsonResponse =
-        Unirest.get(
-                createUrl(
-                    "http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+        Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
             .header("accept", "application/json")
             .asJson();
 
