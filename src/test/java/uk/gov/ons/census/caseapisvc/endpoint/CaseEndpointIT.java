@@ -3,6 +3,7 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOFromResponse;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOsFromResponse;
 
@@ -330,8 +331,8 @@ public class CaseEndpointIT {
   public void testShouldReturn404WhenCcsCaseNotFound() throws UnirestException {
     HttpResponse<JsonNode> jsonResponse =
         Unirest.get(
-                createUrl(
-                    "http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_DOES_NOT_EXIST))
+            createUrl(
+                "http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_DOES_NOT_EXIST))
             .header("accept", "application/json")
             .asJson();
 
@@ -339,8 +340,35 @@ public class CaseEndpointIT {
   }
 
   @Test
-  public void testShouldReturn404WhenCcsQidNotFound() throws UnirestException {
-    setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+  public void testShouldReturn404WhenCaseIsNotCcsWithCcsQid() throws UnirestException {
+    Case nonCcsCase = setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestCcsUacQidLink(TEST_CCS_QID, nonCcsCase);
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(
+                createUrl(
+                    "http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
+  }
+
+  @Test
+  public void testShouldReturn404WhenCcsCaseExistsWithNoCcsQid() throws UnirestException {
+    Case ccsCase = setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestUacQidLink(TEST_QID, ccsCase);
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
+  }
+
+  @Test
+  public void testShouldReturn404CcsCaseExistsWithNoQids() throws UnirestException {
+    Case ccsCase = setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestUacQidLink(TEST_QID, ccsCase);
     HttpResponse<JsonNode> jsonResponse =
         Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
             .header("accept", "application/json")
