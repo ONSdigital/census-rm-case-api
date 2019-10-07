@@ -8,5 +8,5 @@ import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 public interface UacQidLinkRepository extends JpaRepository<UacQidLink, UUID> {
   Optional<UacQidLink> findByQid(String qid);
 
-  Optional<UacQidLink> findOneByCazeCaseIdAndCcsCaseIsTrue(UUID caseId);
+  Optional<UacQidLink> findOneByCazeCaseIdAndCazeCcsCaseIsTrueAndCcsCaseIsTrue(UUID caseId);
 }

@@ -152,7 +152,7 @@ public class CaseServiceTest {
   public void testFindCcsQidByCaseId() {
     Case ccsCase = createSingleCcsCaseWithCcsQid();
     UacQidLink ccsUacQidLink = ccsCase.getUacQidLinks().get(0);
-    when(uacQidLinkRepository.findOneByCazeCaseIdAndCcsCaseIsTrue(
+    when(uacQidLinkRepository.findOneByCazeCaseIdAndCazeCcsCaseIsTrueAndCcsCaseIsTrue(
             UUID.fromString(TEST_CASE_ID_EXISTS)))
         .thenReturn(Optional.of(ccsUacQidLink));
 
@@ -162,7 +162,7 @@ public class CaseServiceTest {
 
   @Test(expected = QidNotFoundException.class)
   public void testFindCcsQidByCaseIdNoCcsQidFound() {
-    when(uacQidLinkRepository.findOneByCazeCaseIdAndCcsCaseIsTrue(
+    when(uacQidLinkRepository.findOneByCazeCaseIdAndCazeCcsCaseIsTrueAndCcsCaseIsTrue(
             UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST)))
         .thenReturn(Optional.empty());
     caseService.findCcsQidByCaseId(TEST_CASE_ID_EXISTS);
