@@ -76,7 +76,7 @@ public class DataUtils {
   public static Case createCcsCase(UUID caseId, int caseRef, String qid) {
     List<UacQidLink> uacQidLinks = new LinkedList<>();
 
-    UacQidLink uacQidLink = createCcsUacQidLink(qid);
+    UacQidLink uacQidLink = createCcsUacQidLink(qid, true);
     uacQidLinks.add(uacQidLink);
 
     Case caze = new Case();
@@ -87,12 +87,13 @@ public class DataUtils {
     return caze;
   }
 
-  public static UacQidLink createCcsUacQidLink(String qid) {
+  public static UacQidLink createCcsUacQidLink(String qid, boolean active) {
     UacQidLink ccsUacQidLink = new UacQidLink();
     ccsUacQidLink.setId(UUID.randomUUID());
     ccsUacQidLink.setUac("any UAC");
     ccsUacQidLink.setQid(qid);
     ccsUacQidLink.setCcsCase(true);
+    ccsUacQidLink.setActive(active);
     return ccsUacQidLink;
   }
 
