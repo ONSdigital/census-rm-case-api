@@ -156,8 +156,10 @@ public class CaseServiceTest {
             UUID.fromString(TEST_CASE_ID_EXISTS)))
         .thenReturn(Optional.of(ccsUacQidLink));
 
-    String actualCcsQid = caseService.findCcsQidByCaseId(ccsCase.getCaseId().toString());
-    assertThat(actualCcsQid).isEqualTo(TEST_CCS_QID);
+    UacQidLink actualCcsUacQidLink =
+        caseService.findUacQidLinkByCaseId(ccsCase.getCaseId().toString());
+    assertThat(actualCcsUacQidLink.getQid()).isEqualTo(TEST_CCS_QID);
+    assertThat(actualCcsUacQidLink.isActive()).isEqualTo(true);
   }
 
   @Test(expected = QidNotFoundException.class)
@@ -165,6 +167,6 @@ public class CaseServiceTest {
     when(uacQidLinkRepository.findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeCcsCaseIsTrue(
             UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST)))
         .thenReturn(Optional.empty());
-    caseService.findCcsQidByCaseId(TEST_CASE_ID_EXISTS);
+    caseService.findUacQidLinkByCaseId(TEST_CASE_ID_EXISTS);
   }
 }

@@ -315,7 +315,7 @@ public class CaseEndpointIT {
   public void testCorrectCcsQidReturnedWhenRequestedByCaseId()
       throws UnirestException, IOException {
     Case ccsCase = setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
-    setupTestCcsUacQidLink(DataUtils.TEST_CCS_QID, ccsCase);
+    setupTestCcsUacQidLink(DataUtils.TEST_CCS_QID, ccsCase, true);
 
     HttpResponse<JsonNode> jsonResponse =
         Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
@@ -325,6 +325,24 @@ public class CaseEndpointIT {
     QidDTO actualQidDTO =
         DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), QidDTO.class);
     assertThat(actualQidDTO.getQid()).isEqualTo(DataUtils.TEST_CCS_QID);
+    assertThat(actualQidDTO.isActive()).isTrue();
+  }
+
+  @Test
+  public void testCorrectInactiveCcsQidReturnedWhenRequestedByCaseId()
+      throws UnirestException, IOException {
+    Case ccsCase = setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestCcsUacQidLink(DataUtils.TEST_CCS_QID, ccsCase, false);
+
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    QidDTO actualQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), QidDTO.class);
+    assertThat(actualQidDTO.getQid()).isEqualTo(DataUtils.TEST_CCS_QID);
+    assertThat(actualQidDTO.isActive()).isFalse();
   }
 
   @Test
@@ -342,7 +360,7 @@ public class CaseEndpointIT {
   @Test
   public void testShouldReturn404WhenCaseIsNotCcsWithCcsQid() throws UnirestException {
     Case nonCcsCase = setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
-    setupTestCcsUacQidLink(TEST_CCS_QID, nonCcsCase);
+    setupTestCcsUacQidLink(TEST_CCS_QID, nonCcsCase, true);
     HttpResponse<JsonNode> jsonResponse =
         Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
             .header("accept", "application/json")
@@ -451,12 +469,13 @@ public class CaseEndpointIT {
     uacQidLinkRepository.saveAndFlush(uacQidLink);
   }
 
-  private void setupTestCcsUacQidLink(String qid, Case caze) {
+  private void setupTestCcsUacQidLink(String qid, Case caze, boolean active) {
     UacQidLink uacQidLink = new UacQidLink();
     uacQidLink.setId(UUID.randomUUID());
     uacQidLink.setCaze(caze);
     uacQidLink.setQid(qid);
     uacQidLink.setCcsCase(true);
+    uacQidLink.setActive(active);
 
     uacQidLinkRepository.saveAndFlush(uacQidLink);
   }
