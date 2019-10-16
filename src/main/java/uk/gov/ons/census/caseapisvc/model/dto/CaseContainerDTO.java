@@ -21,6 +21,10 @@ public class CaseContainerDTO {
 
   private String uprn;
 
+  private String collectionExerciseId;
+
+  private String surveyType;
+
   @JsonProperty("caseType")
   private String addressType;
 
