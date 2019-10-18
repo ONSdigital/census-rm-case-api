@@ -32,6 +32,7 @@ import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
+import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 
@@ -157,7 +158,27 @@ public class CaseEndpointUnitTest {
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_ID))
         .andExpect(jsonPath("$.id", is(TEST1_CASE_ID)))
-        .andExpect(jsonPath("$.caseEvents", hasSize(0)));
+        .andExpect(jsonPath("$.caseEvents", hasSize(0)))
+        .andExpect(jsonPath("$.surveyType", is("CENSUS")));
+  }
+
+  @Test
+  public void getACaseWithoutEventsByCaseIdForCCSCase() throws Exception {
+    Case testCase = createSingleCaseWithEvents();
+    testCase.setCcsCase(true);
+    when(caseService.findByCaseId(any())).thenReturn(testCase);
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/%s", TEST1_CASE_ID))
+                .param("caseEvents", "false")
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_ID))
+        .andExpect(jsonPath("$.id", is(TEST1_CASE_ID)))
+        .andExpect(jsonPath("$.caseEvents", hasSize(0)))
+        .andExpect(jsonPath("$.surveyType", is("CCS")));
   }
 
   @Test

@@ -36,6 +36,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-case-api-it:5432/postgres?sslmode=disable
       - SPRING_RABBITMQ_HOST=rabbitmq-case-api-it
       - SPRING_RABBITMQ_PORT=5672
+      - QUEUECONFIG_UAC_QID_CREATED_QUEUE=dummy.uac-qid-created
       - JAVA_OPTS=-Xmx128m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5121 -Dspring.profiles.active=dev
     healthcheck:
       test: ["CMD", "cat", "/tmp/case-service-healthy"]
