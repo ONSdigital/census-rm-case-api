@@ -17,7 +17,7 @@ For production the configuration is overridden by the K8S apply script
 # How to run
 The service requires several other services to be running started from census-rm-docker-dev
 
-# How to debug census-rm-notify-processor locally 
+# How to debug census-rm-case-api locally 
  
 ## Running as a docker image 
 * Start census-rm-docker-dev services with the following line in section caseapi | environment in rm-services.yml
