@@ -8,7 +8,7 @@ info:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:6432/postgres?readOnly=true
+    url: jdbc:postgresql://localhost:16432/postgres?readOnly=true
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver
@@ -29,7 +29,7 @@ spring:
     username: guest
     password: guest
     host: localhost
-    port: 6672
+    port: 35672
     virtualhost: /
 
 logging:
