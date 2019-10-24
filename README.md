@@ -4,9 +4,12 @@
 This case api service provides a range of Restful endpoints that -
 * Retrieve case details by case id, case ref, UPRN or QID
 * Retrieve a QID by case id
-* Create and return a new Uac Qid Link
+* Create and return a new Uac Qid Link - this resulting 
 
 The service relies on, and makes no changes to the casev2 schema maintained by census-rm-case-processor 
+
+# Queues
+The creation of a Uac Qid Link emits a RM_UAC_CREATED message to the uac-qid-created-exchange
 
 # Configuration
 
