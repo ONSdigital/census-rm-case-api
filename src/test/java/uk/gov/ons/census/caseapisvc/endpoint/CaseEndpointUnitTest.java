@@ -282,7 +282,7 @@ public class CaseEndpointUnitTest {
             get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
-        .andExpect(jsonPath("$.qid", is(TEST_CCS_QID)))
+        .andExpect(jsonPath("$.questionnaireId", is(TEST_CCS_QID)))
         .andExpect(jsonPath("$.active", is(true)));
   }
 
@@ -296,7 +296,7 @@ public class CaseEndpointUnitTest {
             get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
-        .andExpect(jsonPath("$.qid", is(TEST_CCS_QID)))
+        .andExpect(jsonPath("$.questionnaireId", is(TEST_CCS_QID)))
         .andExpect(jsonPath("$.active", is(false)));
   }
 

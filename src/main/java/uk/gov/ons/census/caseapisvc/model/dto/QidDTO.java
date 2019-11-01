@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class QidDTO {
-  private String qid;
+  private String questionnaireId;
   private boolean active;
 }
