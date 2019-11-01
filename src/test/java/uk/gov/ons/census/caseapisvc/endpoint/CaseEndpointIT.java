@@ -324,7 +324,7 @@ public class CaseEndpointIT {
 
     QidDTO actualQidDTO =
         DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), QidDTO.class);
-    assertThat(actualQidDTO.getQid()).isEqualTo(DataUtils.TEST_CCS_QID);
+    assertThat(actualQidDTO.getQuestionnaireId()).isEqualTo(DataUtils.TEST_CCS_QID);
     assertThat(actualQidDTO.isActive()).isTrue();
   }
 
@@ -341,7 +341,7 @@ public class CaseEndpointIT {
 
     QidDTO actualQidDTO =
         DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), QidDTO.class);
-    assertThat(actualQidDTO.getQid()).isEqualTo(DataUtils.TEST_CCS_QID);
+    assertThat(actualQidDTO.getQuestionnaireId()).isEqualTo(DataUtils.TEST_CCS_QID);
     assertThat(actualQidDTO.isActive()).isFalse();
   }
 

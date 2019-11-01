@@ -98,7 +98,7 @@ public final class CaseEndpoint {
     log.debug("Entering findByCaseId");
     UacQidLink ccsUacQidLink = caseService.findUacQidLinkByCaseId(caseId);
     QidDTO qidDTO = new QidDTO();
-    qidDTO.setQid(ccsUacQidLink.getQid());
+    qidDTO.setQuestionnaireId(ccsUacQidLink.getQid());
     qidDTO.setActive(ccsUacQidLink.isActive());
     return qidDTO;
   }
