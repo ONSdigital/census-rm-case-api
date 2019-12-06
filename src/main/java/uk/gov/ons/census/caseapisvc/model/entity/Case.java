@@ -3,7 +3,6 @@ package uk.gov.ons.census.caseapisvc.model.entity;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,23 +11,30 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 
 @Data
 @Entity
 @Table(name = "cases")
 public class Case {
 
-  @Id private int caseRef;
+  @Id private UUID caseId;
 
-  @Column private UUID caseId;
+  // This bad boy allows us to ge;nerate a pseudorandom unique (non-colliding) caseRef
+  @Column(columnDefinition = "serial")
+  @Generated(GenerationTime.INSERT)
+  private int secretSequenceNumber;
 
-  @Column private String caseType;
+  @Column private Integer caseRef;
 
   @Column private String arid;
 
   @Column private String estabArid;
 
   @Column private String uprn;
+
+  @Column private String caseType;
 
   @Column private String addressType;
 
@@ -87,9 +93,7 @@ public class Case {
   @Enumerated(EnumType.STRING)
   private CaseState state;
 
-  @OneToMany(
-      mappedBy = "caze",
-      cascade = {CascadeType.ALL})
+  @OneToMany(mappedBy = "caze")
   List<UacQidLink> uacQidLinks;
 
   @OneToMany(mappedBy = "caze")
@@ -103,6 +107,9 @@ public class Case {
 
   @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
   private boolean addressInvalid;
+
+  @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
+  private boolean undeliveredAsAddressed;
 
   @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
   private boolean ccsCase;

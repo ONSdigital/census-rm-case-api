@@ -32,6 +32,7 @@ import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.EventType;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
+import uk.gov.ons.census.caseapisvc.model.repository.EventRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 import uk.gov.ons.census.caseapisvc.utility.DataUtils;
 
@@ -50,19 +51,22 @@ public class CaseEndpointIT {
   private static final String TEST_INVALID_CASE_ID = "anything";
 
   private static final String TEST_REFERENCE_DOES_NOT_EXIST = "99999999";
-  public static final String TEST_QID = "test_qid";
-  public static final String ADDRESS_TYPE_TEST = "addressTypeTest";
+  private static final String TEST_QID = "test_qid";
+  private static final String ADDRESS_TYPE_TEST = "addressTypeTest";
 
   @LocalServerPort private int port;
 
   @Autowired private CaseRepository caseRepo;
   @Autowired private UacQidLinkRepository uacQidLinkRepository;
+  @Autowired private EventRepository eventRepository;
 
   private EasyRandom easyRandom;
 
   @Before
   public void setUp() {
-    caseRepo.deleteAll();
+    eventRepository.deleteAllInBatch();
+    uacQidLinkRepository.deleteAllInBatch();
+    caseRepo.deleteAllInBatch();
 
     this.easyRandom = new EasyRandom(new EasyRandomParameters().randomizationDepth(1));
   }
@@ -418,7 +422,8 @@ public class CaseEndpointIT {
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
 
-    UacQidLink uacQidLink = easyRandom.nextObject(UacQidLink.class);
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setId(UUID.randomUUID());
     uacQidLink.setActive(true);
 
     Event event = easyRandom.nextObject(Event.class);
@@ -431,9 +436,8 @@ public class CaseEndpointIT {
     uacQidLink.setCaze(caze);
     uacQidLink.setEvents(Collections.singletonList(event));
 
-    caze.setUacQidLinks(Collections.singletonList(uacQidLink));
-
     caseRepo.saveAndFlush(caze);
+    uacQidLinkRepository.save(uacQidLink);
 
     return caseRepo
         .findByCaseId(UUID.fromString(caseId))

@@ -38,6 +38,7 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - QUEUECONFIG_UAC_QID_CREATED_QUEUE=dummy.uac-qid-created
       - JAVA_OPTS=-Xmx128m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5121 -Dspring.profiles.active=dev
+      - CASEREFGENERATORKEY=6+VLkvz5XYkF7vFLVX7FDnfxavQ7M+iY
     healthcheck:
       test: ["CMD", "cat", "/tmp/case-service-healthy"]
       interval: 30s
