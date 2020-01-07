@@ -68,7 +68,7 @@ public class CaseService {
   public UacQidLink findUacQidLinkByCaseId(String caseId) {
     UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
     return uacQidLinkRepository
-        .findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeCcsCaseIsTrue(caseIdUUID)
+        .findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeSurvey(caseIdUUID, "CCS")
         .orElseThrow(() -> new QidNotFoundException(caseIdUUID));
   }
 

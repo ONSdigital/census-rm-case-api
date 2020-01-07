@@ -34,8 +34,6 @@ import uk.gov.ons.census.caseapisvc.service.CaseService;
 public final class CaseEndpoint {
 
   private static final Logger log = LoggerFactory.getLogger(CaseEndpoint.class);
-  private static final String CENSUS_SURVEY_TYPE = "CENSUS";
-  private static final String CCS_SURVEY_TYPE = "CCS";
 
   private final CaseService caseService;
   private final MapperFacade mapperFacade;
@@ -117,7 +115,7 @@ public final class CaseEndpoint {
   private CaseContainerDTO buildCaseContainerDTO(Case caze, boolean includeCaseEvents) {
 
     CaseContainerDTO caseContainerDTO = this.mapperFacade.map(caze, CaseContainerDTO.class);
-    caseContainerDTO.setSurveyType(getSurveyType(caze));
+    caseContainerDTO.setSurveyType(caze.getSurvey());
 
     List<EventDTO> caseEvents = new LinkedList<>();
 
@@ -141,14 +139,5 @@ public final class CaseEndpoint {
     caseContainerDTO.setCaseEvents(caseEvents);
 
     return caseContainerDTO;
-  }
-
-  private String getSurveyType(Case caze) {
-
-    if (caze.isCcsCase()) {
-      return CCS_SURVEY_TYPE;
-    }
-
-    return CENSUS_SURVEY_TYPE;
   }
 }
