@@ -445,11 +445,11 @@ public class CaseEndpointIT {
   }
 
   private Case setupTestCaseWithoutEvents(String caseId) {
-    return setupTestCaseWithoutEvents(caseId, false);
+    return setupTestCaseWithoutEvents(caseId, "CENSUS");
   }
 
   private Case setupTestCcsCaseWithoutEvents(String caseId) {
-    return setupTestCaseWithoutEvents(caseId, true);
+    return setupTestCaseWithoutEvents(caseId, "CCS");
   }
 
   private Case getaCase(String caseId) {
@@ -484,9 +484,9 @@ public class CaseEndpointIT {
     uacQidLinkRepository.saveAndFlush(uacQidLink);
   }
 
-  private Case setupTestCaseWithoutEvents(String caseId, boolean ccsCase) {
+  private Case setupTestCaseWithoutEvents(String caseId, String survey) {
     Case caze = getaCase(caseId);
-    caze.setCcsCase(ccsCase);
+    caze.setSurvey(survey);
 
     caseRepo.saveAndFlush(caze);
 

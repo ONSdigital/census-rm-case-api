@@ -165,7 +165,7 @@ public class CaseEndpointUnitTest {
   @Test
   public void getACaseWithoutEventsByCaseIdForCCSCase() throws Exception {
     Case testCase = createSingleCaseWithEvents();
-    testCase.setCcsCase(true);
+    testCase.setSurvey("CCS");
     when(caseService.findByCaseId(any())).thenReturn(testCase);
 
     mockMvc

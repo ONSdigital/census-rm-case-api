@@ -69,6 +69,7 @@ public class DataUtils {
     caze.setCaseId(caseId);
     caze.setUprn(TEST_UPRN);
     caze.setUacQidLinks(uacQidLinks);
+    caze.setSurvey("CENSUS");
 
     return caze;
   }
@@ -83,6 +84,7 @@ public class DataUtils {
     caze.setCaseRef(caseRef);
     caze.setCaseId(caseId);
     caze.setUacQidLinks(uacQidLinks);
+    caze.setSurvey("CCS");
 
     return caze;
   }
