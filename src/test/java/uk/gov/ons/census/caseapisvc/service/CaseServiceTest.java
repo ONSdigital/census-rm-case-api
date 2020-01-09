@@ -157,7 +157,7 @@ public class CaseServiceTest {
         .thenReturn(Optional.of(ccsUacQidLink));
 
     UacQidLink actualCcsUacQidLink =
-        caseService.findUacQidLinkByCaseId(ccsCase.getCaseId().toString());
+        caseService.findCCSUacQidLinkByCaseId(ccsCase.getCaseId().toString());
     assertThat(actualCcsUacQidLink.getQid()).isEqualTo(TEST_CCS_QID);
     assertThat(actualCcsUacQidLink.isActive()).isEqualTo(true);
   }
@@ -167,6 +167,6 @@ public class CaseServiceTest {
     when(uacQidLinkRepository.findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeSurvey(
             UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST), "CCS"))
         .thenReturn(Optional.empty());
-    caseService.findUacQidLinkByCaseId(TEST_CASE_ID_EXISTS);
+    caseService.findCCSUacQidLinkByCaseId(TEST_CASE_ID_EXISTS);
   }
 }

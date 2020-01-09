@@ -94,7 +94,7 @@ public final class CaseEndpoint {
   @GetMapping(value = "/ccs/{caseId}/qid")
   public QidDTO findCCSQidByCaseId(@PathVariable("caseId") String caseId) {
     log.debug("Entering findByCaseId");
-    UacQidLink ccsUacQidLink = caseService.findUacQidLinkByCaseId(caseId);
+    UacQidLink ccsUacQidLink = caseService.findCCSUacQidLinkByCaseId(caseId);
     QidDTO qidDTO = new QidDTO();
     qidDTO.setQuestionnaireId(ccsUacQidLink.getQid());
     qidDTO.setActive(ccsUacQidLink.isActive());
