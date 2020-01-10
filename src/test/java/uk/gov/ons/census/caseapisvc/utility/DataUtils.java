@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 import org.json.JSONArray;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
@@ -26,6 +27,7 @@ public class DataUtils {
   private static final String TEST_UPRN = "123";
 
   public static final String TEST_CCS_QID = "7120000000000000";
+  public static final String CREATED_UAC = "created UAC";
 
   public static final ObjectMapper mapper;
 
@@ -97,6 +99,19 @@ public class DataUtils {
     ccsUacQidLink.setCcsCase(true);
     ccsUacQidLink.setActive(active);
     return ccsUacQidLink;
+  }
+
+  public static UacQidCreatedPayloadDTO createUacQidCreatedPayload(String qid) {
+    UacQidCreatedPayloadDTO uacQidCreatedPayloadDTO = new UacQidCreatedPayloadDTO();
+    uacQidCreatedPayloadDTO.setQid(qid);
+    uacQidCreatedPayloadDTO.setUac(CREATED_UAC);
+    return uacQidCreatedPayloadDTO;
+  }
+
+  public static UacQidCreatedPayloadDTO createUacQidCreatedPayload(String qid, String caseId) {
+    UacQidCreatedPayloadDTO uacQidCreatedPayloadDTO = createUacQidCreatedPayload(qid);
+    uacQidCreatedPayloadDTO.setCaseId(caseId);
+    return uacQidCreatedPayloadDTO;
   }
 
   public static CaseContainerDTO extractCaseContainerDTOFromResponse(

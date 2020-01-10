@@ -15,18 +15,22 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.EventType;
@@ -35,6 +39,7 @@ import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.EventRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 import uk.gov.ons.census.caseapisvc.utility.DataUtils;
+import uk.gov.ons.census.caseapisvc.utility.RabbitQueueHelper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -54,11 +59,15 @@ public class CaseEndpointIT {
   private static final String TEST_QID = "test_qid";
   private static final String ADDRESS_TYPE_TEST = "addressTypeTest";
 
+  @Value("${queueconfig.uac-qid-created-queue}")
+  private String uacQidCreatedQueueName;
+
   @LocalServerPort private int port;
 
   @Autowired private CaseRepository caseRepo;
   @Autowired private UacQidLinkRepository uacQidLinkRepository;
   @Autowired private EventRepository eventRepository;
+  @Autowired private RabbitQueueHelper rabbitQueueHelper;
 
   private EasyRandom easyRandom;
 
@@ -397,6 +406,50 @@ public class CaseEndpointIT {
     assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
   }
 
+  @Test
+  public void testGetNewUacQidForCase() throws UnirestException, IOException {
+    // Given
+    setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS, "HH_XXXXE");
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    UacQidDTO actualUacQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("01");
+    assertThat(actualUacQidDTO.getUac()).isNotNull();
+  }
+
+  @Test
+  public void testGetNewUacQidForCaseDistributesUacCreatedEvent()
+      throws UnirestException, IOException, InterruptedException {
+    // Given
+    Case caze = setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS, "HH_XXXXE");
+    BlockingQueue<String> uacQidCreatedQueue = rabbitQueueHelper.listen(uacQidCreatedQueueName);
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    String message = rabbitQueueHelper.checkExpectedMessageReceived(uacQidCreatedQueue);
+    UacQidCreatedDTO uacQidCreatedDTO = DataUtils.mapper.readValue(message, UacQidCreatedDTO.class);
+
+    assertThat(uacQidCreatedDTO.getPayload().getUacQidCreated().getCaseId())
+        .isEqualTo(caze.getCaseId().toString());
+    assertThat(uacQidCreatedDTO.getPayload().getUacQidCreated().getQid()).startsWith("01");
+    assertThat(uacQidCreatedDTO.getPayload().getUacQidCreated().getUac()).isNotNull();
+    assertThat(uacQidCreatedDTO.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
+    assertThat(uacQidCreatedDTO.getEvent().getChannel()).isEqualTo("RM");
+    assertThat(uacQidCreatedDTO.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
+  }
+
   private Case createOneTestCaseWithEvent() {
     return setupTestCaseWithEvent(TEST_CASE_ID_1_EXISTS);
   }
@@ -488,10 +541,21 @@ public class CaseEndpointIT {
     Case caze = getaCase(caseId);
     caze.setSurvey(survey);
 
+    return saveAndRetreiveCase(caze);
+  }
+
+  private Case setupTestCaseWithoutEvents(String caseId, String treatmentCode) {
+    Case caze = getaCase(caseId);
+    caze.setTreatmentCode(treatmentCode);
+
+    return saveAndRetreiveCase(caze);
+  }
+
+  private Case saveAndRetreiveCase(Case caze) {
     caseRepo.saveAndFlush(caze);
 
     return caseRepo
-        .findByCaseId(UUID.fromString(TEST_CASE_ID_1_EXISTS))
+        .findByCaseId(UUID.fromString(caze.getCaseId().toString()))
         .orElseThrow(() -> new RuntimeException("Case not found!"));
   }
 

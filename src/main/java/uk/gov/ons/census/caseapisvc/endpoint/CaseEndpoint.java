@@ -1,6 +1,7 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static uk.gov.ons.census.caseapisvc.service.UacQidService.calculateQuestionnaireType;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
@@ -24,10 +25,13 @@ import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
+import uk.gov.ons.census.caseapisvc.service.UacQidService;
 
 @RestController
 @RequestMapping(value = "/cases")
@@ -37,11 +41,14 @@ public final class CaseEndpoint {
 
   private final CaseService caseService;
   private final MapperFacade mapperFacade;
+  private UacQidService uacQidService;
 
   @Autowired
-  public CaseEndpoint(CaseService caseService, MapperFacade mapperFacade) {
+  public CaseEndpoint(
+      CaseService caseService, MapperFacade mapperFacade, UacQidService uacQidService) {
     this.caseService = caseService;
     this.mapperFacade = mapperFacade;
+    this.uacQidService = uacQidService;
   }
 
   @GetMapping(value = "/uprn/{uprn}")
@@ -99,6 +106,19 @@ public final class CaseEndpoint {
     qidDTO.setQuestionnaireId(ccsUacQidLink.getQid());
     qidDTO.setActive(ccsUacQidLink.isActive());
     return qidDTO;
+  }
+
+  @GetMapping(value = "/{caseId}/qid")
+  public UacQidDTO getNewQidByCaseId(@PathVariable("caseId") String caseId) {
+    log.debug("Entering getNewQidByCaseId");
+    Case caze = caseService.findByCaseId(caseId);
+    int questionnaireType = calculateQuestionnaireType(caze.getTreatmentCode());
+    UacQidCreatedPayloadDTO uacQidCreatedPayload =
+        uacQidService.createAndLinkUacQid(caze.getCaseId().toString(), questionnaireType);
+    UacQidDTO uacQidDTO = new UacQidDTO();
+    uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
+    uacQidDTO.setUac(uacQidCreatedPayload.getUac());
+    return uacQidDTO;
   }
 
   @ExceptionHandler({

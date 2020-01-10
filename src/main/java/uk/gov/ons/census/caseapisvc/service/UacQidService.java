@@ -7,25 +7,36 @@ import java.util.UUID;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.model.dto.PayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedEventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 
 @Service
-public class UacQidDistributor {
-  private static final Logger log = LoggerFactory.getLogger(UacQidDistributor.class);
+public class UacQidService {
+  private static final Logger log = LoggerFactory.getLogger(UacQidService.class);
 
   private RabbitTemplate rabbitTemplate;
+  private UacQidServiceClient uacQidServiceClient;
 
   @Value("${queueconfig.uac-qid-created-exchange}")
   private String uacQidCreatedExchange;
 
-  public UacQidDistributor(RabbitTemplate rabbitTemplate) {
+  public UacQidService(RabbitTemplate rabbitTemplate, UacQidServiceClient uacQidServiceClient) {
     this.rabbitTemplate = rabbitTemplate;
+    this.uacQidServiceClient = uacQidServiceClient;
   }
 
-  public void sendUacQidCreatedEvent(UacQidCreatedPayloadDTO uacQidPayload) {
+  public UacQidCreatedPayloadDTO createAndLinkUacQid(String caseId, int questionnaireType) {
+    UacQidCreatedPayloadDTO uacQidCreatedPayload =
+        uacQidServiceClient.generateUacQid(questionnaireType);
+    uacQidCreatedPayload.setCaseId(caseId);
+    sendUacQidCreatedEvent(uacQidCreatedPayload);
+    return uacQidCreatedPayload;
+  }
+
+  private void sendUacQidCreatedEvent(UacQidCreatedPayloadDTO uacQidPayload) {
     UacQidCreatedEventDTO uacQidCreatedEventDTO = buildUacQidCreatedEventDTO();
     UacQidCreatedDTO uacQidCreatedDTO = buildUacQidCreatedDTO(uacQidCreatedEventDTO, uacQidPayload);
     log.with("caseId", uacQidPayload.getCaseId())
@@ -50,5 +61,29 @@ public class UacQidDistributor {
     payloadDTO.setUacQidCreated(uacQidCreatedPayloadDTO);
     uacQidCreatedDTO.setPayload(payloadDTO);
     return uacQidCreatedDTO;
+  }
+
+  public static int calculateQuestionnaireType(String treatmentCode) {
+    String country = treatmentCode.substring(treatmentCode.length() - 1);
+    if (!country.equals("E") && !country.equals("W") && !country.equals("N")) {
+      throw new IllegalArgumentException(
+          String.format("Unknown Country for treatment code %s", treatmentCode));
+    }
+
+    if (treatmentCode.startsWith("HH")) {
+      switch (country) {
+        case "E":
+          return 1;
+        case "W":
+          return 2;
+        case "N":
+          return 4;
+      }
+    } else {
+      throw new IllegalArgumentException(
+          String.format("Unexpected Case Type for treatment code %s", treatmentCode));
+    }
+
+    throw new RuntimeException(String.format("Unprocessable treatment code '%s'", treatmentCode));
   }
 }
