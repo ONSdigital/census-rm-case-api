@@ -25,8 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
@@ -55,6 +57,8 @@ public class CaseEndpointIT {
   private static final String TEST_CASE_ID_DOES_NOT_EXIST = "590179eb-f8ce-4e2d-8cb6-ca4013a2ccf0";
   private static final String TEST_INVALID_CASE_ID = "anything";
 
+  private static final String TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE = "HH_XXXXXE";
+
   private static final String TEST_REFERENCE_DOES_NOT_EXIST = "99999999";
   private static final String TEST_QID = "test_qid";
   private static final String ADDRESS_TYPE_TEST = "addressTypeTest";
@@ -72,10 +76,12 @@ public class CaseEndpointIT {
   private EasyRandom easyRandom;
 
   @Before
+  @Transactional
   public void setUp() {
     eventRepository.deleteAllInBatch();
     uacQidLinkRepository.deleteAllInBatch();
     caseRepo.deleteAllInBatch();
+    rabbitQueueHelper.purgeQueue(uacQidCreatedQueueName);
 
     this.easyRandom = new EasyRandom(new EasyRandomParameters().randomizationDepth(1));
   }
@@ -409,7 +415,7 @@ public class CaseEndpointIT {
   @Test
   public void testGetNewUacQidForCase() throws UnirestException, IOException {
     // Given
-    setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS, "HH_XXXXE");
+    setupTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
 
     // When
     HttpResponse<JsonNode> jsonResponse =
@@ -425,17 +431,19 @@ public class CaseEndpointIT {
   }
 
   @Test
+  @DirtiesContext
   public void testGetNewUacQidForCaseDistributesUacCreatedEvent()
       throws UnirestException, IOException, InterruptedException {
     // Given
-    Case caze = setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS, "HH_XXXXE");
+    Case caze =
+        setupTestCaseWithTreatmentCode(
+            TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
     BlockingQueue<String> uacQidCreatedQueue = rabbitQueueHelper.listen(uacQidCreatedQueueName);
 
     // When
-    HttpResponse<JsonNode> jsonResponse =
-        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
-            .header("accept", "application/json")
-            .asJson();
+    Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+        .header("accept", "application/json")
+        .asJson();
 
     // Then
     String message = rabbitQueueHelper.checkExpectedMessageReceived(uacQidCreatedQueue);
@@ -448,6 +456,35 @@ public class CaseEndpointIT {
     assertThat(uacQidCreatedDTO.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
     assertThat(uacQidCreatedDTO.getEvent().getChannel()).isEqualTo("RM");
     assertThat(uacQidCreatedDTO.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
+  }
+
+  @Test
+  public void testGetNewUacQidForCaseDoesNotReturnTheSameQidUacTwice()
+      throws UnirestException, IOException {
+    // Given
+    setupTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
+
+    // When
+    HttpResponse<JsonNode> firstJsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+    UacQidDTO firstUacQidDTO =
+        DataUtils.mapper.readValue(
+            firstJsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+
+    HttpResponse<JsonNode> secondJsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+    UacQidDTO secondUacQidDTO =
+        DataUtils.mapper.readValue(
+            secondJsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+
+    // Then
+    assertThat(firstUacQidDTO.getQuestionnaireId())
+        .isNotEqualTo(secondUacQidDTO.getQuestionnaireId());
+    assertThat(firstUacQidDTO.getUac()).isNotEqualTo(secondUacQidDTO.getUac());
   }
 
   private Case createOneTestCaseWithEvent() {
@@ -544,7 +581,7 @@ public class CaseEndpointIT {
     return saveAndRetreiveCase(caze);
   }
 
-  private Case setupTestCaseWithoutEvents(String caseId, String treatmentCode) {
+  private Case setupTestCaseWithTreatmentCode(String caseId, String treatmentCode) {
     Case caze = getaCase(caseId);
     caze.setTreatmentCode(treatmentCode);
 
