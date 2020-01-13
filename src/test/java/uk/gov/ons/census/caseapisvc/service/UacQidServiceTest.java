@@ -90,6 +90,30 @@ public class UacQidServiceTest {
     assertThat(questionnaireType).isEqualTo(1);
   }
 
+  @Test
+  public void calculateQuestionnaireTypeForHouseholdWales() {
+    // Given
+    String treatmentCode = "HH_XXXXW";
+
+    // When
+    int questionnaireType = UacQidService.calculateQuestionnaireType(treatmentCode);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(2);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForHouseholdNI() {
+    // Given
+    String treatmentCode = "HH_XXXXN";
+
+    // When
+    int questionnaireType = UacQidService.calculateQuestionnaireType(treatmentCode);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(4);
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void calculateQuestionnaireTypeUnKnownCaseType() {
     // Given
