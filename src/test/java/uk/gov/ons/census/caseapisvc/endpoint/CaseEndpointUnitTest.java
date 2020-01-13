@@ -165,7 +165,7 @@ public class CaseEndpointUnitTest {
   @Test
   public void getACaseWithoutEventsByCaseIdForCCSCase() throws Exception {
     Case testCase = createSingleCaseWithEvents();
-    testCase.setCcsCase(true);
+    testCase.setSurvey("CCS");
     when(caseService.findByCaseId(any())).thenReturn(testCase);
 
     mockMvc
@@ -275,7 +275,7 @@ public class CaseEndpointUnitTest {
   @Test
   public void getCcsQidByCaseId() throws Exception {
     UacQidLink ccsUacQidLink = createCcsUacQidLink(TEST_CCS_QID, true);
-    when(caseService.findUacQidLinkByCaseId(any())).thenReturn(ccsUacQidLink);
+    when(caseService.findCCSUacQidLinkByCaseId(any())).thenReturn(ccsUacQidLink);
 
     mockMvc
         .perform(
@@ -289,7 +289,7 @@ public class CaseEndpointUnitTest {
   @Test
   public void getInactiveCcsQidByCaseId() throws Exception {
     UacQidLink ccsUacQidLink = createCcsUacQidLink(TEST_CCS_QID, false);
-    when(caseService.findUacQidLinkByCaseId(any())).thenReturn(ccsUacQidLink);
+    when(caseService.findCCSUacQidLinkByCaseId(any())).thenReturn(ccsUacQidLink);
 
     mockMvc
         .perform(
@@ -302,7 +302,8 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getCcsQidByCaseIdCcsCaseNotFound() throws Exception {
-    when(caseService.findUacQidLinkByCaseId(any())).thenThrow(new CaseIdNotFoundException("test"));
+    when(caseService.findCCSUacQidLinkByCaseId(any()))
+        .thenThrow(new CaseIdNotFoundException("test"));
 
     mockMvc
         .perform(
@@ -313,7 +314,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getCcsQidByCaseIdCcsQIDNotFound() throws Exception {
-    when(caseService.findUacQidLinkByCaseId(any())).thenThrow(new QidNotFoundException("test"));
+    when(caseService.findCCSUacQidLinkByCaseId(any())).thenThrow(new QidNotFoundException("test"));
 
     mockMvc
         .perform(

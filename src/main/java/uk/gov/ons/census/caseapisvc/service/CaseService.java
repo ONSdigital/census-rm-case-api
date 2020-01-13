@@ -65,10 +65,10 @@ public class CaseService {
     return uacQidLink.getCaze();
   }
 
-  public UacQidLink findUacQidLinkByCaseId(String caseId) {
+  public UacQidLink findCCSUacQidLinkByCaseId(String caseId) {
     UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
     return uacQidLinkRepository
-        .findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeCcsCaseIsTrue(caseIdUUID)
+        .findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeSurvey(caseIdUUID, "CCS")
         .orElseThrow(() -> new QidNotFoundException(caseIdUUID));
   }
 
