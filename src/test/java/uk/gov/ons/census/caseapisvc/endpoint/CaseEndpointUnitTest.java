@@ -302,7 +302,8 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getCcsQidByCaseIdCcsCaseNotFound() throws Exception {
-    when(caseService.findCCSUacQidLinkByCaseId(any())).thenThrow(new CaseIdNotFoundException("test"));
+    when(caseService.findCCSUacQidLinkByCaseId(any()))
+        .thenThrow(new CaseIdNotFoundException("test"));
 
     mockMvc
         .perform(
