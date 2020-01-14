@@ -9,7 +9,7 @@ This case api service provides a range of Restful endpoints that -
 The service relies on, and makes no changes to the casev2 schema maintained by census-rm-case-processor 
 
 # Endpoints
-## Endpoints that return case details:
+## Case details:
 
 * `GET /cases/uprn/<uprn>` (returns a list)
 * `GET /cases/<case_id>`
@@ -22,7 +22,7 @@ All endpoints include an optional `caseevents` boolean query parameter (default 
 
 If this query parameter is omitted these case events **will not** be returned with the case details. 
 
-### Example Case JSON Response
+### Example case JSON response
 ```json
 {
   "abpCode": "RD06",
@@ -55,11 +55,19 @@ If this query parameter is omitted these case events **will not** be returned wi
 }
 ```
 
-## Endpoint that returns a QID:
+## Create, return and link a new UAC QID pair for a case:
 
-* `GET /cases/ccs/<case_id>/qid`
+* `POST /uacqid/create`
 
-### Example QID JSON Response
+### Example request body
+```json
+{
+"caseId": "820c9ebc-ac8c-483c-a9ec-0c2546d15d01",
+"questionnaireType": "01"
+}
+```
+
+### Example JSON response
 ```json
 {
   "caseId": "820c9ebc-ac8c-483c-a9ec-0c2546d15d01",
@@ -68,11 +76,23 @@ If this query parameter is omitted these case events **will not** be returned wi
 }
 ```
 
-## Endpoint that creates and returns a new Uac QID Link:
-
-* `GET /uacqid/create`
+* `GET /cases/<case_id>/qid` 
+    Returns a newly generated QID/UAC pair every time based on the case type and links it to the case by eventual consistency (not synchronously)
 
 ### Example UAC QID Link JSON Response
+```json
+{
+  "qid": "0120000000000200",
+  "uac": "f7hhksdgtk4vj59h"
+}
+```
+
+## CCS QID:
+
+* `GET /cases/ccs/<case_id>/qid` 
+    Returns the single assigned CCS telephone capture QID for a CCS case
+
+### Example CCS QID JSON response
 ```json
 {
   "active": "True",
