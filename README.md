@@ -22,7 +22,7 @@ All endpoints include an optional `caseevents` boolean query parameter (default 
 
 If this query parameter is omitted these case events **will not** be returned with the case details. 
 
-### Example case JSON response
+### Example Case JSON Response
 ```json
 {
   "abpCode": "RD06",
@@ -59,7 +59,7 @@ If this query parameter is omitted these case events **will not** be returned wi
 
 * `POST /uacqid/create`
 
-### Example request body
+### Example Request Rody
 ```json
 {
 "caseId": "820c9ebc-ac8c-483c-a9ec-0c2546d15d01",
@@ -67,7 +67,7 @@ If this query parameter is omitted these case events **will not** be returned wi
 }
 ```
 
-### Example JSON response
+### Example UAC QID JSON Response
 ```json
 {
   "caseId": "820c9ebc-ac8c-483c-a9ec-0c2546d15d01",
@@ -79,7 +79,7 @@ If this query parameter is omitted these case events **will not** be returned wi
 * `GET /cases/<case_id>/qid` 
     Returns a newly generated QID/UAC pair every time based on the case type and links it to the case by eventual consistency (not synchronously)
 
-### Example UAC QID Link JSON Response
+### Example UAC QID JSON Response
 ```json
 {
   "qid": "0120000000000200",
@@ -92,7 +92,7 @@ If this query parameter is omitted these case events **will not** be returned wi
 * `GET /cases/ccs/<case_id>/qid` 
     Returns the single assigned CCS telephone capture QID for a CCS case
 
-### Example CCS QID JSON response
+### Example CCS QID JSON Response
 ```json
 {
   "active": "True",
