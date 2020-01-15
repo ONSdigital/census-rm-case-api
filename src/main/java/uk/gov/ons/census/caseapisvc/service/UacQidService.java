@@ -9,13 +9,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.model.dto.PayloadDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedEventDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
+import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 
 @Service
 public class UacQidService {
+
   private static final Logger log = LoggerFactory.getLogger(UacQidService.class);
+  private final String RM_UAC_CREATED = "RM_UAC_CREATED";
 
   private RabbitTemplate rabbitTemplate;
   private UacQidServiceClient uacQidServiceClient;
@@ -37,49 +39,48 @@ public class UacQidService {
   }
 
   private void sendUacQidCreatedEvent(UacQidCreatedPayloadDTO uacQidPayload) {
-    UacQidCreatedEventDTO uacQidCreatedEventDTO = buildUacQidCreatedEventDTO();
-    UacQidCreatedDTO uacQidCreatedDTO = buildUacQidCreatedDTO(uacQidCreatedEventDTO, uacQidPayload);
+    EventDTO eventDTO = buildUacQidCreatedEventDTO();
+    ResponseManagementEvent responseManagementEvent = buildUacQidCreatedDTO(eventDTO,
+        uacQidPayload);
     log.with("caseId", uacQidPayload.getCaseId())
-        .with("transactionId", uacQidCreatedEventDTO.getTransactionId())
+        .with("transactionId", eventDTO.getTransactionId())
         .debug("Sending UAC QID created event");
-    rabbitTemplate.convertAndSend(uacQidCreatedExchange, "", uacQidCreatedDTO);
+    rabbitTemplate.convertAndSend(uacQidCreatedExchange, "", responseManagementEvent);
   }
 
-  private UacQidCreatedEventDTO buildUacQidCreatedEventDTO() {
-    UacQidCreatedEventDTO uacQidCreatedEventDTO = new UacQidCreatedEventDTO();
-    uacQidCreatedEventDTO.setDateTime(OffsetDateTime.now());
-    uacQidCreatedEventDTO.setTransactionId(UUID.randomUUID().toString());
-    return uacQidCreatedEventDTO;
+  private EventDTO buildUacQidCreatedEventDTO() {
+    EventDTO eventDTO = new EventDTO(RM_UAC_CREATED);
+    eventDTO.setDateTime(OffsetDateTime.now());
+    eventDTO.setTransactionId(UUID.randomUUID().toString());
+    return eventDTO;
   }
 
-  private UacQidCreatedDTO buildUacQidCreatedDTO(
-      UacQidCreatedEventDTO uacQidCreatedEventDTO,
+  private ResponseManagementEvent buildUacQidCreatedDTO(
+      EventDTO eventDTO,
       UacQidCreatedPayloadDTO uacQidCreatedPayloadDTO) {
-    UacQidCreatedDTO uacQidCreatedDTO = new UacQidCreatedDTO();
-    uacQidCreatedDTO.setEvent(uacQidCreatedEventDTO);
+    ResponseManagementEvent responseManagementEvent = new ResponseManagementEvent();
+    responseManagementEvent.setEvent(eventDTO);
     PayloadDTO payloadDTO = new PayloadDTO();
     payloadDTO.setUacQidCreated(uacQidCreatedPayloadDTO);
-    uacQidCreatedDTO.setPayload(payloadDTO);
-    return uacQidCreatedDTO;
+    responseManagementEvent.setPayload(payloadDTO);
+    return responseManagementEvent;
   }
 
   public static int calculateQuestionnaireType(String treatmentCode, String addressLevel) {
+    return calculateQuestionnaireType(treatmentCode, addressLevel, false);
+  }
+
+
+  public static int calculateQuestionnaireType(String treatmentCode, String addressLevel,
+      boolean individual) {
     String country = treatmentCode.substring(treatmentCode.length() - 1);
     if (!country.equals("E") && !country.equals("W") && !country.equals("N")) {
       throw new IllegalArgumentException(
           String.format("Unknown Country for treatment code %s", treatmentCode));
     }
 
-    if (treatmentCode.startsWith("HH")) {
-      switch (country) {
-        case "E":
-          return 1;
-        case "W":
-          return 2;
-        case "N":
-          return 4;
-      }
-    } else if (treatmentCode.startsWith("CE") && addressLevel.equals("U")) {
+    if (isUnitLevelCE(treatmentCode, addressLevel) || isIndividualRequestForHouseholdCaseType(
+        treatmentCode, individual)) {
       switch (country) {
         case "E":
           return 21;
@@ -87,6 +88,15 @@ public class UacQidService {
           return 22;
         case "N":
           return 24;
+      }
+    } else if (isHouseholdCaseType(treatmentCode)) {
+      switch (country) {
+        case "E":
+          return 1;
+        case "W":
+          return 2;
+        case "N":
+          return 4;
       }
     } else {
       throw new IllegalArgumentException(
@@ -99,5 +109,18 @@ public class UacQidService {
         String.format(
             "Unprocessable treatment code: '%s' or address level: '%s'",
             treatmentCode, addressLevel));
+  }
+
+  private static boolean isHouseholdCaseType(String treatmentCode) {
+    return treatmentCode.startsWith("HH");
+  }
+
+  private static boolean isIndividualRequestForHouseholdCaseType(String treatmentCode,
+      boolean individual) {
+    return isHouseholdCaseType(treatmentCode) && individual;
+  }
+
+  private static boolean isUnitLevelCE(String treatmentCode, String addressLevel) {
+    return treatmentCode.startsWith("CE") && addressLevel.equals("U");
   }
 }

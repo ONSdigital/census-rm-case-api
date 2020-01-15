@@ -52,3 +52,5 @@ uacservice:
 queueconfig:
   uac-qid-created-exchange: uac-qid-created-exchange
   uac-qid-created-queue: case.uac-qid-created
+  events-exchange: events
+  fulfilment-event-routing-key: event.fulfilment.request

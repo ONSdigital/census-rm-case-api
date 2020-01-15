@@ -1,19 +1,17 @@
 package uk.gov.ons.census.caseapisvc.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.OffsetDateTime;
 import lombok.Data;
 
 @Data
 public class EventDTO {
+  private final String type;
+  private final String source = "RESPONSE_MANAGEMENT";
+  private final String channel = "RM";
+  private OffsetDateTime dateTime;
+  private String transactionId;
 
-  private String id;
-
-  private String eventType;
-
-  @JsonProperty("description")
-  private String eventDescription;
-
-  @JsonProperty("createdDateTime")
-  private OffsetDateTime eventDate;
+  public EventDTO(String type) {
+    this.type = type;
+  }
 }

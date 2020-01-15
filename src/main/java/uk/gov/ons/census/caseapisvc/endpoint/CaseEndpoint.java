@@ -11,19 +11,21 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.CaseEventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
@@ -109,11 +111,26 @@ public final class CaseEndpoint {
   }
 
   @GetMapping(value = "/{caseId}/qid")
-  public UacQidDTO getNewQidByCaseId(@PathVariable("caseId") String caseId) {
+  public UacQidDTO getNewQidByCaseId(@PathVariable("caseId") String caseId,
+      @RequestParam(value = "individual", required = false, defaultValue = "false")
+          boolean individual,
+      @RequestParam(value = "individualCaseId", required = false) String individualCaseId) {
     log.debug("Entering getNewQidByCaseId");
+    if (individualCaseId != null && individual) {
+      return handleIndividualQidRequest(caseId, individualCaseId);
+
+    } else if (individualCaseId != null) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "IndividualCaseId requires individual flag to be true");
+    }
+    return handleQidRequest(caseId);
+  }
+
+  private UacQidDTO handleQidRequest(String caseId) {
     Case caze = caseService.findByCaseId(caseId);
     int questionnaireType =
         calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel());
+
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(caze.getCaseId().toString(), questionnaireType);
     UacQidDTO uacQidDTO = new UacQidDTO();
@@ -122,12 +139,31 @@ public final class CaseEndpoint {
     return uacQidDTO;
   }
 
+  private UacQidDTO handleIndividualQidRequest(String caseId, String individualCaseId) {
+    if (caseService.caseExistsByCaseId(individualCaseId)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          String.format("IndividualCaseId %s already exists", individualCaseId));
+    }
+    Case caze = caseService.findByCaseId(caseId);
+    int questionnaireType =
+        calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel(), true);
+
+    UacQidCreatedPayloadDTO uacQidCreatedPayload =
+        uacQidService.createAndLinkUacQid(individualCaseId, questionnaireType);
+
+    caseService.buildAndSendHiTelephoneCaptureFulfilmentRequest(caseId, individualCaseId);
+    UacQidDTO uacQidDTO = new UacQidDTO();
+    uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
+    uacQidDTO.setUac(uacQidCreatedPayload.getUac());
+    return uacQidDTO;
+  }
+
   @ExceptionHandler({
-    UPRNNotFoundException.class,
-    CaseIdNotFoundException.class,
-    CaseIdInvalidException.class,
-    CaseReferenceNotFoundException.class,
-    QidNotFoundException.class
+      UPRNNotFoundException.class,
+      CaseIdNotFoundException.class,
+      CaseIdInvalidException.class,
+      CaseReferenceNotFoundException.class,
+      QidNotFoundException.class
   })
   public void handleCaseIdNotFoundAndInvalid(HttpServletResponse response) throws IOException {
     response.sendError(NOT_FOUND.value());
@@ -138,7 +174,7 @@ public final class CaseEndpoint {
     CaseContainerDTO caseContainerDTO = this.mapperFacade.map(caze, CaseContainerDTO.class);
     caseContainerDTO.setSurveyType(caze.getSurvey());
 
-    List<EventDTO> caseEvents = new LinkedList<>();
+    List<CaseEventDTO> caseEvents = new LinkedList<>();
 
     if (includeCaseEvents) {
       List<UacQidLink> uacQidLinks = caze.getUacQidLinks();
@@ -147,12 +183,12 @@ public final class CaseEndpoint {
         List<Event> events = uacQidLink.getEvents();
 
         for (Event event : events) {
-          caseEvents.add(this.mapperFacade.map(event, EventDTO.class));
+          caseEvents.add(this.mapperFacade.map(event, CaseEventDTO.class));
         }
       }
       if (caze.getEvents() != null) {
         for (Event event : caze.getEvents()) {
-          caseEvents.add(this.mapperFacade.map(event, EventDTO.class));
+          caseEvents.add(this.mapperFacade.map(event, CaseEventDTO.class));
         }
       }
     }

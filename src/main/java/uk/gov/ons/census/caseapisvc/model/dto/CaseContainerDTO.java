@@ -62,5 +62,5 @@ public class CaseContainerDTO {
 
   private String state;
 
-  private List<EventDTO> caseEvents;
+  private List<CaseEventDTO> caseEvents;
 }
