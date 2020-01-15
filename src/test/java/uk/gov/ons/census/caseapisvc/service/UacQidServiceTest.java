@@ -26,6 +26,7 @@ public class UacQidServiceTest {
   private String uacQidCreatedExchange;
 
   private String NEW_QID = "newly created QID";
+  private String ADDRESS_LEVEL_UNIT = "U";
   private int TEST_QUESTIONNAIRE_TYPE = 1;
 
   @Mock private UacQidServiceClient uacQidServiceClient;
@@ -80,11 +81,9 @@ public class UacQidServiceTest {
 
   @Test
   public void calculateQuestionnaireTypeForHouseholdEngland() {
-    // Given
-    String treatmentCode = "HH_XXXXE";
-
     // When
-    int questionnaireType = UacQidService.calculateQuestionnaireType(treatmentCode);
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("HH_XXXXE", ADDRESS_LEVEL_UNIT);
 
     // Then
     assertThat(questionnaireType).isEqualTo(1);
@@ -92,11 +91,9 @@ public class UacQidServiceTest {
 
   @Test
   public void calculateQuestionnaireTypeForHouseholdWales() {
-    // Given
-    String treatmentCode = "HH_XXXXW";
-
     // When
-    int questionnaireType = UacQidService.calculateQuestionnaireType(treatmentCode);
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("HH_XXXXW", ADDRESS_LEVEL_UNIT);
 
     // Then
     assertThat(questionnaireType).isEqualTo(2);
@@ -104,31 +101,59 @@ public class UacQidServiceTest {
 
   @Test
   public void calculateQuestionnaireTypeForHouseholdNI() {
-    // Given
-    String treatmentCode = "HH_XXXXN";
-
     // When
-    int questionnaireType = UacQidService.calculateQuestionnaireType(treatmentCode);
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("HH_XXXXN", ADDRESS_LEVEL_UNIT);
 
     // Then
     assertThat(questionnaireType).isEqualTo(4);
   }
 
+  @Test
+  public void calculateQuestionnaireTypeForCeEngland() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXE", ADDRESS_LEVEL_UNIT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(21);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForCeWales() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXW", ADDRESS_LEVEL_UNIT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(22);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForCeNI() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXN", ADDRESS_LEVEL_UNIT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(24);
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void calculateQuestionnaireTypeUnKnownCaseType() {
-    // Given
-    String treatmentCode = "UN_XXXXE";
-
     // When, then throws
-    UacQidService.calculateQuestionnaireType(treatmentCode);
+    UacQidService.calculateQuestionnaireType("UN_XXXXE", ADDRESS_LEVEL_UNIT);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void calculateQuestionnaireTypeUnKnownCountryCode() {
-    // Given
-    String treatmentCode = "HH_XXXXO";
-
     // When, then throws
-    UacQidService.calculateQuestionnaireType(treatmentCode);
+    UacQidService.calculateQuestionnaireType("HH_XXXXO", ADDRESS_LEVEL_UNIT);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void calculateQuestionnaireTypeCeInvalidAddressLevel() {
+    // When, then throws
+    UacQidService.calculateQuestionnaireType("CE_XXXXE", "NOT_VALID_AL");
   }
 }
