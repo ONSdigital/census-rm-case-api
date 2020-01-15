@@ -58,6 +58,7 @@ public class CaseEndpointIT {
   private static final String TEST_INVALID_CASE_ID = "anything";
 
   private static final String TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE = "HH_XXXXXE";
+  private static final String TEST_HOUSEHOLD_CE_TREATMENT_CODE = "CE_XXXXXE";
 
   private static final String TEST_REFERENCE_DOES_NOT_EXIST = "99999999";
   private static final String TEST_QID = "test_qid";
@@ -413,9 +414,10 @@ public class CaseEndpointIT {
   }
 
   @Test
-  public void testGetNewUacQidForCase() throws UnirestException, IOException {
+  public void testGetNewUacQidForEnglishHouseholdCase() throws UnirestException, IOException {
     // Given
-    setupTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
+    setupUnitTestCaseWithTreatmentCode(
+        TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
 
     // When
     HttpResponse<JsonNode> jsonResponse =
@@ -431,12 +433,30 @@ public class CaseEndpointIT {
   }
 
   @Test
+  public void testGetNewUacQidForEnglishCeUnitCase() throws UnirestException, IOException {
+    // Given
+    setupUnitTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_CE_TREATMENT_CODE);
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    UacQidDTO actualUacQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("21");
+    assertThat(actualUacQidDTO.getUac()).isNotNull();
+  }
+
+  @Test
   @DirtiesContext
   public void testGetNewUacQidForCaseDistributesUacCreatedEvent()
       throws UnirestException, IOException, InterruptedException {
     // Given
     Case caze =
-        setupTestCaseWithTreatmentCode(
+        setupUnitTestCaseWithTreatmentCode(
             TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
     BlockingQueue<String> uacQidCreatedQueue = rabbitQueueHelper.listen(uacQidCreatedQueueName);
 
@@ -462,7 +482,8 @@ public class CaseEndpointIT {
   public void testGetNewUacQidForCaseDoesNotReturnTheSameQidUacTwice()
       throws UnirestException, IOException {
     // Given
-    setupTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
+    setupUnitTestCaseWithTreatmentCode(
+        TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
 
     // When
     HttpResponse<JsonNode> firstJsonResponse =
@@ -581,9 +602,10 @@ public class CaseEndpointIT {
     return saveAndRetreiveCase(caze);
   }
 
-  private Case setupTestCaseWithTreatmentCode(String caseId, String treatmentCode) {
+  private Case setupUnitTestCaseWithTreatmentCode(String caseId, String treatmentCode) {
     Case caze = getaCase(caseId);
     caze.setTreatmentCode(treatmentCode);
+    caze.setAddressLevel("U");
 
     return saveAndRetreiveCase(caze);
   }

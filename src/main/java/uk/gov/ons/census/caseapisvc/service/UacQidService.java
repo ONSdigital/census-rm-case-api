@@ -63,7 +63,7 @@ public class UacQidService {
     return uacQidCreatedDTO;
   }
 
-  public static int calculateQuestionnaireType(String treatmentCode) {
+  public static int calculateQuestionnaireType(String treatmentCode, String addressLevel) {
     String country = treatmentCode.substring(treatmentCode.length() - 1);
     if (!country.equals("E") && !country.equals("W") && !country.equals("N")) {
       throw new IllegalArgumentException(
@@ -79,11 +79,25 @@ public class UacQidService {
         case "N":
           return 4;
       }
+    } else if (treatmentCode.startsWith("CE") && addressLevel.equals("U")) {
+      switch (country) {
+        case "E":
+          return 21;
+        case "W":
+          return 22;
+        case "N":
+          return 24;
+      }
     } else {
       throw new IllegalArgumentException(
-          String.format("Unexpected Case Type for treatment code %s", treatmentCode));
+          String.format(
+              "Unexpected Case Type or Address level for treatment code: '%s', address level: '%s'",
+              treatmentCode, addressLevel));
     }
 
-    throw new RuntimeException(String.format("Unprocessable treatment code '%s'", treatmentCode));
+    throw new RuntimeException(
+        String.format(
+            "Unprocessable treatment code: '%s' or address level: '%s'",
+            treatmentCode, addressLevel));
   }
 }

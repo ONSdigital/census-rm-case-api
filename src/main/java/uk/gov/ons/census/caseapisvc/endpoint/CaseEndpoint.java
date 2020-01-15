@@ -112,7 +112,8 @@ public final class CaseEndpoint {
   public UacQidDTO getNewQidByCaseId(@PathVariable("caseId") String caseId) {
     log.debug("Entering getNewQidByCaseId");
     Case caze = caseService.findByCaseId(caseId);
-    int questionnaireType = calculateQuestionnaireType(caze.getTreatmentCode());
+    int questionnaireType =
+        calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel());
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(caze.getCaseId().toString(), questionnaireType);
     UacQidDTO uacQidDTO = new UacQidDTO();

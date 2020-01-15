@@ -27,7 +27,7 @@ services:
       - ./definitions.json:/opt/definitions.json:ro
 
   case-processor:
-    container_name: case-processor-it
+    container_name: case-processor-case-api-it
     image: eu.gcr.io/census-rm-ci/rm/census-rm-case-processor
     external_links:
       - postgres-case-api-it
