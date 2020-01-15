@@ -31,7 +31,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
@@ -58,7 +58,7 @@ public class CaseEndpointIT {
   private static final String TEST_INVALID_CASE_ID = "anything";
 
   private static final String TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE = "HH_XXXXXE";
-  private static final String TEST_HOUSEHOLD_CE_TREATMENT_CODE = "CE_XXXXXE";
+  private static final String TEST_CE_ENGLAND_TREATMENT_CODE = "CE_XXXXXE";
 
   private static final String TEST_REFERENCE_DOES_NOT_EXIST = "99999999";
   private static final String TEST_QID = "test_qid";
@@ -435,7 +435,7 @@ public class CaseEndpointIT {
   @Test
   public void testGetNewUacQidForEnglishCeUnitCase() throws UnirestException, IOException {
     // Given
-    setupUnitTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_CE_TREATMENT_CODE);
+    setupUnitTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_CE_ENGLAND_TREATMENT_CODE);
 
     // When
     HttpResponse<JsonNode> jsonResponse =
@@ -467,15 +467,15 @@ public class CaseEndpointIT {
 
     // Then
     String message = rabbitQueueHelper.checkExpectedMessageReceived(uacQidCreatedQueue);
-    UacQidCreatedDTO uacQidCreatedDTO = DataUtils.mapper.readValue(message, UacQidCreatedDTO.class);
+    ResponseManagementEvent responseManagementEvent = DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
 
-    assertThat(uacQidCreatedDTO.getPayload().getUacQidCreated().getCaseId())
+    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getCaseId())
         .isEqualTo(caze.getCaseId().toString());
-    assertThat(uacQidCreatedDTO.getPayload().getUacQidCreated().getQid()).startsWith("01");
-    assertThat(uacQidCreatedDTO.getPayload().getUacQidCreated().getUac()).isNotNull();
-    assertThat(uacQidCreatedDTO.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
-    assertThat(uacQidCreatedDTO.getEvent().getChannel()).isEqualTo("RM");
-    assertThat(uacQidCreatedDTO.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
+    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getQid()).startsWith("01");
+    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getUac()).isNotNull();
+    assertThat(responseManagementEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
+    assertThat(responseManagementEvent.getEvent().getChannel()).isEqualTo("RM");
+    assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
   }
 
   @Test
@@ -507,6 +507,54 @@ public class CaseEndpointIT {
         .isNotEqualTo(secondUacQidDTO.getQuestionnaireId());
     assertThat(firstUacQidDTO.getUac()).isNotEqualTo(secondUacQidDTO.getUac());
   }
+
+  @Test
+  public void testGetNewIndividualUacQidForEnglishHouseholdCase() throws UnirestException, IOException {
+    // Given
+    setupUnitTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
+    UUID individualCaseId
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    UacQidDTO actualUacQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("21");
+    assertThat(actualUacQidDTO.getUac()).isNotNull();
+  }
+
+  @Test
+  @DirtiesContext
+  public void testGetNewUacQidForCaseDistributesUacCreatedEvent()
+      throws UnirestException, IOException, InterruptedException {
+    // Given
+    Case caze =
+        setupUnitTestCaseWithTreatmentCode(
+            TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
+    BlockingQueue<String> uacQidCreatedQueue = rabbitQueueHelper.listen(uacQidCreatedQueueName);
+
+    // When
+    Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+        .header("accept", "application/json")
+        .asJson();
+
+    // Then
+    String message = rabbitQueueHelper.checkExpectedMessageReceived(uacQidCreatedQueue);
+    ResponseManagementEvent responseManagementEvent = DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
+
+    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getCaseId())
+        .isEqualTo(caze.getCaseId().toString());
+    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getQid()).startsWith("01");
+    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getUac()).isNotNull();
+    assertThat(responseManagementEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
+    assertThat(responseManagementEvent.getEvent().getChannel()).isEqualTo("RM");
+    assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
+  }
+
 
   private Case createOneTestCaseWithEvent() {
     return setupTestCaseWithEvent(TEST_CASE_ID_1_EXISTS);

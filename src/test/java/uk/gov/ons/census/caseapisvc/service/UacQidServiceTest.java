@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 
 public class UacQidServiceTest {
@@ -67,15 +67,15 @@ public class UacQidServiceTest {
     uacQidService.createAndLinkUacQid(caseId, TEST_QUESTIONNAIRE_TYPE);
 
     // Then
-    ArgumentCaptor<UacQidCreatedDTO> uacQidCreatedCaptor =
-        ArgumentCaptor.forClass(UacQidCreatedDTO.class);
+    ArgumentCaptor<ResponseManagementEvent> uacQidCreatedCaptor =
+        ArgumentCaptor.forClass(ResponseManagementEvent.class);
     verify(rabbitTemplate)
         .convertAndSend(eq(uacQidCreatedExchange), eq(""), uacQidCreatedCaptor.capture());
-    UacQidCreatedDTO sentUacQidCreatedDTO = uacQidCreatedCaptor.getValue();
-    assertThat(sentUacQidCreatedDTO.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
-    assertThat(sentUacQidCreatedDTO.getPayload().getUacQidCreated().getCaseId()).isEqualTo(caseId);
-    assertThat(sentUacQidCreatedDTO.getPayload().getUacQidCreated().getQid()).isEqualTo(NEW_QID);
-    assertThat(sentUacQidCreatedDTO.getPayload().getUacQidCreated().getUac())
+    ResponseManagementEvent sentResponseManagementEvent = uacQidCreatedCaptor.getValue();
+    assertThat(sentResponseManagementEvent.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
+    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getCaseId()).isEqualTo(caseId);
+    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getQid()).isEqualTo(NEW_QID);
+    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getUac())
         .isEqualTo(CREATED_UAC);
   }
 
@@ -134,6 +134,36 @@ public class UacQidServiceTest {
     // When
     int questionnaireType =
         UacQidService.calculateQuestionnaireType("CE_XXXXN", ADDRESS_LEVEL_UNIT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(24);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualHHEngland() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("HH_XXXXE", ADDRESS_LEVEL_UNIT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(21);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualHHWales() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("HH_XXXXW", ADDRESS_LEVEL_UNIT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(22);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualHHNI() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("HH_XXXXN", ADDRESS_LEVEL_UNIT, true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(24);

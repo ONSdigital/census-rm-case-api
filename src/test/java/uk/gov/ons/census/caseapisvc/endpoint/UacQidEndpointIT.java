@@ -26,7 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.utility.RabbitQueueHelper;
 
 @RunWith(SpringRunner.class)
@@ -83,15 +83,15 @@ public class UacQidEndpointIT {
 
     // Then
     String message = rabbitQueueHelper.checkExpectedMessageReceived(uacQidCreatedQueue);
-    UacQidCreatedDTO uacQidCreatedDTO = objectMapper.readValue(message, UacQidCreatedDTO.class);
+    ResponseManagementEvent responseManagementEvent = objectMapper.readValue(message, ResponseManagementEvent.class);
 
-    assertThat(uacQidCreatedDTO.getPayload().getUacQidCreated().getCaseId())
+    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getCaseId())
         .isEqualTo(caseId.toString());
-    assertThat(uacQidCreatedDTO.getPayload().getUacQidCreated().getQid()).startsWith("32");
-    assertThat(uacQidCreatedDTO.getPayload().getUacQidCreated().getUac()).isNotNull();
-    assertThat(uacQidCreatedDTO.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
-    assertThat(uacQidCreatedDTO.getEvent().getChannel()).isEqualTo("RM");
-    assertThat(uacQidCreatedDTO.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
+    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getQid()).startsWith("32");
+    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getUac()).isNotNull();
+    assertThat(responseManagementEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
+    assertThat(responseManagementEvent.getEvent().getChannel()).isEqualTo("RM");
+    assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
   }
 
   private String buildCaseDetailsJSON(String questionnaireType, UUID caseId) {

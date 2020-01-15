@@ -6,7 +6,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -20,6 +23,7 @@ import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCases
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createUacQidCreatedPayload;
 
+import java.util.UUID;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.After;
@@ -355,6 +359,63 @@ public class CaseEndpointUnitTest {
     mockMvc
         .perform(get(createUrl("/cases/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void getNewIndividualUacQidByCaseId() throws Exception {
+    Case parentCase = createSingleCaseWithEvents();
+    String individualCaseId = UUID.randomUUID().toString();
+    parentCase.setTreatmentCode("HH_XXXXXE");
+    when(caseService.findByCaseId(eq(parentCase.getCaseId().toString()))).thenReturn(parentCase);
+    when(uacQidService.createAndLinkUacQid(eq(individualCaseId), eq(21)))
+        .thenReturn(createUacQidCreatedPayload(TEST_QID, parentCase.getCaseId().toString()));
+    when(caseService.caseExistsByCaseId(eq(individualCaseId))).thenReturn(false);
+
+    mockMvc
+        .perform(
+            get(String.format("/cases/%s/qid?individual=true&individualCaseId=%s", parentCase.getCaseId().toString(), individualCaseId))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+
+    verify(caseService).buildAndSendHiTelephoneCaptureFulfilmentRequest(eq(parentCase.getCaseId().toString()), eq(individualCaseId));
+  }
+
+  @Test
+  public void getNewIndividualUacQidButIndividualCaseExists() throws Exception {
+    Case parentCase = createSingleCaseWithEvents();
+    String individualCaseId = UUID.randomUUID().toString();
+    parentCase.setTreatmentCode("HH_XXXXXE");
+    when(caseService.findByCaseId(eq(parentCase.getCaseId().toString()))).thenReturn(parentCase);
+    when(caseService.caseExistsByCaseId(eq(individualCaseId))).thenReturn(true);
+
+    mockMvc
+        .perform(
+            get(String.format("/cases/%s/qid?individual=true&individualCaseId=%s", parentCase.getCaseId().toString(), individualCaseId))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(handler().handlerType(CaseEndpoint.class));
+
+    verify(caseService, never()).buildAndSendHiTelephoneCaptureFulfilmentRequest(any(), any());
+    verifyZeroInteractions(uacQidService);
+  }
+
+  @Test
+  public void getNewIndividualUacQidButIndividualParamNotGiven() throws Exception {
+    Case parentCase = createSingleCaseWithEvents();
+    String individualCaseId = UUID.randomUUID().toString();
+
+    mockMvc
+        .perform(
+            get(String.format("/cases/%s/qid?individualCaseId=%s", parentCase.getCaseId().toString(), individualCaseId))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(handler().handlerType(CaseEndpoint.class));
+
+    verifyZeroInteractions(caseService);
+    verifyZeroInteractions(uacQidService);
   }
 
   private String createUrl(String urlFormat, String param1) {
