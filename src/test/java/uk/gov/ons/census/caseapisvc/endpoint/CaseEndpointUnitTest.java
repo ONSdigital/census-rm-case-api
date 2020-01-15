@@ -5,6 +5,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -12,10 +13,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.CREATED_UAC;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createCcsUacQidLink;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createUacQidCreatedPayload;
 
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
@@ -28,6 +31,7 @@ import org.mockito.Spy;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
@@ -35,6 +39,7 @@ import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
+import uk.gov.ons.census.caseapisvc.service.UacQidService;
 
 public class CaseEndpointUnitTest {
 
@@ -53,6 +58,8 @@ public class CaseEndpointUnitTest {
   private MockMvc mockMvc;
 
   @Mock private CaseService caseService;
+  @Mock private UacQidServiceClient uacQidServiceClient;
+  @Mock private UacQidService uacQidService;
 
   @Spy
   private MapperFacade mapperFacade = new DefaultMapperFactory.Builder().build().getMapperFacade();
@@ -320,6 +327,33 @@ public class CaseEndpointUnitTest {
         .perform(
             get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_REFERENCE_ID))
                 .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void getNewUacQidByCaseId() throws Exception {
+    Case caze = createSingleCaseWithEvents();
+    caze.setTreatmentCode("HH_XXXXXE");
+    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
+    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId().toString()), eq(1)))
+        .thenReturn(createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString()));
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/%s/qid", caze.getCaseId().toString()))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+  }
+
+  @Test
+  public void getNewUacQidByCaseIdNotFound() throws Exception {
+    when(caseService.findByCaseId(any())).thenThrow(new CaseIdNotFoundException("a case id"));
+
+    mockMvc
+        .perform(get(createUrl("/cases/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 

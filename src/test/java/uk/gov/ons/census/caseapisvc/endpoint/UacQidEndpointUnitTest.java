@@ -1,13 +1,11 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.UUID;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -16,9 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
-import uk.gov.ons.census.caseapisvc.service.UacQidDistributor;
+import uk.gov.ons.census.caseapisvc.service.UacQidService;
 
 public class UacQidEndpointUnitTest {
 
@@ -26,11 +23,7 @@ public class UacQidEndpointUnitTest {
 
   private MockMvc mockMvc;
 
-  @Mock private UacQidServiceClient uacQidServiceClient;
-
-  @Mock
-  @SuppressWarnings("unused")
-  private UacQidDistributor uacQidDistributor;
+  @Mock private UacQidService uacQidService;
 
   @InjectMocks private UacQidEndpoint uacQidEndpoint;
 
@@ -41,11 +34,6 @@ public class UacQidEndpointUnitTest {
     this.mockMvc = MockMvcBuilders.standaloneSetup(uacQidEndpoint).build();
   }
 
-  @After
-  public void tearDown() {
-    reset(uacQidServiceClient);
-  }
-
   @Test
   public void createUacQidPair() throws Exception {
     UUID caseId = UUID.randomUUID();
@@ -53,7 +41,8 @@ public class UacQidEndpointUnitTest {
     uacQidCreatedPayloadDTO.setQid("0120000000005700");
     uacQidCreatedPayloadDTO.setUac("6ghnj22s5bp8r6rd");
     uacQidCreatedPayloadDTO.setCaseId(caseId.toString());
-    when(uacQidServiceClient.generateUacQid(1)).thenReturn(uacQidCreatedPayloadDTO);
+    when(uacQidService.createAndLinkUacQid(caseId.toString(), 1))
+        .thenReturn(uacQidCreatedPayloadDTO);
 
     mockMvc
         .perform(

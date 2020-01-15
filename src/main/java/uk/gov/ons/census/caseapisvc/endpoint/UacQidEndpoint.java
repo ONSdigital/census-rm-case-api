@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseDetailsDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
-import uk.gov.ons.census.caseapisvc.service.UacQidDistributor;
+import uk.gov.ons.census.caseapisvc.service.UacQidService;
 
 @RestController
 @RequestMapping(value = "/uacqid")
@@ -19,13 +18,10 @@ public class UacQidEndpoint {
 
   private static final Logger log = LoggerFactory.getLogger(UacQidEndpoint.class);
 
-  private final UacQidServiceClient uacQidServiceClient;
-  private final UacQidDistributor uacQidDistributor;
+  private final UacQidService uacQidService;
 
-  public UacQidEndpoint(
-      UacQidServiceClient uacQidServiceClient, UacQidDistributor uacQidDistributor) {
-    this.uacQidServiceClient = uacQidServiceClient;
-    this.uacQidDistributor = uacQidDistributor;
+  public UacQidEndpoint(UacQidService uacQidService) {
+    this.uacQidService = uacQidService;
   }
 
   @PostMapping(path = "/create", consumes = "application/json", produces = "application/json")
@@ -34,9 +30,7 @@ public class UacQidEndpoint {
     int questionnaireType = Integer.parseInt(caseDetails.getQuestionnaireType());
     log.with("caseId", caseDetails.getCaseId()).debug("Generating UAC QID pair for case");
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
-        uacQidServiceClient.generateUacQid(questionnaireType);
-    uacQidCreatedPayload.setCaseId(caseDetails.getCaseId().toString());
-    uacQidDistributor.sendUacQidCreatedEvent(uacQidCreatedPayload);
+        uacQidService.createAndLinkUacQid(caseDetails.getCaseId().toString(), questionnaireType);
     return ResponseEntity.status(HttpStatus.CREATED).body(uacQidCreatedPayload);
   }
 }
