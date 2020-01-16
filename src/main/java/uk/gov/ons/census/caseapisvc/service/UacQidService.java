@@ -49,7 +49,8 @@ public class UacQidService {
   }
 
   private EventDTO buildUacQidCreatedEventDTO() {
-    EventDTO eventDTO = new EventDTO(RM_UAC_CREATED);
+    EventDTO eventDTO = new EventDTO();
+    eventDTO.setType(RM_UAC_CREATED);
     eventDTO.setDateTime(OffsetDateTime.now());
     eventDTO.setTransactionId(UUID.randomUUID().toString());
     return eventDTO;

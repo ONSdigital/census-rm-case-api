@@ -144,6 +144,13 @@
       "durable": true,
       "auto_delete": false,
       "arguments": {}
+    },
+    {
+      "name": "dummy.case.fulfilments",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
     }
   ],
   "exchanges": [
@@ -212,6 +219,14 @@
       "source": "events",
       "vhost": "/",
       "destination": "case.fulfilments",
+      "destination_type": "queue",
+      "routing_key": "event.fulfilment.request",
+      "arguments": {}
+    },
+    {
+      "source": "events",
+      "vhost": "/",
+      "destination": "dummy.case.fulfilments",
       "destination_type": "queue",
       "routing_key": "event.fulfilment.request",
       "arguments": {}

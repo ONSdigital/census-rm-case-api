@@ -2,6 +2,7 @@ package uk.gov.ons.census.caseapisvc.service;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -116,7 +117,10 @@ public class CaseService {
     PayloadDTO payloadDTO = new PayloadDTO();
     payloadDTO.setFulfilmentRequest(fulfilmentRequestDTO);
 
-    EventDTO eventDTO = new EventDTO(FULFILMENT_REQUEST_EVENT_TYPE);
+    EventDTO eventDTO = new EventDTO();
+    eventDTO.setType(FULFILMENT_REQUEST_EVENT_TYPE);
+    eventDTO.setDateTime(OffsetDateTime.now());
+    eventDTO.setTransactionId(UUID.randomUUID().toString());
 
     ResponseManagementEvent responseManagementEvent = new ResponseManagementEvent(eventDTO, payloadDTO);
 
