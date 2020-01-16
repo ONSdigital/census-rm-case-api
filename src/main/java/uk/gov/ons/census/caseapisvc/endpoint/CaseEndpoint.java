@@ -111,7 +111,8 @@ public final class CaseEndpoint {
   }
 
   @GetMapping(value = "/{caseId}/qid")
-  public UacQidDTO getNewQidByCaseId(@PathVariable("caseId") String caseId,
+  public UacQidDTO getNewQidByCaseId(
+      @PathVariable("caseId") String caseId,
       @RequestParam(value = "individual", required = false, defaultValue = "false")
           boolean individual,
       @RequestParam(value = "individualCaseId", required = false) String individualCaseId) {
@@ -120,8 +121,8 @@ public final class CaseEndpoint {
       return handleIndividualQidRequest(caseId, individualCaseId);
 
     } else if (individualCaseId != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          "IndividualCaseId requires individual flag to be true");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "IndividualCaseId requires individual flag to be true");
     }
     return handleQidRequest(caseId);
   }
@@ -141,7 +142,8 @@ public final class CaseEndpoint {
 
   private UacQidDTO handleIndividualQidRequest(String caseId, String individualCaseId) {
     if (caseService.caseExistsByCaseId(individualCaseId)) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
           String.format("IndividualCaseId %s already exists", individualCaseId));
     }
     Case caze = caseService.findByCaseId(caseId);
@@ -159,11 +161,11 @@ public final class CaseEndpoint {
   }
 
   @ExceptionHandler({
-      UPRNNotFoundException.class,
-      CaseIdNotFoundException.class,
-      CaseIdInvalidException.class,
-      CaseReferenceNotFoundException.class,
-      QidNotFoundException.class
+    UPRNNotFoundException.class,
+    CaseIdNotFoundException.class,
+    CaseIdInvalidException.class,
+    CaseReferenceNotFoundException.class,
+    QidNotFoundException.class
   })
   public void handleCaseIdNotFoundAndInvalid(HttpServletResponse response) throws IOException {
     response.sendError(NOT_FOUND.value());

@@ -46,15 +46,11 @@ public class CaseServiceTest {
   private static final String TEST_UPRN = "123";
   public static final String TEST_QID = "test_qid";
 
-  @Mock
-  private CaseRepository caseRepo;
-  @Mock
-  private UacQidLinkRepository uacQidLinkRepository;
-  @Mock
-  private RabbitTemplate rabbitTemplate;
+  @Mock private CaseRepository caseRepo;
+  @Mock private UacQidLinkRepository uacQidLinkRepository;
+  @Mock private RabbitTemplate rabbitTemplate;
 
-  @InjectMocks
-  private CaseService caseService;
+  @InjectMocks private CaseService caseService;
 
   @Value("${queueconfig.events-exchange}")
   private String eventsExchange;
@@ -168,7 +164,7 @@ public class CaseServiceTest {
     Case ccsCase = createSingleCcsCaseWithCcsQid();
     UacQidLink ccsUacQidLink = ccsCase.getUacQidLinks().get(0);
     when(uacQidLinkRepository.findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeSurvey(
-        UUID.fromString(TEST_CASE_ID_EXISTS), "CCS"))
+            UUID.fromString(TEST_CASE_ID_EXISTS), "CCS"))
         .thenReturn(Optional.of(ccsUacQidLink));
 
     UacQidLink actualCcsUacQidLink =
@@ -180,7 +176,7 @@ public class CaseServiceTest {
   @Test(expected = QidNotFoundException.class)
   public void testFindCcsQidByCaseIdNoCcsQidFound() {
     when(uacQidLinkRepository.findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeSurvey(
-        UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST), "CCS"))
+            UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST), "CCS"))
         .thenReturn(Optional.empty());
     caseService.findCCSUacQidLinkByCaseId(TEST_CASE_ID_EXISTS);
   }
@@ -192,14 +188,15 @@ public class CaseServiceTest {
     UUID individualCaseId = UUID.randomUUID();
 
     // When
-    caseService.buildAndSendHiTelephoneCaptureFulfilmentRequest(parentCaseId.toString(),
-        individualCaseId.toString());
+    caseService.buildAndSendHiTelephoneCaptureFulfilmentRequest(
+        parentCaseId.toString(), individualCaseId.toString());
 
     // Then
     ArgumentCaptor<ResponseManagementEvent> eventArgumentCaptor =
         ArgumentCaptor.forClass(ResponseManagementEvent.class);
     verify(rabbitTemplate)
-        .convertAndSend(eq(eventsExchange), eq(fulfilmentEventRoutingKey), eventArgumentCaptor.capture());
+        .convertAndSend(
+            eq(eventsExchange), eq(fulfilmentEventRoutingKey), eventArgumentCaptor.capture());
 
     ResponseManagementEvent responseManagementEvent = eventArgumentCaptor.getValue();
     assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("FULFILMENT_REQUESTED");

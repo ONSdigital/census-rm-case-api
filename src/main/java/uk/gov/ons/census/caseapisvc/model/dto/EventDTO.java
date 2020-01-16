@@ -1,9 +1,7 @@
 package uk.gov.ons.census.caseapisvc.model.dto;
 
 import java.time.OffsetDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 public class EventDTO {

@@ -373,14 +373,18 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(String.format("/cases/%s/qid?individual=true&individualCaseId=%s", parentCase.getCaseId().toString(), individualCaseId))
+            get(String.format(
+                    "/cases/%s/qid?individual=true&individualCaseId=%s",
+                    parentCase.getCaseId().toString(), individualCaseId))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
         .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
 
-    verify(caseService).buildAndSendHiTelephoneCaptureFulfilmentRequest(eq(parentCase.getCaseId().toString()), eq(individualCaseId));
+    verify(caseService)
+        .buildAndSendHiTelephoneCaptureFulfilmentRequest(
+            eq(parentCase.getCaseId().toString()), eq(individualCaseId));
   }
 
   @Test
@@ -393,7 +397,9 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(String.format("/cases/%s/qid?individual=true&individualCaseId=%s", parentCase.getCaseId().toString(), individualCaseId))
+            get(String.format(
+                    "/cases/%s/qid?individual=true&individualCaseId=%s",
+                    parentCase.getCaseId().toString(), individualCaseId))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(handler().handlerType(CaseEndpoint.class));
@@ -409,7 +415,9 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(String.format("/cases/%s/qid?individualCaseId=%s", parentCase.getCaseId().toString(), individualCaseId))
+            get(String.format(
+                    "/cases/%s/qid?individualCaseId=%s",
+                    parentCase.getCaseId().toString(), individualCaseId))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(handler().handlerType(CaseEndpoint.class));

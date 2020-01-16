@@ -83,7 +83,8 @@ public class UacQidEndpointIT {
 
     // Then
     String message = rabbitQueueHelper.checkExpectedMessageReceived(uacQidCreatedQueue);
-    ResponseManagementEvent responseManagementEvent = objectMapper.readValue(message, ResponseManagementEvent.class);
+    ResponseManagementEvent responseManagementEvent =
+        objectMapper.readValue(message, ResponseManagementEvent.class);
 
     assertThat(responseManagementEvent.getPayload().getUacQidCreated().getCaseId())
         .isEqualTo(caseId.toString());

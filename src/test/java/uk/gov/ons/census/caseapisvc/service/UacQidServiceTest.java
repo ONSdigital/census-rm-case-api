@@ -73,8 +73,10 @@ public class UacQidServiceTest {
         .convertAndSend(eq(uacQidCreatedExchange), eq(""), uacQidCreatedCaptor.capture());
     ResponseManagementEvent sentResponseManagementEvent = uacQidCreatedCaptor.getValue();
     assertThat(sentResponseManagementEvent.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
-    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getCaseId()).isEqualTo(caseId);
-    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getQid()).isEqualTo(NEW_QID);
+    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getCaseId())
+        .isEqualTo(caseId);
+    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getQid())
+        .isEqualTo(NEW_QID);
     assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getUac())
         .isEqualTo(CREATED_UAC);
   }

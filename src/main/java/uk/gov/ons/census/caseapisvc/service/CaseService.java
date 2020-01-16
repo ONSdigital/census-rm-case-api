@@ -28,8 +28,8 @@ import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 public class CaseService {
   private static final Logger log = LoggerFactory.getLogger(CaseService.class);
 
-  private final static String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
-  private final static String FULFILMENT_REQUEST_EVENT_TYPE = "FULFILMENT_REQUESTED";
+  private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
+  private static final String FULFILMENT_REQUEST_EVENT_TYPE = "FULFILMENT_REQUESTED";
 
   private final CaseRepository caseRepo;
   private final UacQidLinkRepository uacQidLinkRepository;
@@ -42,7 +42,9 @@ public class CaseService {
   private String fulfilmentEventRoutingKey;
 
   @Autowired
-  public CaseService(CaseRepository caseRepo, UacQidLinkRepository uacQidLinkRepository,
+  public CaseService(
+      CaseRepository caseRepo,
+      UacQidLinkRepository uacQidLinkRepository,
       RabbitTemplate rabbitTemplate) {
     this.caseRepo = caseRepo;
     this.uacQidLinkRepository = uacQidLinkRepository;
@@ -108,7 +110,8 @@ public class CaseService {
     return caseIdUUID;
   }
 
-  public void buildAndSendHiTelephoneCaptureFulfilmentRequest(String parentCaseId, String individualCaseId){
+  public void buildAndSendHiTelephoneCaptureFulfilmentRequest(
+      String parentCaseId, String individualCaseId) {
     FulfilmentRequestDTO fulfilmentRequestDTO = new FulfilmentRequestDTO();
     fulfilmentRequestDTO.setCaseId(parentCaseId);
     fulfilmentRequestDTO.setFulfilmentCode(RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL);
@@ -122,13 +125,15 @@ public class CaseService {
     eventDTO.setDateTime(OffsetDateTime.now());
     eventDTO.setTransactionId(UUID.randomUUID().toString());
 
-    ResponseManagementEvent responseManagementEvent = new ResponseManagementEvent(eventDTO, payloadDTO);
+    ResponseManagementEvent responseManagementEvent =
+        new ResponseManagementEvent(eventDTO, payloadDTO);
 
     log.with("caseId", parentCaseId)
         .with("individualCaseId", individualCaseId)
         .with("transactionId", eventDTO.getTransactionId())
         .debug("Sending UAC QID created event");
 
-    rabbitTemplate.convertAndSend(eventsExchange, fulfilmentEventRoutingKey, responseManagementEvent);
+    rabbitTemplate.convertAndSend(
+        eventsExchange, fulfilmentEventRoutingKey, responseManagementEvent);
   }
 }

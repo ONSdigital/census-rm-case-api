@@ -8,9 +8,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
+import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.PayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
-import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 
 @Service
@@ -40,8 +40,8 @@ public class UacQidService {
 
   private void sendUacQidCreatedEvent(UacQidCreatedPayloadDTO uacQidPayload) {
     EventDTO eventDTO = buildUacQidCreatedEventDTO();
-    ResponseManagementEvent responseManagementEvent = buildUacQidCreatedDTO(eventDTO,
-        uacQidPayload);
+    ResponseManagementEvent responseManagementEvent =
+        buildUacQidCreatedDTO(eventDTO, uacQidPayload);
     log.with("caseId", uacQidPayload.getCaseId())
         .with("transactionId", eventDTO.getTransactionId())
         .debug("Sending UAC QID created event");
@@ -57,8 +57,7 @@ public class UacQidService {
   }
 
   private ResponseManagementEvent buildUacQidCreatedDTO(
-      EventDTO eventDTO,
-      UacQidCreatedPayloadDTO uacQidCreatedPayloadDTO) {
+      EventDTO eventDTO, UacQidCreatedPayloadDTO uacQidCreatedPayloadDTO) {
     ResponseManagementEvent responseManagementEvent = new ResponseManagementEvent();
     responseManagementEvent.setEvent(eventDTO);
     PayloadDTO payloadDTO = new PayloadDTO();
@@ -71,17 +70,16 @@ public class UacQidService {
     return calculateQuestionnaireType(treatmentCode, addressLevel, false);
   }
 
-
-  public static int calculateQuestionnaireType(String treatmentCode, String addressLevel,
-      boolean individual) {
+  public static int calculateQuestionnaireType(
+      String treatmentCode, String addressLevel, boolean individual) {
     String country = treatmentCode.substring(treatmentCode.length() - 1);
     if (!country.equals("E") && !country.equals("W") && !country.equals("N")) {
       throw new IllegalArgumentException(
           String.format("Unknown Country for treatment code %s", treatmentCode));
     }
 
-    if (isUnitLevelCE(treatmentCode, addressLevel) || isIndividualRequestForHouseholdCaseType(
-        treatmentCode, individual)) {
+    if (isUnitLevelCE(treatmentCode, addressLevel)
+        || isIndividualRequestForHouseholdCaseType(treatmentCode, individual)) {
       switch (country) {
         case "E":
           return 21;
@@ -116,8 +114,8 @@ public class UacQidService {
     return treatmentCode.startsWith("HH");
   }
 
-  private static boolean isIndividualRequestForHouseholdCaseType(String treatmentCode,
-      boolean individual) {
+  private static boolean isIndividualRequestForHouseholdCaseType(
+      String treatmentCode, boolean individual) {
     return isHouseholdCaseType(treatmentCode) && individual;
   }
 
