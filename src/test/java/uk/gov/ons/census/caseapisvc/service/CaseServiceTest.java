@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -20,12 +21,15 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UacQidLinkWithNoCaseException;
+import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
@@ -44,8 +48,15 @@ public class CaseServiceTest {
 
   @Mock private CaseRepository caseRepo;
   @Mock private UacQidLinkRepository uacQidLinkRepository;
+  @Mock private RabbitTemplate rabbitTemplate;
 
   @InjectMocks private CaseService caseService;
+
+  @Value("${queueconfig.events-exchange}")
+  private String eventsExchange;
+
+  @Value("${queueconfig.fulfilment-event-routing-key}")
+  private String fulfilmentEventRoutingKey;
 
   @Before
   public void setUp() {
@@ -168,5 +179,32 @@ public class CaseServiceTest {
             UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST), "CCS"))
         .thenReturn(Optional.empty());
     caseService.findCCSUacQidLinkByCaseId(TEST_CASE_ID_EXISTS);
+  }
+
+  @Test
+  public void testBuildAndSendHiTelephoneCaptureFulfilmentRequest() {
+    // Given
+    UUID parentCaseId = UUID.randomUUID();
+    UUID individualCaseId = UUID.randomUUID();
+
+    // When
+    caseService.buildAndSendHiTelephoneCaptureFulfilmentRequest(
+        parentCaseId.toString(), individualCaseId.toString());
+
+    // Then
+    ArgumentCaptor<ResponseManagementEvent> eventArgumentCaptor =
+        ArgumentCaptor.forClass(ResponseManagementEvent.class);
+    verify(rabbitTemplate)
+        .convertAndSend(
+            eq(eventsExchange), eq(fulfilmentEventRoutingKey), eventArgumentCaptor.capture());
+
+    ResponseManagementEvent responseManagementEvent = eventArgumentCaptor.getValue();
+    assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("FULFILMENT_REQUESTED");
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getCaseId())
+        .isEqualTo(parentCaseId.toString());
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getIndividualCaseId())
+        .isEqualTo(individualCaseId.toString());
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
+        .isEqualTo("RM_TC_HI");
   }
 }
