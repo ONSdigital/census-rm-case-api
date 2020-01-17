@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -604,6 +605,26 @@ public class CaseEndpointIT {
     assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("FULFILMENT_REQUESTED");
     assertThat(responseManagementEvent.getEvent().getTransactionId()).isNotNull();
     assertThat(responseManagementEvent.getEvent().getDateTime()).isNotNull();
+  }
+
+  @Test
+  public void testGetNewIndividualUacQidIndividualCaseIdAlreadyExists() throws UnirestException {
+    // Given
+    setupUnitTestCaseWithTreatmentCode(
+        TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
+    UUID individualCaseId = UUID.randomUUID();
+    setupTestCaseWithoutEvents(individualCaseId.toString());
+
+    // When
+    HttpResponse<String> response =
+        Unirest.get(
+                String.format(
+                    "http://localhost:%d/cases/%s/qid?individual=true&individualCaseId=%s",
+                    port, TEST_CASE_ID_1_EXISTS, individualCaseId.toString()))
+            .asString();
+
+    // Then
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 
   private Case createOneTestCaseWithEvent() {
