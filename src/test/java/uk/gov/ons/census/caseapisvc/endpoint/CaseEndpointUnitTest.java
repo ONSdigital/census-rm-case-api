@@ -35,7 +35,6 @@ import org.mockito.Spy;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
@@ -62,7 +61,6 @@ public class CaseEndpointUnitTest {
   private MockMvc mockMvc;
 
   @Mock private CaseService caseService;
-  @Mock private UacQidServiceClient uacQidServiceClient;
   @Mock private UacQidService uacQidService;
 
   @Spy

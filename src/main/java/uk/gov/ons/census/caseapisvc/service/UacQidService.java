@@ -88,7 +88,7 @@ public class UacQidService {
         case "N":
           return 24;
       }
-    } else if (isHouseholdCaseType(treatmentCode)) {
+    } else if (isHouseholdCaseType(treatmentCode) || isSpgCaseType(treatmentCode)) {
       switch (country) {
         case "E":
           return 1;
@@ -108,6 +108,10 @@ public class UacQidService {
         String.format(
             "Unprocessable treatment code: '%s' or address level: '%s'",
             treatmentCode, addressLevel));
+  }
+
+  private static boolean isSpgCaseType(String treatmentCode) {
+    return treatmentCode.startsWith("SPG");
   }
 
   private static boolean isHouseholdCaseType(String treatmentCode) {

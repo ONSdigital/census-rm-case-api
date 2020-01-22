@@ -27,6 +27,7 @@ public class UacQidServiceTest {
 
   private String NEW_QID = "newly created QID";
   private String ADDRESS_LEVEL_UNIT = "U";
+  private String ADDRESS_LEVEL_ESTABLISHMENT = "E";
   private int TEST_QUESTIONNAIRE_TYPE = 1;
 
   @Mock private UacQidServiceClient uacQidServiceClient;
@@ -169,6 +170,66 @@ public class UacQidServiceTest {
 
     // Then
     assertThat(questionnaireType).isEqualTo(24);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForSpgEnglandUnit() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXE", ADDRESS_LEVEL_UNIT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(1);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForSpgWalesUnit() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXW", ADDRESS_LEVEL_UNIT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(2);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForSpgNIUnit() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXN", ADDRESS_LEVEL_UNIT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(4);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForSpgEnglandEstab() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXE", ADDRESS_LEVEL_ESTABLISHMENT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(1);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForSpgWalesEstab() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXW", ADDRESS_LEVEL_ESTABLISHMENT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(2);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForSpgNiEstab() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXN", ADDRESS_LEVEL_ESTABLISHMENT);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(4);
   }
 
   @Test(expected = IllegalArgumentException.class)
