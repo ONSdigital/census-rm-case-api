@@ -38,8 +38,9 @@ import uk.gov.ons.census.caseapisvc.service.UacQidService;
 @RestController
 @RequestMapping(value = "/cases")
 public final class CaseEndpoint {
-
   private static final Logger log = LoggerFactory.getLogger(CaseEndpoint.class);
+  private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
+  private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD = "RM_TC";
 
   private final CaseService caseService;
   private final MapperFacade mapperFacade;
@@ -117,14 +118,18 @@ public final class CaseEndpoint {
           boolean individual,
       @RequestParam(value = "individualCaseId", required = false) String individualCaseId) {
     log.debug("Entering getNewQidByCaseId");
+
+    if (individualCaseId == null && !individual) {
+      return handleQidRequest(caseId);
+    }
+
     if (individualCaseId != null && individual) {
       return handleIndividualQidRequest(caseId, individualCaseId);
-
-    } else if (individualCaseId != null) {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "IndividualCaseId requires individual flag to be true");
     }
-    return handleQidRequest(caseId);
+
+    throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "Unexpected Parameter combination, if IndividualCaseId set, then individual flag must be true");
   }
 
   private UacQidDTO handleQidRequest(String caseId) {
@@ -134,9 +139,13 @@ public final class CaseEndpoint {
 
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(caze.getCaseId().toString(), questionnaireType);
+
+    caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
+        caze.getCaseId().toString(), RM_TELEPHONE_CAPTURE_HOUSEHOLD, null);
     UacQidDTO uacQidDTO = new UacQidDTO();
     uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
     uacQidDTO.setUac(uacQidCreatedPayload.getUac());
+
     return uacQidDTO;
   }
 
@@ -146,6 +155,7 @@ public final class CaseEndpoint {
           HttpStatus.BAD_REQUEST,
           String.format("IndividualCaseId %s already exists", individualCaseId));
     }
+
     Case caze = caseService.findByCaseId(caseId);
     int questionnaireType =
         calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel(), true);
@@ -153,7 +163,8 @@ public final class CaseEndpoint {
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(individualCaseId, questionnaireType);
 
-    caseService.buildAndSendHiTelephoneCaptureFulfilmentRequest(caseId, individualCaseId);
+    caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
+        caseId, RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL, individualCaseId);
     UacQidDTO uacQidDTO = new UacQidDTO();
     uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
     uacQidDTO.setUac(uacQidCreatedPayload.getUac());

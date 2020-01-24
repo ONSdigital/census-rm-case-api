@@ -36,9 +36,8 @@ import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 
 public class CaseServiceTest {
-
   private static final int TEST_CASE_REFERENCE_ID_EXISTS = 123;
-
+  private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
   private static final String TEST_CASE_ID_EXISTS = "2e083ab1-41f7-4dea-a3d9-77f48458b5ca";
   private static final String TEST_CASE_ID_DOES_NOT_EXIST = "590179eb-f8ce-4e2d-8cb6-ca4013a2ccf0";
   private static final String TEST_INVALID_CASE_ID = "anything";
@@ -188,8 +187,10 @@ public class CaseServiceTest {
     UUID individualCaseId = UUID.randomUUID();
 
     // When
-    caseService.buildAndSendHiTelephoneCaptureFulfilmentRequest(
-        parentCaseId.toString(), individualCaseId.toString());
+    caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
+        parentCaseId.toString(),
+        RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL,
+        individualCaseId.toString());
 
     // Then
     ArgumentCaptor<ResponseManagementEvent> eventArgumentCaptor =

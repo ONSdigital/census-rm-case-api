@@ -9,6 +9,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
@@ -27,8 +28,6 @@ import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 @Service
 public class CaseService {
   private static final Logger log = LoggerFactory.getLogger(CaseService.class);
-
-  private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
   private static final String FULFILMENT_REQUEST_EVENT_TYPE = "FULFILMENT_REQUESTED";
 
   private final CaseRepository caseRepo;
@@ -110,28 +109,34 @@ public class CaseService {
     return caseIdUUID;
   }
 
-  public void buildAndSendHiTelephoneCaptureFulfilmentRequest(
-      String parentCaseId, String individualCaseId) {
+  public void buildAndSendTelephoneCaptureFulfilmentRequest(
+      String caseId, String fulfilmentCode, String individualCaseId) {
     FulfilmentRequestDTO fulfilmentRequestDTO = new FulfilmentRequestDTO();
-    fulfilmentRequestDTO.setCaseId(parentCaseId);
-    fulfilmentRequestDTO.setFulfilmentCode(RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL);
-    fulfilmentRequestDTO.setIndividualCaseId(individualCaseId);
-
-    PayloadDTO payloadDTO = new PayloadDTO();
-    payloadDTO.setFulfilmentRequest(fulfilmentRequestDTO);
+    fulfilmentRequestDTO.setCaseId(caseId);
+    fulfilmentRequestDTO.setFulfilmentCode(fulfilmentCode);
 
     EventDTO eventDTO = new EventDTO();
     eventDTO.setType(FULFILMENT_REQUEST_EVENT_TYPE);
     eventDTO.setDateTime(OffsetDateTime.now());
     eventDTO.setTransactionId(UUID.randomUUID().toString());
 
+    if (!StringUtils.isEmpty(individualCaseId)) {
+      fulfilmentRequestDTO.setIndividualCaseId(individualCaseId);
+      log.with("caseId", caseId)
+          .with("individualCaseId", individualCaseId)
+          .with("transactionId", eventDTO.getTransactionId())
+          .debug("Sending UAC QID created event");
+    } else {
+      log.with("caseId", caseId)
+          .with("transactionId", eventDTO.getTransactionId())
+          .debug("Sending UAC QID created event");
+    }
+
+    PayloadDTO payloadDTO = new PayloadDTO();
+    payloadDTO.setFulfilmentRequest(fulfilmentRequestDTO);
+
     ResponseManagementEvent responseManagementEvent =
         new ResponseManagementEvent(eventDTO, payloadDTO);
-
-    log.with("caseId", parentCaseId)
-        .with("individualCaseId", individualCaseId)
-        .with("transactionId", eventDTO.getTransactionId())
-        .debug("Sending UAC QID created event");
 
     rabbitTemplate.convertAndSend(
         eventsExchange, fulfilmentEventRoutingKey, responseManagementEvent);
