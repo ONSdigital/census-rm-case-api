@@ -52,7 +52,7 @@ public class CaseEndpointUnitTest {
 
   private static final String TEST2_CASE_ID = "3e948f6a-00bb-466d-88a7-b0990a827b53";
   private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
-  private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD = "RM_TC";
+  private static final String RM_TELEPHONE_CAPTURE = "RM_TC";
 
   private static final String TEST_UPRN = "123";
   public static final String TEST_QID = "test_qid";
@@ -351,7 +351,7 @@ public class CaseEndpointUnitTest {
     verify(uacQidService).createAndLinkUacQid(eq(caze.getCaseId().toString()), anyInt());
     verify(caseService)
         .buildAndSendTelephoneCaptureFulfilmentRequest(
-            eq(caze.getCaseId().toString()), eq(RM_TELEPHONE_CAPTURE_HOUSEHOLD), isNull());
+            eq(caze.getCaseId().toString()), eq(RM_TELEPHONE_CAPTURE), isNull());
   }
 
   @Test

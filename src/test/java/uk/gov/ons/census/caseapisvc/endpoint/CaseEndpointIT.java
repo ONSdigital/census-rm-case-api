@@ -599,13 +599,11 @@ public class CaseEndpointIT {
         .isEqualTo("RM_TC_HI");
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getCaseId())
         .isEqualTo(parentCase.getCaseId().toString());
-    System.out.println("Comparing individual ids");
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getIndividualCaseId())
         .isEqualTo(individualCaseId.toString());
     assertThat(responseManagementEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
     assertThat(responseManagementEvent.getEvent().getChannel()).isEqualTo("RM");
     assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("FULFILMENT_REQUESTED");
-    System.out.println("Comparing transactions");
     assertThat(responseManagementEvent.getEvent().getTransactionId()).isNotNull();
     assertThat(responseManagementEvent.getEvent().getDateTime()).isNotNull();
   }

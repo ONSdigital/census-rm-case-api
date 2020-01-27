@@ -40,7 +40,7 @@ import uk.gov.ons.census.caseapisvc.service.UacQidService;
 public final class CaseEndpoint {
   private static final Logger log = LoggerFactory.getLogger(CaseEndpoint.class);
   private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
-  private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD = "RM_TC";
+  private static final String RM_TELEPHONE_CAPTURE = "RM_TC";
 
   private final CaseService caseService;
   private final MapperFacade mapperFacade;
@@ -141,7 +141,7 @@ public final class CaseEndpoint {
         uacQidService.createAndLinkUacQid(caze.getCaseId().toString(), questionnaireType);
 
     caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
-        caze.getCaseId().toString(), RM_TELEPHONE_CAPTURE_HOUSEHOLD, null);
+        caze.getCaseId().toString(), RM_TELEPHONE_CAPTURE, null);
     UacQidDTO uacQidDTO = new UacQidDTO();
     uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
     uacQidDTO.setUac(uacQidCreatedPayload.getUac());
