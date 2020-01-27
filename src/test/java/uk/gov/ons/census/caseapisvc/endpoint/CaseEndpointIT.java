@@ -1,8 +1,7 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOFromResponse;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOsFromResponse;
@@ -12,7 +11,6 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -82,13 +80,25 @@ public class CaseEndpointIT {
   @Before
   @Transactional
   public void setUp() {
+    try {
+      clearDown();
+    } catch (Exception e) {
+      // this is expected behaviour, where the event rows are deleted, then the case-processor image
+      // puts a new
+      // event row on and the case table clear down fails.  2nd run should clear it down
+      clearDown();
+    }
+
+    rabbitQueueHelper.purgeQueue(uacQidCreatedQueueName);
+    rabbitQueueHelper.purgeQueue(caseFulfilmentsQueueName);
+
+    this.easyRandom = new EasyRandom(new EasyRandomParameters().randomizationDepth(1));
+  }
+
+  public void clearDown() {
     eventRepository.deleteAllInBatch();
     uacQidLinkRepository.deleteAllInBatch();
     caseRepo.deleteAllInBatch();
-
-    rabbitQueueHelper.purgeQueue(uacQidCreatedQueueName);
-
-    this.easyRandom = new EasyRandom(new EasyRandomParameters().randomizationDepth(1));
   }
 
   @Test
@@ -652,23 +662,22 @@ public class CaseEndpointIT {
     caze.setEvents(null);
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
+    caseRepo.saveAndFlush(caze);
 
     UacQidLink uacQidLink = new UacQidLink();
     uacQidLink.setId(UUID.randomUUID());
     uacQidLink.setActive(true);
+    uacQidLink.setCaze(caze);
+    uacQidLinkRepository.save(uacQidLink);
 
-    Event event = easyRandom.nextObject(Event.class);
+    Event event = new Event();
+    event.setId(UUID.randomUUID());
     event.setCaze(null);
-    event.setEventPayload(null);
     event.setEventType(EventType.CASE_CREATED);
     event.setUacQidLink(uacQidLink);
     event.setEventPayload("{}");
 
-    uacQidLink.setCaze(caze);
-    uacQidLink.setEvents(Collections.singletonList(event));
-
-    caseRepo.saveAndFlush(caze);
-    uacQidLinkRepository.save(uacQidLink);
+    eventRepository.save(event);
 
     return caseRepo
         .findByCaseId(UUID.fromString(caseId))

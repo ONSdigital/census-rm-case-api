@@ -2,7 +2,6 @@ package uk.gov.ons.census.caseapisvc.model.entity;
 
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,9 +20,7 @@ public class UacQidLink {
 
   @ManyToOne private Case caze;
 
-  @OneToMany(
-      mappedBy = "uacQidLink",
-      cascade = {CascadeType.ALL})
+  @OneToMany(mappedBy = "uacQidLink")
   private List<Event> events;
 
   @Column private UUID batchId;
