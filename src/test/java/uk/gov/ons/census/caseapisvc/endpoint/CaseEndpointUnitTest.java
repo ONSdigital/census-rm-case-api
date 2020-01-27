@@ -2,10 +2,7 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -54,6 +51,8 @@ public class CaseEndpointUnitTest {
   private static final String TEST1_CASE_REFERENCE_ID = "123";
 
   private static final String TEST2_CASE_ID = "3e948f6a-00bb-466d-88a7-b0990a827b53";
+  private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
+  private static final String RM_TELEPHONE_CAPTURE = "RM_TC";
 
   private static final String TEST_UPRN = "123";
   public static final String TEST_QID = "test_qid";
@@ -348,6 +347,11 @@ public class CaseEndpointUnitTest {
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
         .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+
+    verify(uacQidService).createAndLinkUacQid(eq(caze.getCaseId().toString()), anyInt());
+    verify(caseService)
+        .buildAndSendTelephoneCaptureFulfilmentRequest(
+            eq(caze.getCaseId().toString()), eq(RM_TELEPHONE_CAPTURE), isNull());
   }
 
   @Test
@@ -381,8 +385,10 @@ public class CaseEndpointUnitTest {
         .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
 
     verify(caseService)
-        .buildAndSendHiTelephoneCaptureFulfilmentRequest(
-            eq(parentCase.getCaseId().toString()), eq(individualCaseId));
+        .buildAndSendTelephoneCaptureFulfilmentRequest(
+            eq(parentCase.getCaseId().toString()),
+            eq(RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL),
+            eq(individualCaseId));
   }
 
   @Test
@@ -402,7 +408,7 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isBadRequest())
         .andExpect(handler().handlerType(CaseEndpoint.class));
 
-    verify(caseService, never()).buildAndSendHiTelephoneCaptureFulfilmentRequest(any(), any());
+    verify(caseService, never()).buildAndSendTelephoneCaptureFulfilmentRequest(any(), any(), any());
     verifyZeroInteractions(uacQidService);
   }
 
