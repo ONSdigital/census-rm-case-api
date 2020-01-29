@@ -31,6 +31,7 @@ public class UacQidEndpoint {
     log.with("caseId", caseDetails.getCaseId()).debug("Generating UAC QID pair for case");
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(caseDetails.getCaseId().toString(), questionnaireType);
+    uacQidService.sendUacQidCreatedEvent(uacQidCreatedPayload);
     return ResponseEntity.status(HttpStatus.CREATED).body(uacQidCreatedPayload);
   }
 }
