@@ -6,14 +6,18 @@ import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOFromResponse;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOsFromResponse;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.stream.Collectors;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.junit.Before;
@@ -62,6 +66,9 @@ public class CaseEndpointIT {
   private static final String TEST_REFERENCE_DOES_NOT_EXIST = "99999999";
   private static final String TEST_QID = "test_qid";
   private static final String ADDRESS_TYPE_TEST = "addressTypeTest";
+
+  private static final String TEST_POSTCODE_NO_SPACE = "AB12BC";
+  private static final String TEST_POSTCODE_WITH_SPACE = "AB1 2BC";
 
   @Value("${queueconfig.uac-qid-created-queue}")
   private String uacQidCreatedQueueName;
@@ -638,6 +645,137 @@ public class CaseEndpointIT {
     assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 
+  @Test
+  public void testFindOneCcsCaseByPostCode() throws IOException, UnirestException {
+
+    // Given
+    Case ccsCase = setupCcsCaseWithPostcode(TEST_POSTCODE_NO_SPACE, TEST_CASE_ID_1_EXISTS);
+
+    // Second case should not match postcode
+    Case otherCase = getaCase(TEST_CASE_ID_2_EXISTS);
+    otherCase.setPostcode("ZY12XW");
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(
+                createUrl(
+                    "http://localhost:%d/cases/ccs/postcode/%s", port, TEST_POSTCODE_NO_SPACE))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    assertThat(jsonResponse.getBody().isArray()).isTrue();
+    List<CaseContainerDTO> foundCases =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getArray().toString(),
+            new TypeReference<List<CaseContainerDTO>>() {});
+
+    assertThat(foundCases).hasSize(1);
+    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
+  }
+
+  @Test
+  public void testFindMultipleCcsCasesByPostCode() throws IOException, UnirestException {
+
+    // Given
+    Case[] matchCases = setupCcsCasesWithPostcode(TEST_POSTCODE_NO_SPACE, 3);
+    Set<String> expectedCaseIds =
+        Arrays.stream(matchCases).map(c -> c.getCaseId().toString()).collect(Collectors.toSet());
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(
+                createUrl(
+                    "http://localhost:%d/cases/ccs/postcode/%s", port, TEST_POSTCODE_NO_SPACE))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    assertThat(jsonResponse.getBody().isArray()).isTrue();
+    List<CaseContainerDTO> foundCases =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getArray().toString(),
+            new TypeReference<List<CaseContainerDTO>>() {});
+
+    assertThat(foundCases).hasSize(3);
+    Set<String> actualCaseIds =
+        foundCases.stream().map(CaseContainerDTO::getCaseId).collect(Collectors.toSet());
+    assertThat(actualCaseIds).isEqualTo(expectedCaseIds);
+  }
+
+  @Test
+  public void testFindCcsCaseByPostCodeIgnoresSpaceInParam() throws IOException, UnirestException {
+
+    // Given
+    Case ccsCase = setupCcsCaseWithPostcode(TEST_POSTCODE_NO_SPACE, TEST_CASE_ID_1_EXISTS);
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(
+                createUrl(
+                    "http://localhost:%d/cases/ccs/postcode/%s", port, TEST_POSTCODE_WITH_SPACE))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    assertThat(jsonResponse.getBody().isArray()).isTrue();
+    List<CaseContainerDTO> foundCases =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getArray().toString(),
+            new TypeReference<List<CaseContainerDTO>>() {});
+
+    assertThat(foundCases).hasSize(1);
+    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
+  }
+
+  @Test
+  public void testFindCcsCaseByPostCodeIgnoresSpaceInData() throws IOException, UnirestException {
+
+    // Given
+    Case ccsCase = setupCcsCaseWithPostcode(TEST_POSTCODE_WITH_SPACE, TEST_CASE_ID_1_EXISTS);
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(
+                createUrl(
+                    "http://localhost:%d/cases/ccs/postcode/%s", port, TEST_POSTCODE_NO_SPACE))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    assertThat(jsonResponse.getBody().isArray()).isTrue();
+    List<CaseContainerDTO> foundCases =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getArray().toString(),
+            new TypeReference<List<CaseContainerDTO>>() {});
+
+    assertThat(foundCases).hasSize(1);
+    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
+  }
+
+  @Test
+  public void testFindCcsCaseByPostCodeIgnoresCharacterCase() throws IOException, UnirestException {
+
+    // Given
+    Case ccsCase = setupCcsCaseWithPostcode("aB12Cd", TEST_CASE_ID_1_EXISTS);
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/ccs/postcode/%s", port, "Ab12cD"))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    assertThat(jsonResponse.getBody().isArray()).isTrue();
+    List<CaseContainerDTO> foundCases =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getArray().toString(),
+            new TypeReference<List<CaseContainerDTO>>() {});
+
+    assertThat(foundCases).hasSize(1);
+    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
+  }
+
   private Case createOneTestCaseWithEvent() {
     return setupTestCaseWithEvent(TEST_CASE_ID_1_EXISTS);
   }
@@ -737,6 +875,22 @@ public class CaseEndpointIT {
     caze.setAddressLevel("U");
 
     return saveAndRetreiveCase(caze);
+  }
+
+  private Case setupCcsCaseWithPostcode(String postcode, String caseId) {
+    Case ccsCase = getaCase(caseId);
+    ccsCase.setSurvey("CCS");
+    ccsCase.setPostcode(postcode);
+    return saveAndRetreiveCase(ccsCase);
+  }
+
+  private Case[] setupCcsCasesWithPostcode(String postcode, int numberOfCases) {
+    Case[] createdCases = new Case[numberOfCases];
+    for (int i = 0; i < numberOfCases; i++) {
+      Case newCase = setupCcsCaseWithPostcode(postcode, UUID.randomUUID().toString());
+      createdCases[i] = newCase;
+    }
+    return createdCases;
   }
 
   private Case saveAndRetreiveCase(Case caze) {

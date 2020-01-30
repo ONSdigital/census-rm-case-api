@@ -85,6 +85,10 @@ public class CaseService {
     return uacQidLink.getCaze();
   }
 
+  public List<Case> findCCSCasesByPostcode(String postcode) {
+    return caseRepo.findCCSCasesByPostcodeIgnoringCaseAndSpaces(postcode);
+  }
+
   public boolean caseExistsByCaseId(String caseId) {
     UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
     return caseRepo.existsCaseByCaseId(caseIdUUID);
