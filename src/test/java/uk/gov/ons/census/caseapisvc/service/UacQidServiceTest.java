@@ -58,14 +58,26 @@ public class UacQidServiceTest {
   }
 
   @Test
-  public void createAndLinkUacQidSendsRmUacCreatedEvent() {
+  public void createAndLinkUacQidReturnsALovelyObjectWhichIAmVeryFondOf() {
     // Given
     String caseId = UUID.randomUUID().toString();
+    UacQidCreatedPayloadDTO expectedResult = createUacQidCreatedPayload(NEW_QID);
     when(uacQidServiceClient.generateUacQid(eq(TEST_QUESTIONNAIRE_TYPE)))
-        .thenReturn(createUacQidCreatedPayload(NEW_QID));
+        .thenReturn(expectedResult);
 
     // When
-    uacQidService.createAndLinkUacQid(caseId, TEST_QUESTIONNAIRE_TYPE);
+    UacQidCreatedPayloadDTO actualResult =
+        uacQidService.createAndLinkUacQid(caseId, TEST_QUESTIONNAIRE_TYPE);
+
+    assertThat(actualResult).isEqualTo(expectedResult);
+  }
+
+  @Test
+  public void sendUacQidCreatedEventSendsRmUacCreatedEvent() {
+    String caseId = UUID.randomUUID().toString();
+    UacQidCreatedPayloadDTO thingToSend = createUacQidCreatedPayload(NEW_QID, caseId);
+
+    uacQidService.sendUacQidCreatedEvent(thingToSend);
 
     // Then
     ArgumentCaptor<ResponseManagementEvent> uacQidCreatedCaptor =

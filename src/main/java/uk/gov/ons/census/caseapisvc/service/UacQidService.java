@@ -34,11 +34,10 @@ public class UacQidService {
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidServiceClient.generateUacQid(questionnaireType);
     uacQidCreatedPayload.setCaseId(caseId);
-    sendUacQidCreatedEvent(uacQidCreatedPayload);
     return uacQidCreatedPayload;
   }
 
-  private void sendUacQidCreatedEvent(UacQidCreatedPayloadDTO uacQidPayload) {
+  public void sendUacQidCreatedEvent(UacQidCreatedPayloadDTO uacQidPayload) {
     EventDTO eventDTO = buildUacQidCreatedEventDTO();
     ResponseManagementEvent responseManagementEvent =
         buildUacQidCreatedDTO(eventDTO, uacQidPayload);

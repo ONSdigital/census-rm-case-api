@@ -472,35 +472,6 @@ public class CaseEndpointIT {
   }
 
   @Test
-  @DirtiesContext
-  public void testGetNewUacQidForCaseDistributesUacCreatedEvent()
-      throws UnirestException, IOException, InterruptedException {
-    // Given
-    Case caze =
-        setupUnitTestCaseWithTreatmentCode(
-            TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
-    BlockingQueue<String> uacQidCreatedQueue = rabbitQueueHelper.listen(uacQidCreatedQueueName);
-
-    // When
-    Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
-        .header("accept", "application/json")
-        .asJson();
-
-    // Then
-    String message = rabbitQueueHelper.checkExpectedMessageReceived(uacQidCreatedQueue);
-    ResponseManagementEvent responseManagementEvent =
-        DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
-
-    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getCaseId())
-        .isEqualTo(caze.getCaseId().toString());
-    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getQid()).startsWith("01");
-    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getUac()).isNotNull();
-    assertThat(responseManagementEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
-    assertThat(responseManagementEvent.getEvent().getChannel()).isEqualTo("RM");
-    assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
-  }
-
-  @Test
   public void testGetNewUacQidForCaseDoesNotReturnTheSameQidUacTwice()
       throws UnirestException, IOException {
     // Given
@@ -556,41 +527,61 @@ public class CaseEndpointIT {
 
   @Test
   @DirtiesContext
-  public void testGetNewIndividualUacQidForCaseDistributesUacCreatedEvent()
+  public void testGetNewUacQidForCaseDistributesFulfilmentEvent()
       throws UnirestException, IOException, InterruptedException {
     // Given
-    setupUnitTestCaseWithTreatmentCode(
-        TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
-    UUID individualCaseId = UUID.randomUUID();
-    BlockingQueue<String> uacQidCreatedQueue = rabbitQueueHelper.listen(uacQidCreatedQueueName);
+    Case caze =
+        setupUnitTestCaseWithTreatmentCode(
+            TEST_CASE_ID_1_EXISTS, TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE);
+    BlockingQueue<String> caseFulfilmentQueue = rabbitQueueHelper.listen(caseFulfilmentsQueueName);
 
     // When
-    Unirest.get(
-            String.format(
-                "http://localhost:%d/cases/%s/qid?individual=true&individualCaseId=%s",
-                port, TEST_CASE_ID_1_EXISTS, individualCaseId.toString()))
-        .header("accept", "application/json")
-        .asJson();
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
 
     // Then
-    String message = rabbitQueueHelper.checkExpectedMessageReceived(uacQidCreatedQueue);
+    UacQidDTO actualUacQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("01");
+    assertThat(actualUacQidDTO.getUac()).isNotNull();
+
+    String message = rabbitQueueHelper.checkExpectedMessageReceived(caseFulfilmentQueue);
     ResponseManagementEvent responseManagementEvent =
         DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
 
-    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getCaseId())
-        .isEqualTo(individualCaseId.toString());
-    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getQid()).startsWith("21");
-    assertThat(responseManagementEvent.getPayload().getUacQidCreated().getUac()).isNotNull();
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
+        .isEqualTo("RM_TC");
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getCaseId())
+        .isEqualTo(caze.getCaseId().toString());
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getIndividualCaseId())
+        .isNull();
+
+    assertThat(
+            responseManagementEvent
+                .getPayload()
+                .getFulfilmentRequest()
+                .getUacQidCreated()
+                .getCaseId())
+        .isEqualTo(caze.getCaseId().toString());
+    assertThat(
+            responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated().getQid())
+        .startsWith("01");
+    assertThat(
+            responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated().getUac())
+        .isNotNull();
+
     assertThat(responseManagementEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
     assertThat(responseManagementEvent.getEvent().getChannel()).isEqualTo("RM");
-    assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
+    assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("FULFILMENT_REQUESTED");
     assertThat(responseManagementEvent.getEvent().getTransactionId()).isNotNull();
     assertThat(responseManagementEvent.getEvent().getDateTime()).isNotNull();
   }
 
   @Test
   @DirtiesContext
-  public void testGetNewIndividualUacQidForCaseDistributesIndividualCaseCreatedEvent()
+  public void testGetNewIndividualUacQidForCaseDistributesFulfilmentEvent()
       throws UnirestException, IOException, InterruptedException {
     // Given
     Case parentCase =
@@ -600,14 +591,20 @@ public class CaseEndpointIT {
     BlockingQueue<String> caseFulfilmentQueue = rabbitQueueHelper.listen(caseFulfilmentsQueueName);
 
     // When
-    Unirest.get(
-            String.format(
-                "http://localhost:%d/cases/%s/qid?individual=true&individualCaseId=%s",
-                port, TEST_CASE_ID_1_EXISTS, individualCaseId.toString()))
-        .header("accept", "application/json")
-        .asJson();
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(
+                String.format(
+                    "http://localhost:%d/cases/%s/qid?individual=true&individualCaseId=%s",
+                    port, TEST_CASE_ID_1_EXISTS, individualCaseId.toString()))
+            .header("accept", "application/json")
+            .asJson();
 
     // Then
+    UacQidDTO actualUacQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("21");
+    assertThat(actualUacQidDTO.getUac()).isNotNull();
+
     String message = rabbitQueueHelper.checkExpectedMessageReceived(caseFulfilmentQueue);
     ResponseManagementEvent responseManagementEvent =
         DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
@@ -618,6 +615,21 @@ public class CaseEndpointIT {
         .isEqualTo(parentCase.getCaseId().toString());
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getIndividualCaseId())
         .isEqualTo(individualCaseId.toString());
+
+    assertThat(
+            responseManagementEvent
+                .getPayload()
+                .getFulfilmentRequest()
+                .getUacQidCreated()
+                .getCaseId())
+        .isEqualTo(individualCaseId.toString());
+    assertThat(
+            responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated().getQid())
+        .startsWith("21");
+    assertThat(
+            responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated().getUac())
+        .isNotNull();
+
     assertThat(responseManagementEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
     assertThat(responseManagementEvent.getEvent().getChannel()).isEqualTo("RM");
     assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("FULFILMENT_REQUESTED");

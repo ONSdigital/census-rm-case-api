@@ -154,7 +154,7 @@ public final class CaseEndpoint {
         uacQidService.createAndLinkUacQid(caze.getCaseId().toString(), questionnaireType);
 
     caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
-        caze.getCaseId().toString(), RM_TELEPHONE_CAPTURE, null);
+        caze.getCaseId().toString(), RM_TELEPHONE_CAPTURE, null, uacQidCreatedPayload);
     UacQidDTO uacQidDTO = new UacQidDTO();
     uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
     uacQidDTO.setUac(uacQidCreatedPayload.getUac());
@@ -177,7 +177,7 @@ public final class CaseEndpoint {
         uacQidService.createAndLinkUacQid(individualCaseId, questionnaireType);
 
     caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
-        caseId, RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL, individualCaseId);
+        caseId, RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL, individualCaseId, uacQidCreatedPayload);
     UacQidDTO uacQidDTO = new UacQidDTO();
     uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
     uacQidDTO.setUac(uacQidCreatedPayload.getUac());

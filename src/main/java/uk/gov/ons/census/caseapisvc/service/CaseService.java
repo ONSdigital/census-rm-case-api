@@ -20,6 +20,7 @@ import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.FulfilmentRequestDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.PayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
@@ -114,10 +115,14 @@ public class CaseService {
   }
 
   public void buildAndSendTelephoneCaptureFulfilmentRequest(
-      String caseId, String fulfilmentCode, String individualCaseId) {
+      String caseId,
+      String fulfilmentCode,
+      String individualCaseId,
+      UacQidCreatedPayloadDTO uacQidCreated) {
     FulfilmentRequestDTO fulfilmentRequestDTO = new FulfilmentRequestDTO();
     fulfilmentRequestDTO.setCaseId(caseId);
     fulfilmentRequestDTO.setFulfilmentCode(fulfilmentCode);
+    fulfilmentRequestDTO.setUacQidCreated(uacQidCreated);
 
     EventDTO eventDTO = new EventDTO();
     eventDTO.setType(FULFILMENT_REQUEST_EVENT_TYPE);
