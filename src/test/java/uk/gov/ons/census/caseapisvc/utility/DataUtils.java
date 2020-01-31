@@ -67,6 +67,7 @@ public class DataUtils {
     uacQidLinks.add(uacQidLink);
 
     Case caze = new Case();
+    caze.setCaseType("HH");
     caze.setCaseRef(caseRef);
     caze.setCaseId(caseId);
     caze.setUprn(TEST_UPRN);

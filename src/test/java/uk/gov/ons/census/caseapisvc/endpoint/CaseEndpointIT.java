@@ -650,6 +650,61 @@ public class CaseEndpointIT {
     assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 
+  @Test
+  @DirtiesContext
+  public void getIndividualUacQidForSPGUnitLevellCase()
+      throws UnirestException, IOException, InterruptedException {
+    // Given
+    Case caze = setUpSPGUnitCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, "SPG_XXXE");
+    BlockingQueue<String> caseFulfilmentQueue = rabbitQueueHelper.listen(caseFulfilmentsQueueName);
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(
+                String.format(
+                    "http://localhost:%d/cases/%s/qid?individual=true",
+                    port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    UacQidDTO actualUacQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("21");
+    assertThat(actualUacQidDTO.getUac()).isNotNull();
+
+    String message = rabbitQueueHelper.checkExpectedMessageReceived(caseFulfilmentQueue);
+    ResponseManagementEvent responseManagementEvent =
+        DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
+
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
+        .isEqualTo("RM_TC");
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getCaseId())
+        .isEqualTo(caze.getCaseId().toString());
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getIndividualCaseId())
+        .isNull();
+
+    assertThat(
+            responseManagementEvent
+                .getPayload()
+                .getFulfilmentRequest()
+                .getUacQidCreated()
+                .getCaseId())
+        .isEqualTo(caze.getCaseId().toString());
+    assertThat(
+            responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated().getQid())
+        .startsWith("21");
+    assertThat(
+            responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated().getUac())
+        .isNotNull();
+
+    assertThat(responseManagementEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
+    assertThat(responseManagementEvent.getEvent().getChannel()).isEqualTo("RM");
+    assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("FULFILMENT_REQUESTED");
+    assertThat(responseManagementEvent.getEvent().getTransactionId()).isNotNull();
+    assertThat(responseManagementEvent.getEvent().getDateTime()).isNotNull();
+  }
+
   private Case createOneTestCaseWithEvent() {
     return setupTestCaseWithEvent(TEST_CASE_ID_1_EXISTS);
   }
@@ -745,8 +800,18 @@ public class CaseEndpointIT {
 
   private Case setupUnitTestCaseWithTreatmentCode(String caseId, String treatmentCode) {
     Case caze = getaCase(caseId);
+    caze.setCaseType("HH");
     caze.setTreatmentCode(treatmentCode);
     caze.setAddressLevel("U");
+
+    return saveAndRetreiveCase(caze);
+  }
+
+  private Case setUpSPGUnitCaseWithTreatmentCode(String caseId, String treatmentCode) {
+    Case caze = getaCase(caseId);
+    caze.setTreatmentCode(treatmentCode);
+    caze.setAddressLevel("U");
+    caze.setCaseType("SPG");
 
     return saveAndRetreiveCase(caze);
   }

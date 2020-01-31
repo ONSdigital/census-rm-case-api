@@ -78,7 +78,8 @@ public class UacQidService {
     }
 
     if (isUnitLevelCE(treatmentCode, addressLevel)
-        || isIndividualRequestForHouseholdCaseType(treatmentCode, individual)) {
+        || isIndividualRequestForHouseholdCaseType(treatmentCode, individual)
+        || isIndividualRequestForSPGUnitCase(treatmentCode, addressLevel, individual)) {
       switch (country) {
         case "E":
           return 21;
@@ -107,6 +108,11 @@ public class UacQidService {
         String.format(
             "Unprocessable treatment code: '%s' or address level: '%s'",
             treatmentCode, addressLevel));
+  }
+
+  private static boolean isIndividualRequestForSPGUnitCase(
+      String treatmentCode, String addressLevel, boolean individual) {
+    return isSpgCaseType(treatmentCode) && addressLevel.equals("U") && individual;
   }
 
   private static boolean isSpgCaseType(String treatmentCode) {

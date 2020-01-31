@@ -244,6 +244,36 @@ public class UacQidServiceTest {
     assertThat(questionnaireType).isEqualTo(4);
   }
 
+  @Test
+  public void calculateQuestionnaireTypeForIndividualSPGEUnit() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXE", ADDRESS_LEVEL_UNIT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(21);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualSPGWUnit() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXW", ADDRESS_LEVEL_UNIT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(22);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualSPGNIUnit() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXN", ADDRESS_LEVEL_UNIT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(24);
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void calculateQuestionnaireTypeUnKnownCaseType() {
     // When, then throws
