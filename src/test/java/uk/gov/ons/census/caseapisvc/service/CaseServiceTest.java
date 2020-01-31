@@ -30,6 +30,7 @@ import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UacQidLinkWithNoCaseException;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
@@ -185,12 +186,14 @@ public class CaseServiceTest {
     // Given
     UUID parentCaseId = UUID.randomUUID();
     UUID individualCaseId = UUID.randomUUID();
+    UacQidCreatedPayloadDTO uacQidCreated = new UacQidCreatedPayloadDTO();
 
     // When
     caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
         parentCaseId.toString(),
         RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL,
-        individualCaseId.toString());
+        individualCaseId.toString(),
+        uacQidCreated);
 
     // Then
     ArgumentCaptor<ResponseManagementEvent> eventArgumentCaptor =
@@ -207,5 +210,7 @@ public class CaseServiceTest {
         .isEqualTo(individualCaseId.toString());
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
         .isEqualTo("RM_TC_HI");
+    assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated())
+        .isEqualTo(uacQidCreated);
   }
 }
