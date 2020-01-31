@@ -16,7 +16,7 @@ public interface CaseRepository extends JpaRepository<Case, UUID> {
   Optional<Case> findByCaseRef(int reference);
 
   @Query(
-      "SELECT c FROM Case c WHERE survey='CCS' AND UPPER(REPLACE(postcode, ' ', '')) LIKE UPPER(REPLACE(:postcode, ' ', ''))")
+      "SELECT c FROM Case c WHERE survey='CCS' AND UPPER(REPLACE(postcode, ' ', '')) = UPPER(REPLACE(:postcode, ' ', ''))")
   List<Case> findCCSCasesByPostcodeIgnoringCaseAndSpaces(@Param("postcode") String postcode);
 
   boolean existsCaseByCaseId(UUID caseId);
