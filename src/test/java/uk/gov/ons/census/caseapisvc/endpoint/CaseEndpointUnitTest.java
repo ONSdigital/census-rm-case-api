@@ -36,6 +36,7 @@ import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
+import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
@@ -335,9 +336,11 @@ public class CaseEndpointUnitTest {
   public void getNewUacQidByCaseId() throws Exception {
     Case caze = createSingleCaseWithEvents();
     caze.setTreatmentCode("HH_XXXXXE");
+    UacQidCreatedPayloadDTO uacQidCreated =
+        createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
     when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
     when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId().toString()), eq(1)))
-        .thenReturn(createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString()));
+        .thenReturn(uacQidCreated);
 
     mockMvc
         .perform(
@@ -351,7 +354,7 @@ public class CaseEndpointUnitTest {
     verify(uacQidService).createAndLinkUacQid(eq(caze.getCaseId().toString()), anyInt());
     verify(caseService)
         .buildAndSendTelephoneCaptureFulfilmentRequest(
-            eq(caze.getCaseId().toString()), eq(RM_TELEPHONE_CAPTURE), isNull());
+            eq(caze.getCaseId().toString()), eq(RM_TELEPHONE_CAPTURE), isNull(), eq(uacQidCreated));
   }
 
   @Test
@@ -368,9 +371,9 @@ public class CaseEndpointUnitTest {
     Case parentCase = createSingleCaseWithEvents();
     String individualCaseId = UUID.randomUUID().toString();
     parentCase.setTreatmentCode("HH_XXXXXE");
+    UacQidCreatedPayloadDTO uacQidCreated = createUacQidCreatedPayload(TEST_QID, individualCaseId);
     when(caseService.findByCaseId(eq(parentCase.getCaseId().toString()))).thenReturn(parentCase);
-    when(uacQidService.createAndLinkUacQid(eq(individualCaseId), eq(21)))
-        .thenReturn(createUacQidCreatedPayload(TEST_QID, parentCase.getCaseId().toString()));
+    when(uacQidService.createAndLinkUacQid(eq(individualCaseId), eq(21))).thenReturn(uacQidCreated);
     when(caseService.caseExistsByCaseId(eq(individualCaseId))).thenReturn(false);
 
     mockMvc
@@ -388,7 +391,8 @@ public class CaseEndpointUnitTest {
         .buildAndSendTelephoneCaptureFulfilmentRequest(
             eq(parentCase.getCaseId().toString()),
             eq(RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL),
-            eq(individualCaseId));
+            eq(individualCaseId),
+            eq(uacQidCreated));
   }
 
   @Test
@@ -408,7 +412,8 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isBadRequest())
         .andExpect(handler().handlerType(CaseEndpoint.class));
 
-    verify(caseService, never()).buildAndSendTelephoneCaptureFulfilmentRequest(any(), any(), any());
+    verify(caseService, never())
+        .buildAndSendTelephoneCaptureFulfilmentRequest(any(), any(), any(), any());
     verifyZeroInteractions(uacQidService);
   }
 
