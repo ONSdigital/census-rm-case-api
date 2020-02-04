@@ -8,6 +8,7 @@ import com.godaddy.logging.LoggerFactory;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,18 @@ public final class CaseEndpoint {
     log.debug("Entering findByReference");
 
     return buildCaseContainerDTO(caseService.findByReference(reference), caseEvents);
+  }
+
+  @GetMapping(value = "/ccs/postcode/{postcode}")
+  public List<CaseContainerDTO> findCCSCasesByPostcode(
+      @PathVariable("postcode") String postcode,
+      @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
+          boolean caseEvents) {
+    log.debug("Entering findByPostcode");
+    List<Case> cases = caseService.findCCSCasesByPostcode(postcode);
+    return cases.stream()
+        .map(c -> buildCaseContainerDTO(c, caseEvents))
+        .collect(Collectors.toList());
   }
 
   @GetMapping(value = "/ccs/{caseId}/qid")

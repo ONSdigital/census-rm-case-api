@@ -20,6 +20,7 @@ import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCases
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createUacQidCreatedPayload;
 
+import java.util.List;
 import java.util.UUID;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
@@ -477,6 +478,24 @@ public class CaseEndpointUnitTest {
         .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
 
     verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
+  }
+
+  @Test
+  public void getCCSCasesByPostcode() throws Exception {
+    Case ccsCase = createSingleCaseWithEvents();
+    ccsCase.setSurvey("CCS");
+    ccsCase.setPostcode("AB12BC");
+    when(caseService.findCCSCasesByPostcode(anyString())).thenReturn(List.of(ccsCase));
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/ccs/postcode/%s", ccsCase.getPostcode()))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].id", is(ccsCase.getCaseId().toString())))
+        .andExpect(jsonPath("$[0].postcode", is(ccsCase.getPostcode())));
   }
 
   private String createUrl(String urlFormat, String param1) {

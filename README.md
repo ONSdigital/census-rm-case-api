@@ -48,7 +48,6 @@ If this query parameter is omitted these case events **will not** be returned wi
   "organisationName": "",
   "postcode": "XX1 0XX",
   "region": "E12000009",
-  "state": "ACTIONABLE",
   "surveyType": "CENSUS",
   "townName": "Windleybury",
   "uprn": "10008677190"
