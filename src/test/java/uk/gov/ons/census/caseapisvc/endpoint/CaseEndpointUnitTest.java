@@ -432,8 +432,52 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isBadRequest())
         .andExpect(handler().handlerType(CaseEndpoint.class));
 
-    verifyZeroInteractions(caseService);
     verifyZeroInteractions(uacQidService);
+  }
+
+  @Test
+  public void getIndividualQidForSPGUnitLevelFails404IfIndividualCaseIdSet() throws Exception {
+    Case caze = createSingleCaseWithEvents();
+    caze.setCaseType("SPG");
+    caze.setAddressLevel("U");
+    String individualCaseId = UUID.randomUUID().toString();
+    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
+    when(caseService.caseExistsByCaseId(eq(individualCaseId))).thenReturn(false);
+
+    mockMvc
+        .perform(
+            get(String.format(
+                    "/cases/%s/qid?individual=true&individualCaseId=%s",
+                    caze.getCaseId().toString(), individualCaseId))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(handler().handlerType(CaseEndpoint.class));
+
+    verify(caseService).findByCaseId(caze.getCaseId().toString());
+  }
+
+  @Test
+  public void getIndividualResponseForSPGUnitCase() throws Exception {
+    Case caze = createSingleCaseWithEvents();
+    caze.setCaseType("SPG");
+    caze.setAddressLevel("U");
+    caze.setTreatmentCode("SPG_XXXXXE");
+    UacQidCreatedPayloadDTO uacQidCreated =
+        createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
+    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
+    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId().toString()), eq(21)))
+        .thenReturn(uacQidCreated);
+
+    mockMvc
+        .perform(
+            get(String.format("/cases/%s/qid?individual=true", caze.getCaseId().toString()))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+
+    verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
   }
 
   @Test

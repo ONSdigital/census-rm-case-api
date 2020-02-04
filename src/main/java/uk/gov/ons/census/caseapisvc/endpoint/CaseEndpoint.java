@@ -132,12 +132,12 @@ public final class CaseEndpoint {
       @RequestParam(value = "individualCaseId", required = false) String individualCaseId) {
     log.debug("Entering getNewQidByCaseId");
 
-    if (individualCaseId == null && !individual) {
-      return handleQidRequest(caseId);
+    if (individual) {
+      return handleIndividualQidRequest(caseId, individualCaseId);
     }
 
-    if (individualCaseId != null && individual) {
-      return handleIndividualQidRequest(caseId, individualCaseId);
+    if (individualCaseId == null) {
+      return handleQidRequest(caseId, false);
     }
 
     throw new ResponseStatusException(
@@ -145,10 +145,12 @@ public final class CaseEndpoint {
         "Unexpected Parameter combination, if IndividualCaseId set, then individual flag must be true");
   }
 
-  private UacQidDTO handleQidRequest(String caseId) {
-    Case caze = caseService.findByCaseId(caseId);
+  private UacQidDTO handleQidRequest(String cazeId, boolean individual) {
+
+    Case caze = caseService.findByCaseId(cazeId);
+
     int questionnaireType =
-        calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel());
+        calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel(), individual);
 
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(caze.getCaseId().toString(), questionnaireType);
@@ -163,13 +165,18 @@ public final class CaseEndpoint {
   }
 
   private UacQidDTO handleIndividualQidRequest(String caseId, String individualCaseId) {
+    Case caze = caseService.findByCaseId(caseId);
+
+    if (caze.getCaseType().equals("SPG") && caze.getAddressLevel().equals("U")) {
+      return handleIndividualQidRequestForSPGUnitLevelCase(caseId, individualCaseId);
+    }
+
     if (caseService.caseExistsByCaseId(individualCaseId)) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST,
           String.format("IndividualCaseId %s already exists", individualCaseId));
     }
 
-    Case caze = caseService.findByCaseId(caseId);
     int questionnaireType =
         calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel(), true);
 
@@ -177,11 +184,28 @@ public final class CaseEndpoint {
         uacQidService.createAndLinkUacQid(individualCaseId, questionnaireType);
 
     caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
-        caseId, RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL, individualCaseId, uacQidCreatedPayload);
+        caze.getCaseId().toString(),
+        RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL,
+        individualCaseId,
+        uacQidCreatedPayload);
     UacQidDTO uacQidDTO = new UacQidDTO();
     uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
     uacQidDTO.setUac(uacQidCreatedPayload.getUac());
+
     return uacQidDTO;
+  }
+
+  private UacQidDTO handleIndividualQidRequestForSPGUnitLevelCase(
+      String caseId, String individualCaseId) {
+    if (individualCaseId != null) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          String.format(
+              "SPG Unit level case %s cannot have a new Individual child case added to it",
+              caseId));
+    }
+
+    return handleQidRequest(caseId, true);
   }
 
   @ExceptionHandler({
