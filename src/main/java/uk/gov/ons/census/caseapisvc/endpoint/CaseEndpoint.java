@@ -167,7 +167,8 @@ public final class CaseEndpoint {
   private UacQidDTO handleIndividualQidRequest(String caseId, String individualCaseId) {
     Case caze = caseService.findByCaseId(caseId);
 
-    if (caze.getCaseType().equals("SPG") && caze.getAddressLevel().equals("U")) {
+    if (caze.getCaseType().equals("SPG") && caze.getAddressLevel().equals("U")
+        || caze.getCaseType().equals("CE") && caze.getAddressLevel().equals("E")) {
       return handleIndividualQidRequestForSPGUnitLevelCase(caseId, individualCaseId);
     }
 
