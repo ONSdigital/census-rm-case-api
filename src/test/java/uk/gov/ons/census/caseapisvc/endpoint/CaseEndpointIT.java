@@ -713,6 +713,27 @@ public class CaseEndpointIT {
   }
 
   @Test
+  public void testGetNewCe1UacQidForEnglishCeEstabCase() throws UnirestException, IOException {
+    // Given
+    Case CeEstabCase = getaCase(TEST_CASE_ID_1_EXISTS);
+    CeEstabCase.setTreatmentCode(TEST_CE_ENGLAND_TREATMENT_CODE);
+    CeEstabCase.setAddressLevel("E");
+    CeEstabCase = saveAndRetreiveCase(CeEstabCase);
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(String.format("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    UacQidDTO actualUacQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("31");
+    assertThat(actualUacQidDTO.getUac()).isNotNull();
+  }
+
+  @Test
   public void testFindOneCcsCaseByPostCode() throws IOException, UnirestException {
 
     // Given
