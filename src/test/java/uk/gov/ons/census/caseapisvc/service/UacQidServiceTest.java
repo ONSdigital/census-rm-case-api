@@ -274,6 +274,36 @@ public class UacQidServiceTest {
     assertThat(questionnaireType).isEqualTo(24);
   }
 
+  @Test
+  public void calculateQuestionnaireTypeForIndividualCEEstabEngland() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXE", ADDRESS_LEVEL_ESTABLISHMENT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(21);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualCEEstabWales() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXW", ADDRESS_LEVEL_ESTABLISHMENT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(22);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualCEEstabNI() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXN", ADDRESS_LEVEL_ESTABLISHMENT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(24);
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void calculateQuestionnaireTypeUnKnownCaseType() {
     // When, then throws
