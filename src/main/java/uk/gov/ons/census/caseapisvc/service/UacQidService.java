@@ -91,10 +91,10 @@ public class UacQidService {
           String.format("Unknown Country for treatment code %s", treatmentCode));
     }
 
-    if (isUnitLevelCE(treatmentCode, addressLevel)
-        || isIndividualRequestForHouseholdCaseType(treatmentCode, individual)
-        || isIndividualRequestForSPGUnitCase(treatmentCode, addressLevel, individual)
-        || isIndividualRequestForCEEstabLevelCaseType(treatmentCode, addressLevel, individual)) {
+    if (individual
+        && (isCeCaseType(treatmentCode)
+            || isHouseholdCaseType(treatmentCode)
+            || isSpgUnitLevelCase(treatmentCode, addressLevel))) {
       switch (country) {
         case COUNTRY_CODE_ENGLAND:
           return 21;
@@ -112,7 +112,7 @@ public class UacQidService {
         case COUNTRY_CODE_NORTHERN_IRELAND:
           return 4;
       }
-    } else if (isCE1RequestForEstabCECase(treatmentCode, addressLevel, individual)) {
+    } else if (isCE1RequestForEstabCeCase(treatmentCode, addressLevel, individual)) {
       switch (country) {
         case COUNTRY_CODE_ENGLAND:
           return 31;
@@ -134,19 +134,13 @@ public class UacQidService {
             treatmentCode, addressLevel, individual));
   }
 
-  private static boolean isCE1RequestForEstabCECase(
+  private static boolean isCE1RequestForEstabCeCase(
       String treatmentCode, String addressLevel, boolean individual) {
     return isCeCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_ESTAB) && !individual;
   }
 
-  private static boolean isIndividualRequestForSPGUnitCase(
-      String treatmentCode, String addressLevel, boolean individual) {
-    return isSpgCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_UNIT) && individual;
-  }
-
-  private static boolean isIndividualRequestForCEEstabLevelCaseType(
-      String treatmentCode, String addressLevel, boolean individual) {
-    return individual && treatmentCode.startsWith("CE") && addressLevel.equals("E");
+  private static boolean isSpgUnitLevelCase(String treatmentCode, String addressLevel) {
+    return isSpgCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_UNIT);
   }
 
   private static boolean isSpgCaseType(String treatmentCode) {
@@ -159,14 +153,5 @@ public class UacQidService {
 
   private static boolean isCeCaseType(String treatmentCode) {
     return treatmentCode.startsWith(CASE_TYPE_CE);
-  }
-
-  private static boolean isIndividualRequestForHouseholdCaseType(
-      String treatmentCode, boolean individual) {
-    return isHouseholdCaseType(treatmentCode) && individual;
-  }
-
-  private static boolean isUnitLevelCE(String treatmentCode, String addressLevel) {
-    return isCeCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_UNIT);
   }
 }
