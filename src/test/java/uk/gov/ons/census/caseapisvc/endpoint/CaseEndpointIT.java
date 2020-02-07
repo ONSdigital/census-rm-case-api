@@ -460,7 +460,10 @@ public class CaseEndpointIT {
 
     // When
     HttpResponse<JsonNode> jsonResponse =
-        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+        Unirest.get(
+                createUrl(
+                    "http://localhost:%d/cases/%s/qid?individual=true",
+                    port, TEST_CASE_ID_1_EXISTS))
             .header("accept", "application/json")
             .asJson();
 

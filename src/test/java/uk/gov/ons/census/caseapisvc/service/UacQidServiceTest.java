@@ -125,30 +125,30 @@ public class UacQidServiceTest {
   }
 
   @Test
-  public void calculateQuestionnaireTypeForCeEngland() {
+  public void calculateIndividualQuestionnaireTypeForCeUnitEngland() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE_XXXXE", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("CE_XXXXE", ADDRESS_LEVEL_UNIT, true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(21);
   }
 
   @Test
-  public void calculateQuestionnaireTypeForCeWales() {
+  public void calculateIndividualQuestionnaireTypeForCeUnitWales() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE_XXXXW", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("CE_XXXXW", ADDRESS_LEVEL_UNIT, true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(22);
   }
 
   @Test
-  public void calculateQuestionnaireTypeForCeNI() {
+  public void calculateIndividualQuestionnaireTypeForCeUnitNI() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE_XXXXN", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("CE_XXXXN", ADDRESS_LEVEL_UNIT, true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(24);
