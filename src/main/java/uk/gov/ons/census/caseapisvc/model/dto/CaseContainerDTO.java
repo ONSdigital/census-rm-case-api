@@ -56,6 +56,8 @@ public class CaseContainerDTO {
 
   private String lsoa;
 
+  private OffsetDateTime lastUpdated;
+
   private String msoa;
 
   private String lad;
