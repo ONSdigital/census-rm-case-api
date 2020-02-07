@@ -460,7 +460,10 @@ public class CaseEndpointIT {
 
     // When
     HttpResponse<JsonNode> jsonResponse =
-        Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+        Unirest.get(
+                createUrl(
+                    "http://localhost:%d/cases/%s/qid?individual=true",
+                    port, TEST_CASE_ID_1_EXISTS))
             .header("accept", "application/json")
             .asJson();
 
@@ -710,6 +713,27 @@ public class CaseEndpointIT {
     assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("FULFILMENT_REQUESTED");
     assertThat(responseManagementEvent.getEvent().getTransactionId()).isNotNull();
     assertThat(responseManagementEvent.getEvent().getDateTime()).isNotNull();
+  }
+
+  @Test
+  public void testGetNewCe1UacQidForEnglishCeEstabCase() throws UnirestException, IOException {
+    // Given
+    Case CeEstabCase = getaCase(TEST_CASE_ID_1_EXISTS);
+    CeEstabCase.setTreatmentCode(TEST_CE_ENGLAND_TREATMENT_CODE);
+    CeEstabCase.setAddressLevel("E");
+    CeEstabCase = saveAndRetreiveCase(CeEstabCase);
+
+    // When
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(String.format("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    // Then
+    UacQidDTO actualUacQidDTO =
+        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("31");
+    assertThat(actualUacQidDTO.getUac()).isNotNull();
   }
 
   @Test
