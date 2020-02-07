@@ -245,7 +245,7 @@ public class UacQidServiceTest {
   }
 
   @Test
-  public void calculateQuestionnaireTypeForIndividualSPGEUnit() {
+  public void calculateQuestionnaireTypeForIndividualSpgEUnit() {
     // When
     int questionnaireType =
         UacQidService.calculateQuestionnaireType("SPG_XXXXE", ADDRESS_LEVEL_UNIT, true);
@@ -255,7 +255,7 @@ public class UacQidServiceTest {
   }
 
   @Test
-  public void calculateQuestionnaireTypeForIndividualSPGWUnit() {
+  public void calculateQuestionnaireTypeForIndividualSpgWUnit() {
     // When
     int questionnaireType =
         UacQidService.calculateQuestionnaireType("SPG_XXXXW", ADDRESS_LEVEL_UNIT, true);
@@ -265,13 +265,73 @@ public class UacQidServiceTest {
   }
 
   @Test
-  public void calculateQuestionnaireTypeForIndividualSPGNIUnit() {
+  public void calculateQuestionnaireTypeForIndividualSpgNiUnit() {
     // When
     int questionnaireType =
         UacQidService.calculateQuestionnaireType("SPG_XXXXN", ADDRESS_LEVEL_UNIT, true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(24);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualCEEstabEngland() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXE", ADDRESS_LEVEL_ESTABLISHMENT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(21);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualCEEstabWales() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXW", ADDRESS_LEVEL_ESTABLISHMENT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(22);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualCEEstabNI() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXN", ADDRESS_LEVEL_ESTABLISHMENT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(24);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForNonIndividualCeEEstab() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXE", ADDRESS_LEVEL_ESTABLISHMENT, false);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(31);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForNonIndividualCeWEstab() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXW", ADDRESS_LEVEL_ESTABLISHMENT, false);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(32);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForNonIndividualCeNiEstab() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("CE_XXXXN", ADDRESS_LEVEL_ESTABLISHMENT, false);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(34);
   }
 
   @Test(expected = IllegalArgumentException.class)

@@ -17,7 +17,19 @@ import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 public class UacQidService {
 
   private static final Logger log = LoggerFactory.getLogger(UacQidService.class);
-  private final String RM_UAC_CREATED = "RM_UAC_CREATED";
+
+  private static final String RM_UAC_CREATED = "RM_UAC_CREATED";
+
+  private static final String ADDRESS_LEVEL_UNIT = "U";
+  private static final String ADDRESS_LEVEL_ESTAB = "E";
+
+  private static final String COUNTRY_CODE_ENGLAND = "E";
+  private static final String COUNTRY_CODE_WALES = "W";
+  private static final String COUNTRY_CODE_NORTHERN_IRELAND = "N";
+
+  private static final String CASE_TYPE_HOUSEHOLD = "HH";
+  private static final String CASE_TYPE_SPG = "SPG";
+  private static final String CASE_TYPE_CE = "CE";
 
   private RabbitTemplate rabbitTemplate;
   private UacQidServiceClient uacQidServiceClient;
@@ -72,55 +84,81 @@ public class UacQidService {
   public static int calculateQuestionnaireType(
       String treatmentCode, String addressLevel, boolean individual) {
     String country = treatmentCode.substring(treatmentCode.length() - 1);
-    if (!country.equals("E") && !country.equals("W") && !country.equals("N")) {
+    if (!country.equals(COUNTRY_CODE_ENGLAND)
+        && !country.equals(COUNTRY_CODE_WALES)
+        && !country.equals(COUNTRY_CODE_NORTHERN_IRELAND)) {
       throw new IllegalArgumentException(
           String.format("Unknown Country for treatment code %s", treatmentCode));
     }
 
     if (isUnitLevelCE(treatmentCode, addressLevel)
         || isIndividualRequestForHouseholdCaseType(treatmentCode, individual)
-        || isIndividualRequestForSPGUnitCase(treatmentCode, addressLevel, individual)) {
+        || isIndividualRequestForSPGUnitCase(treatmentCode, addressLevel, individual)
+        || isIndividualRequestForCEEstabLevelCaseType(treatmentCode, addressLevel, individual)) {
       switch (country) {
-        case "E":
+        case COUNTRY_CODE_ENGLAND:
           return 21;
-        case "W":
+        case COUNTRY_CODE_WALES:
           return 22;
-        case "N":
+        case COUNTRY_CODE_NORTHERN_IRELAND:
           return 24;
       }
     } else if (isHouseholdCaseType(treatmentCode) || isSpgCaseType(treatmentCode)) {
       switch (country) {
-        case "E":
+        case COUNTRY_CODE_ENGLAND:
           return 1;
-        case "W":
+        case COUNTRY_CODE_WALES:
           return 2;
-        case "N":
+        case COUNTRY_CODE_NORTHERN_IRELAND:
           return 4;
+      }
+    } else if (isCE1RequestForEstabCECase(treatmentCode, addressLevel, individual)) {
+      switch (country) {
+        case COUNTRY_CODE_ENGLAND:
+          return 31;
+        case COUNTRY_CODE_WALES:
+          return 32;
+        case COUNTRY_CODE_NORTHERN_IRELAND:
+          return 34;
       }
     } else {
       throw new IllegalArgumentException(
           String.format(
-              "Unexpected Case Type or Address level for treatment code: '%s', address level: '%s'",
-              treatmentCode, addressLevel));
+              "Unexpected combination of Case Type, Address level and individual request. treatment code: '%s', address level: '%s', individual request: '%s'",
+              treatmentCode, addressLevel, individual));
     }
 
     throw new RuntimeException(
         String.format(
-            "Unprocessable treatment code: '%s' or address level: '%s'",
-            treatmentCode, addressLevel));
+            "Unprocessable combination of Case Type, Address level and individual request. treatment code: '%s', address level: '%s', individual request: '%s'",
+            treatmentCode, addressLevel, individual));
+  }
+
+  private static boolean isCE1RequestForEstabCECase(
+      String treatmentCode, String addressLevel, boolean individual) {
+    return isCeCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_ESTAB) && !individual;
   }
 
   private static boolean isIndividualRequestForSPGUnitCase(
       String treatmentCode, String addressLevel, boolean individual) {
-    return isSpgCaseType(treatmentCode) && addressLevel.equals("U") && individual;
+    return isSpgCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_UNIT) && individual;
+  }
+
+  private static boolean isIndividualRequestForCEEstabLevelCaseType(
+      String treatmentCode, String addressLevel, boolean individual) {
+    return individual && treatmentCode.startsWith("CE") && addressLevel.equals("E");
   }
 
   private static boolean isSpgCaseType(String treatmentCode) {
-    return treatmentCode.startsWith("SPG");
+    return treatmentCode.startsWith(CASE_TYPE_SPG);
   }
 
   private static boolean isHouseholdCaseType(String treatmentCode) {
-    return treatmentCode.startsWith("HH");
+    return treatmentCode.startsWith(CASE_TYPE_HOUSEHOLD);
+  }
+
+  private static boolean isCeCaseType(String treatmentCode) {
+    return treatmentCode.startsWith(CASE_TYPE_CE);
   }
 
   private static boolean isIndividualRequestForHouseholdCaseType(
@@ -129,6 +167,6 @@ public class UacQidService {
   }
 
   private static boolean isUnitLevelCE(String treatmentCode, String addressLevel) {
-    return treatmentCode.startsWith("CE") && addressLevel.equals("U");
+    return isCeCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_UNIT);
   }
 }

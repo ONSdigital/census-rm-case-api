@@ -481,6 +481,30 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
+  public void getInvidualResponseForCEEstabCase() throws Exception {
+    Case caze = createSingleCaseWithEvents();
+    caze.setCaseType("CE");
+    caze.setAddressLevel("E");
+    caze.setTreatmentCode("CE_XXXXXE");
+    UacQidCreatedPayloadDTO uacQidCreated =
+        createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
+    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
+    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId().toString()), eq(21)))
+        .thenReturn(uacQidCreated);
+
+    mockMvc
+        .perform(
+            get(String.format("/cases/%s/qid?individual=true", caze.getCaseId().toString()))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+
+    verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
+  }
+
+  @Test
   public void getCCSCasesByPostcode() throws Exception {
     Case ccsCase = createSingleCaseWithEvents();
     ccsCase.setSurvey("CCS");
