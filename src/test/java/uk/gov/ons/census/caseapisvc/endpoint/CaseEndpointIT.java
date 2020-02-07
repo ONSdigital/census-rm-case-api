@@ -456,7 +456,7 @@ public class CaseEndpointIT {
   @Test
   public void testGetNewUacQidForEnglishCeUnitCase() throws UnirestException, IOException {
     // Given
-    setupUnitTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_CE_ENGLAND_TREATMENT_CODE);
+    setupCEUnitTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_CE_ENGLAND_TREATMENT_CODE);
 
     // When
     HttpResponse<JsonNode> jsonResponse =
@@ -963,6 +963,15 @@ public class CaseEndpointIT {
   private Case setupUnitTestCaseWithTreatmentCode(String caseId, String treatmentCode) {
     Case caze = getaCase(caseId);
     caze.setCaseType("HH");
+    caze.setTreatmentCode(treatmentCode);
+    caze.setAddressLevel("U");
+
+    return saveAndRetreiveCase(caze);
+  }
+
+  private Case setupCEUnitTestCaseWithTreatmentCode(String caseId, String treatmentCode) {
+    Case caze = getaCase(caseId);
+    caze.setCaseType("CE");
     caze.setTreatmentCode(treatmentCode);
     caze.setAddressLevel("U");
 
