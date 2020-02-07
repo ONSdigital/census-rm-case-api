@@ -35,6 +35,7 @@ import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 import uk.gov.ons.census.caseapisvc.service.UacQidService;
+import uk.gov.ons.census.caseapisvc.validation.RequestValidator;
 
 @RestController
 @RequestMapping(value = "/cases")
@@ -132,6 +133,9 @@ public final class CaseEndpoint {
       @RequestParam(value = "individualCaseId", required = false) String individualCaseId) {
     log.debug("Entering getNewQidByCaseId");
 
+    Case caze = caseService.findByCaseId(caseId);
+    RequestValidator.validateGetNewQidByCaseIdRequest(caze, individual, individualCaseId);
+
     if (individual) {
       return handleIndividualQidRequest(caseId, individualCaseId);
     }
@@ -141,8 +145,7 @@ public final class CaseEndpoint {
     }
 
     throw new ResponseStatusException(
-        HttpStatus.BAD_REQUEST,
-        "Unexpected Parameter combination, if IndividualCaseId set, then individual flag must be true");
+        HttpStatus.INTERNAL_SERVER_ERROR, "Request validation failed");
   }
 
   private UacQidDTO handleQidRequest(String cazeId, boolean individual) {
