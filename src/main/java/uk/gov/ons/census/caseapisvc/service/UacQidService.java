@@ -20,7 +20,6 @@ public class UacQidService {
 
   private static final String RM_UAC_CREATED = "RM_UAC_CREATED";
 
-  private static final String ADDRESS_LEVEL_UNIT = "U";
   private static final String ADDRESS_LEVEL_ESTAB = "E";
 
   private static final String COUNTRY_CODE_ENGLAND = "E";
