@@ -421,6 +421,7 @@ public class CaseEndpointUnitTest {
   @Test
   public void getNewIndividualUacQidButIndividualParamNotGiven() throws Exception {
     Case parentCase = createSingleCaseWithEvents();
+    when(caseService.findByCaseId(anyString())).thenReturn(parentCase);
     String individualCaseId = UUID.randomUUID().toString();
 
     mockMvc

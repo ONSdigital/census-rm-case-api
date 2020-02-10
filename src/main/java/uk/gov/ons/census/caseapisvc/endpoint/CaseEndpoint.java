@@ -35,6 +35,7 @@ import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 import uk.gov.ons.census.caseapisvc.service.UacQidService;
+import uk.gov.ons.census.caseapisvc.validation.RequestValidator;
 
 @RestController
 @RequestMapping(value = "/cases")
@@ -132,20 +133,17 @@ public final class CaseEndpoint {
       @RequestParam(value = "individualCaseId", required = false) String individualCaseId) {
     log.debug("Entering getNewQidByCaseId");
 
-    if (individualCaseId != null && individual) {
-      return handleNewHiIndividualQidRequest(caseId, individualCaseId);
+    Case caze = caseService.findByCaseId(caseId);
+    RequestValidator.validateGetNewQidByCaseIdRequest(caze, individual, individualCaseId);
 
-    } else if (individualCaseId != null) {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST,
-          "Unexpected Parameter combination, if IndividualCaseId is set, then the individual flag must be true");
+    if (individualCaseId != null && individual) {
+      return handleNewHiIndividualQidRequest(caze, individualCaseId);
     }
-    return handleQidRequest(caseId, individual);
+
+    return handleQidRequest(caze, individual);
   }
 
-  private UacQidDTO handleQidRequest(String caseId, boolean individual) {
-
-    Case caze = caseService.findByCaseId(caseId);
+  private UacQidDTO handleQidRequest(Case caze, boolean individual) {
 
     int questionnaireType =
         calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel(), individual);
@@ -162,17 +160,7 @@ public final class CaseEndpoint {
     return uacQidDTO;
   }
 
-  private UacQidDTO handleNewHiIndividualQidRequest(String caseId, String individualCaseId) {
-    Case caze = caseService.findByCaseId(caseId);
-
-    if (!caze.getCaseType().equals("HH")) {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST,
-          String.format(
-              "IndividualCaseId is only valid for case type HH, found case type: %s",
-              caze.getCaseType()));
-    }
-
+  private UacQidDTO handleNewHiIndividualQidRequest(Case caze, String individualCaseId) {
     if (caseService.caseExistsByCaseId(individualCaseId)) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST,
