@@ -505,7 +505,7 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getInvidualResponseForCeEstabCase() throws Exception {
+  public void getIndividualResponseForCeEstabCase() throws Exception {
     Case caze = createSingleCaseWithEvents();
     caze.setCaseType("CE");
     caze.setAddressLevel("E");
