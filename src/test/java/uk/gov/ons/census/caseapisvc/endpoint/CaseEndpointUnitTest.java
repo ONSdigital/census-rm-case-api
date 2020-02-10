@@ -436,7 +436,7 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getIndividualQidForSPGUnitLevelFails404IfIndividualCaseIdSet() throws Exception {
+  public void getIndividualQidForSpgUnitLevelFails404IfIndividualCaseIdSet() throws Exception {
     Case caze = createSingleCaseWithEvents();
     caze.setCaseType("SPG");
     caze.setAddressLevel("U");
@@ -457,7 +457,7 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getIndividualResponseForSPGUnitCase() throws Exception {
+  public void getIndividualResponseForSpgUnitCase() throws Exception {
     Case caze = createSingleCaseWithEvents();
     caze.setCaseType("SPG");
     caze.setAddressLevel("U");
@@ -481,7 +481,31 @@ public class CaseEndpointUnitTest {
   }
 
   @Test
-  public void getInvidualResponseForCEEstabCase() throws Exception {
+  public void getIndividualResponseForSpgEstabCase() throws Exception {
+    Case caze = createSingleCaseWithEvents();
+    caze.setCaseType("SPG");
+    caze.setAddressLevel("E");
+    caze.setTreatmentCode("SPG_XXXXXE");
+    UacQidCreatedPayloadDTO uacQidCreated =
+        createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
+    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
+    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId().toString()), eq(21)))
+        .thenReturn(uacQidCreated);
+
+    mockMvc
+        .perform(
+            get(String.format("/cases/%s/qid?individual=true", caze.getCaseId().toString()))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+
+    verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
+  }
+
+  @Test
+  public void getInvidualResponseForCeEstabCase() throws Exception {
     Case caze = createSingleCaseWithEvents();
     caze.setCaseType("CE");
     caze.setAddressLevel("E");

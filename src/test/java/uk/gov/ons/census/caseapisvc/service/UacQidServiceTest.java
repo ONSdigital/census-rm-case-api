@@ -245,6 +245,36 @@ public class UacQidServiceTest {
   }
 
   @Test
+  public void calculateQuestionnaireTypeForIndividualSpgEnglandEstab() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXE", ADDRESS_LEVEL_ESTABLISHMENT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(21);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualSpgWalesEstab() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXW", ADDRESS_LEVEL_ESTABLISHMENT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(22);
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeForIndividualSpgNiEstab() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("SPG_XXXXN", ADDRESS_LEVEL_ESTABLISHMENT, true);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(24);
+  }
+
+  @Test
   public void calculateQuestionnaireTypeForIndividualSpgEUnit() {
     // When
     int questionnaireType =

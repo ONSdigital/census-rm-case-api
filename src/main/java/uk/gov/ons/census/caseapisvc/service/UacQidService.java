@@ -91,10 +91,7 @@ public class UacQidService {
           String.format("Unknown Country for treatment code %s", treatmentCode));
     }
 
-    if (individual
-        && (isCeCaseType(treatmentCode)
-            || isHouseholdCaseType(treatmentCode)
-            || isSpgUnitLevelCase(treatmentCode, addressLevel))) {
+    if (individual) {
       switch (country) {
         case COUNTRY_CODE_ENGLAND:
           return 21;
@@ -137,10 +134,6 @@ public class UacQidService {
   private static boolean isCE1RequestForEstabCeCase(
       String treatmentCode, String addressLevel, boolean individual) {
     return isCeCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_ESTAB) && !individual;
-  }
-
-  private static boolean isSpgUnitLevelCase(String treatmentCode, String addressLevel) {
-    return isSpgCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_UNIT);
   }
 
   private static boolean isSpgCaseType(String treatmentCode) {
