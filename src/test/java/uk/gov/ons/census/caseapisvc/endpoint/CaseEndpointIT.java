@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.TelephoneCaptureDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.EventType;
@@ -447,14 +447,18 @@ public class CaseEndpointIT {
             .asJson();
 
     // Then
-    UacQidDTO actualUacQidDTO =
-        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
-    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("01");
-    assertThat(actualUacQidDTO.getUac()).isNotNull();
+    TelephoneCaptureDTO actualTelephoneCaptureDTO =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("01");
+    assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
+    assertThat(actualTelephoneCaptureDTO.getFormType()).isEqualTo("H");
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireType()).isEqualTo("01");
   }
 
   @Test
-  public void testGetNewUacQidForEnglishCeUnitCase() throws UnirestException, IOException {
+  public void testGetNewIndividualUacQidForEnglishCeUnitCase()
+      throws UnirestException, IOException {
     // Given
     setupCEUnitTestCaseWithTreatmentCode(TEST_CASE_ID_1_EXISTS, TEST_CE_ENGLAND_TREATMENT_CODE);
 
@@ -468,10 +472,13 @@ public class CaseEndpointIT {
             .asJson();
 
     // Then
-    UacQidDTO actualUacQidDTO =
-        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
-    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("21");
-    assertThat(actualUacQidDTO.getUac()).isNotNull();
+    TelephoneCaptureDTO actualTelephoneCaptureDTO =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("21");
+    assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
+    assertThat(actualTelephoneCaptureDTO.getFormType()).isEqualTo("I");
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireType()).isEqualTo("21");
   }
 
   @Test
@@ -486,22 +493,22 @@ public class CaseEndpointIT {
         Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
             .header("accept", "application/json")
             .asJson();
-    UacQidDTO firstUacQidDTO =
+    TelephoneCaptureDTO firstTelephoneCaptureDTO =
         DataUtils.mapper.readValue(
-            firstJsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+            firstJsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
 
     HttpResponse<JsonNode> secondJsonResponse =
         Unirest.get(createUrl("http://localhost:%d/cases/%s/qid", port, TEST_CASE_ID_1_EXISTS))
             .header("accept", "application/json")
             .asJson();
-    UacQidDTO secondUacQidDTO =
+    TelephoneCaptureDTO secondTelephoneCaptureDTO =
         DataUtils.mapper.readValue(
-            secondJsonResponse.getBody().getObject().toString(), UacQidDTO.class);
+            secondJsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
 
     // Then
-    assertThat(firstUacQidDTO.getQuestionnaireId())
-        .isNotEqualTo(secondUacQidDTO.getQuestionnaireId());
-    assertThat(firstUacQidDTO.getUac()).isNotEqualTo(secondUacQidDTO.getUac());
+    assertThat(firstTelephoneCaptureDTO.getQuestionnaireId())
+        .isNotEqualTo(secondTelephoneCaptureDTO.getQuestionnaireId());
+    assertThat(firstTelephoneCaptureDTO.getUac()).isNotEqualTo(secondTelephoneCaptureDTO.getUac());
   }
 
   @Test
@@ -522,10 +529,13 @@ public class CaseEndpointIT {
             .asJson();
 
     // Then
-    UacQidDTO actualUacQidDTO =
-        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
-    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("21");
-    assertThat(actualUacQidDTO.getUac()).isNotNull();
+    TelephoneCaptureDTO actualTelephoneCaptureDTO =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("21");
+    assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
+    assertThat(actualTelephoneCaptureDTO.getFormType()).isEqualTo("I");
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireType()).isEqualTo("21");
   }
 
   @Test
@@ -545,10 +555,11 @@ public class CaseEndpointIT {
             .asJson();
 
     // Then
-    UacQidDTO actualUacQidDTO =
-        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
-    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("01");
-    assertThat(actualUacQidDTO.getUac()).isNotNull();
+    TelephoneCaptureDTO actualTelephoneCaptureDTO =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("01");
+    assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
 
     String message = rabbitQueueHelper.checkExpectedMessageReceived(caseFulfilmentQueue);
     ResponseManagementEvent responseManagementEvent =
@@ -603,10 +614,11 @@ public class CaseEndpointIT {
             .asJson();
 
     // Then
-    UacQidDTO actualUacQidDTO =
-        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
-    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("21");
-    assertThat(actualUacQidDTO.getUac()).isNotNull();
+    TelephoneCaptureDTO actualTelephoneCaptureDTO =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("21");
+    assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
 
     String message = rabbitQueueHelper.checkExpectedMessageReceived(caseFulfilmentQueue);
     ResponseManagementEvent responseManagementEvent =
@@ -678,10 +690,11 @@ public class CaseEndpointIT {
             .asJson();
 
     // Then
-    UacQidDTO actualUacQidDTO =
-        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
-    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("21");
-    assertThat(actualUacQidDTO.getUac()).isNotNull();
+    TelephoneCaptureDTO actualTelephoneCaptureDTO =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("21");
+    assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
 
     String message = rabbitQueueHelper.checkExpectedMessageReceived(caseFulfilmentQueue);
     ResponseManagementEvent responseManagementEvent =
@@ -730,10 +743,13 @@ public class CaseEndpointIT {
             .asJson();
 
     // Then
-    UacQidDTO actualUacQidDTO =
-        DataUtils.mapper.readValue(jsonResponse.getBody().getObject().toString(), UacQidDTO.class);
-    assertThat(actualUacQidDTO.getQuestionnaireId()).startsWith("31");
-    assertThat(actualUacQidDTO.getUac()).isNotNull();
+    TelephoneCaptureDTO actualTelephoneCaptureDTO =
+        DataUtils.mapper.readValue(
+            jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("31");
+    assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
+    assertThat(actualTelephoneCaptureDTO.getFormType()).isEqualTo("C");
+    assertThat(actualTelephoneCaptureDTO.getQuestionnaireType()).isEqualTo("31");
   }
 
   @Test
