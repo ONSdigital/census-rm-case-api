@@ -350,7 +350,9 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
-        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)))
+        .andExpect(jsonPath("$.formType", is("H")))
+        .andExpect(jsonPath("$.questionnaireType", is("01")));
 
     verify(uacQidService).createAndLinkUacQid(eq(caze.getCaseId().toString()), anyInt());
     verify(caseService)
@@ -386,7 +388,9 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
-        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)))
+        .andExpect(jsonPath("$.formType", is("I")))
+        .andExpect(jsonPath("$.questionnaireType", is("21")));
 
     verify(caseService)
         .buildAndSendTelephoneCaptureFulfilmentRequest(
@@ -476,7 +480,9 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
-        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)))
+        .andExpect(jsonPath("$.formType", is("I")))
+        .andExpect(jsonPath("$.questionnaireType", is("21")));
 
     verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
   }
@@ -500,7 +506,9 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
-        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)))
+        .andExpect(jsonPath("$.formType", is("I")))
+        .andExpect(jsonPath("$.questionnaireType", is("21")));
 
     verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
   }
@@ -524,7 +532,9 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_QID)))
-        .andExpect(jsonPath("$.uac", is(CREATED_UAC)));
+        .andExpect(jsonPath("$.uac", is(CREATED_UAC)))
+        .andExpect(jsonPath("$.formType", is("I")))
+        .andExpect(jsonPath("$.questionnaireType", is("21")));
 
     verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
   }
