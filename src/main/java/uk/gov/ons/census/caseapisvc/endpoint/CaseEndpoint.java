@@ -129,7 +129,7 @@ public final class CaseEndpoint {
   }
 
   @GetMapping(value = "/{caseId}/qid")
-  public TelephoneCaptureDTO getNewQidByCaseId(
+  public TelephoneCaptureDTO getNewQidForTelephoneCapture(
       @PathVariable("caseId") String caseId,
       @RequestParam(value = "individual", required = false, defaultValue = "false")
           boolean individual,
@@ -140,13 +140,13 @@ public final class CaseEndpoint {
     RequestValidator.validateGetNewQidByCaseIdRequest(caze, individual, individualCaseId);
 
     if (individualCaseId != null && individual) {
-      return handleNewHiIndividualQidRequest(caze, individualCaseId);
+      return handleNewIndividualTelephoneCaptureRequest(caze, individualCaseId);
     }
 
-    return handleQidRequest(caze, individual);
+    return handleTelephoneCaptureRequest(caze, individual);
   }
 
-  private TelephoneCaptureDTO handleQidRequest(Case caze, boolean individual) {
+  private TelephoneCaptureDTO handleTelephoneCaptureRequest(Case caze, boolean individual) {
 
     int questionnaireType =
         calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel(), individual);
@@ -160,7 +160,8 @@ public final class CaseEndpoint {
     return buildTelephoneCaptureDTO(uacQidCreatedPayload, questionnaireType);
   }
 
-  private TelephoneCaptureDTO handleNewHiIndividualQidRequest(Case caze, String individualCaseId) {
+  private TelephoneCaptureDTO handleNewIndividualTelephoneCaptureRequest(
+      Case caze, String individualCaseId) {
     if (caseService.caseExistsByCaseId(individualCaseId)) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST,
