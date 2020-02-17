@@ -28,8 +28,8 @@ import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseEventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.TelephoneCaptureDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
@@ -43,6 +43,9 @@ public final class CaseEndpoint {
   private static final Logger log = LoggerFactory.getLogger(CaseEndpoint.class);
   private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
   private static final String RM_TELEPHONE_CAPTURE = "RM_TC";
+  private static final String HH_FORM_TYPE = "H";
+  private static final String IND_FORM_TYPE = "I";
+  private static final String CE1_FORM_TYPE = "C";
 
   private final CaseService caseService;
   private final MapperFacade mapperFacade;
@@ -126,7 +129,7 @@ public final class CaseEndpoint {
   }
 
   @GetMapping(value = "/{caseId}/qid")
-  public UacQidDTO getNewQidByCaseId(
+  public TelephoneCaptureDTO getNewQidForTelephoneCapture(
       @PathVariable("caseId") String caseId,
       @RequestParam(value = "individual", required = false, defaultValue = "false")
           boolean individual,
@@ -137,13 +140,13 @@ public final class CaseEndpoint {
     RequestValidator.validateGetNewQidByCaseIdRequest(caze, individual, individualCaseId);
 
     if (individualCaseId != null && individual) {
-      return handleNewHiIndividualQidRequest(caze, individualCaseId);
+      return handleNewIndividualTelephoneCaptureRequest(caze, individualCaseId);
     }
 
-    return handleQidRequest(caze, individual);
+    return handleTelephoneCaptureRequest(caze, individual);
   }
 
-  private UacQidDTO handleQidRequest(Case caze, boolean individual) {
+  private TelephoneCaptureDTO handleTelephoneCaptureRequest(Case caze, boolean individual) {
 
     int questionnaireType =
         calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel(), individual);
@@ -153,14 +156,12 @@ public final class CaseEndpoint {
 
     caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
         caze.getCaseId().toString(), RM_TELEPHONE_CAPTURE, null, uacQidCreatedPayload);
-    UacQidDTO uacQidDTO = new UacQidDTO();
-    uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
-    uacQidDTO.setUac(uacQidCreatedPayload.getUac());
 
-    return uacQidDTO;
+    return buildTelephoneCaptureDTO(uacQidCreatedPayload, questionnaireType);
   }
 
-  private UacQidDTO handleNewHiIndividualQidRequest(Case caze, String individualCaseId) {
+  private TelephoneCaptureDTO handleNewIndividualTelephoneCaptureRequest(
+      Case caze, String individualCaseId) {
     if (caseService.caseExistsByCaseId(individualCaseId)) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST,
@@ -178,11 +179,8 @@ public final class CaseEndpoint {
         RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL,
         individualCaseId,
         uacQidCreatedPayload);
-    UacQidDTO uacQidDTO = new UacQidDTO();
-    uacQidDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
-    uacQidDTO.setUac(uacQidCreatedPayload.getUac());
 
-    return uacQidDTO;
+    return buildTelephoneCaptureDTO(uacQidCreatedPayload, questionnaireType);
   }
 
   @ExceptionHandler({
@@ -223,5 +221,35 @@ public final class CaseEndpoint {
     caseContainerDTO.setCaseEvents(caseEvents);
 
     return caseContainerDTO;
+  }
+
+  private TelephoneCaptureDTO buildTelephoneCaptureDTO(
+      UacQidCreatedPayloadDTO uacQidCreatedPayload, int questionnaireType) {
+    TelephoneCaptureDTO telephoneCaptureDTO = new TelephoneCaptureDTO();
+    telephoneCaptureDTO.setQuestionnaireId(uacQidCreatedPayload.getQid());
+    telephoneCaptureDTO.setUac(uacQidCreatedPayload.getUac());
+    telephoneCaptureDTO.setFormType(mapQuestionnaireTypeToFormType(questionnaireType));
+    telephoneCaptureDTO.setQuestionnaireType(String.format("%02d", questionnaireType));
+    return telephoneCaptureDTO;
+  }
+
+  private String mapQuestionnaireTypeToFormType(int questionnaireType) {
+    switch (questionnaireType) {
+      case 1:
+      case 2:
+      case 4:
+        return HH_FORM_TYPE;
+      case 21:
+      case 22:
+      case 24:
+        return IND_FORM_TYPE;
+      case 31:
+      case 32:
+      case 34:
+        return CE1_FORM_TYPE;
+      default:
+        throw new IllegalArgumentException(
+            String.format("Invalid QuestionnaireType: '%d'", questionnaireType));
+    }
   }
 }
