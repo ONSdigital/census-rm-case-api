@@ -63,4 +63,6 @@ public class CaseContainerDTO {
   private String lad;
 
   private List<CaseEventDTO> caseEvents;
+
+  private boolean handDelivery;
 }
