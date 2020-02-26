@@ -32,7 +32,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ons.census.caseapisvc.model.dto.CCSFieldLaunchEndpointDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.CCSLaunchDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.dto.TelephoneCaptureDTO;
@@ -363,13 +363,12 @@ public class CaseEndpointIT {
             .header("accept", "application/json")
             .asJson();
 
-    CCSFieldLaunchEndpointDTO actualCCSFieldLaunchEndpointDTO =
+    CCSLaunchDTO actualCCSLaunchDTO =
         DataUtils.mapper.readValue(
-            jsonResponse.getBody().getObject().toString(), CCSFieldLaunchEndpointDTO.class);
-    assertThat(actualCCSFieldLaunchEndpointDTO.getQuestionnaireId())
-        .isEqualTo(DataUtils.TEST_CCS_QID);
-    assertThat(actualCCSFieldLaunchEndpointDTO.isActive()).isTrue();
-    assertThat(actualCCSFieldLaunchEndpointDTO.getFormType()).isEqualTo("H");
+            jsonResponse.getBody().getObject().toString(), CCSLaunchDTO.class);
+    assertThat(actualCCSLaunchDTO.getQuestionnaireId()).isEqualTo(DataUtils.TEST_CCS_QID);
+    assertThat(actualCCSLaunchDTO.isActive()).isTrue();
+    assertThat(actualCCSLaunchDTO.getFormType()).isEqualTo("H");
   }
 
   @Test
@@ -383,13 +382,12 @@ public class CaseEndpointIT {
             .header("accept", "application/json")
             .asJson();
 
-    CCSFieldLaunchEndpointDTO actualCCSFieldLaunchEndpointDTO =
+    CCSLaunchDTO actualCCSLaunchDTO =
         DataUtils.mapper.readValue(
-            jsonResponse.getBody().getObject().toString(), CCSFieldLaunchEndpointDTO.class);
-    assertThat(actualCCSFieldLaunchEndpointDTO.getQuestionnaireId())
-        .isEqualTo(DataUtils.TEST_CCS_QID);
-    assertThat(actualCCSFieldLaunchEndpointDTO.isActive()).isFalse();
-    assertThat(actualCCSFieldLaunchEndpointDTO.getFormType()).isEqualTo("H");
+            jsonResponse.getBody().getObject().toString(), CCSLaunchDTO.class);
+    assertThat(actualCCSLaunchDTO.getQuestionnaireId()).isEqualTo(DataUtils.TEST_CCS_QID);
+    assertThat(actualCCSLaunchDTO.isActive()).isFalse();
+    assertThat(actualCCSLaunchDTO.getFormType()).isEqualTo("H");
   }
 
   @Test
