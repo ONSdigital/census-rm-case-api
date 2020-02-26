@@ -2,6 +2,7 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static uk.gov.ons.census.caseapisvc.service.UacQidService.calculateQuestionnaireType;
+import static uk.gov.ons.census.caseapisvc.utility.FormTypeHelper.mapCCSFieldLaunchQuestionnaireTypeToFormType;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
@@ -25,9 +26,9 @@ import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
+import uk.gov.ons.census.caseapisvc.model.dto.CCSFieldLaunchEndpointDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseEventDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.TelephoneCaptureDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
@@ -119,13 +120,16 @@ public final class CaseEndpoint {
   }
 
   @GetMapping(value = "/ccs/{caseId}/qid")
-  public QidDTO findCCSQidByCaseId(@PathVariable("caseId") String caseId) {
+  public CCSFieldLaunchEndpointDTO findCCSQidByCaseId(@PathVariable("caseId") String caseId) {
     log.debug("Entering findByCaseId");
     UacQidLink ccsUacQidLink = caseService.findCCSUacQidLinkByCaseId(caseId);
-    QidDTO qidDTO = new QidDTO();
-    qidDTO.setQuestionnaireId(ccsUacQidLink.getQid());
-    qidDTO.setActive(ccsUacQidLink.isActive());
-    return qidDTO;
+
+    CCSFieldLaunchEndpointDTO ccsFieldLaunchEndpointDTO = new CCSFieldLaunchEndpointDTO();
+    ccsFieldLaunchEndpointDTO.setQuestionnaireId(ccsUacQidLink.getQid());
+    ccsFieldLaunchEndpointDTO.setActive(ccsUacQidLink.isActive());
+    ccsFieldLaunchEndpointDTO.setFormType(
+        mapCCSFieldLaunchQuestionnaireTypeToFormType(ccsUacQidLink.getQid()));
+    return ccsFieldLaunchEndpointDTO;
   }
 
   @GetMapping(value = "/{caseId}/qid")
