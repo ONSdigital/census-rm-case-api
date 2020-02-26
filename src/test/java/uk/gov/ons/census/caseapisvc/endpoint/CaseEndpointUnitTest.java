@@ -293,7 +293,8 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_CCS_QID)))
-        .andExpect(jsonPath("$.active", is(true)));
+        .andExpect(jsonPath("$.active", is(true)))
+        .andExpect(jsonPath("$.formType", is("H")));
   }
 
   @Test
@@ -307,7 +308,8 @@ public class CaseEndpointUnitTest {
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_CCS_QID)))
-        .andExpect(jsonPath("$.active", is(false)));
+        .andExpect(jsonPath("$.active", is(false)))
+        .andExpect(jsonPath("$.formType", is("H")));
   }
 
   @Test

@@ -95,7 +95,8 @@ If this query parameter is omitted these case events **will not** be returned wi
 ```json
 {
   "active": "True",
-  "qid": "7120000000020300"
+  "qid": "7120000000020300",
+  "formType": "H"
 }
 ```
 

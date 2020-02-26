@@ -25,9 +25,9 @@ import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
+import uk.gov.ons.census.caseapisvc.model.dto.CCSLaunchDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseEventDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.QidDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.TelephoneCaptureDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
@@ -119,13 +119,15 @@ public final class CaseEndpoint {
   }
 
   @GetMapping(value = "/ccs/{caseId}/qid")
-  public QidDTO findCCSQidByCaseId(@PathVariable("caseId") String caseId) {
+  public CCSLaunchDTO findCCSQidByCaseId(@PathVariable("caseId") String caseId) {
     log.debug("Entering findByCaseId");
     UacQidLink ccsUacQidLink = caseService.findCCSUacQidLinkByCaseId(caseId);
-    QidDTO qidDTO = new QidDTO();
-    qidDTO.setQuestionnaireId(ccsUacQidLink.getQid());
-    qidDTO.setActive(ccsUacQidLink.isActive());
-    return qidDTO;
+
+    CCSLaunchDTO ccsLaunchDTO = new CCSLaunchDTO();
+    ccsLaunchDTO.setQuestionnaireId(ccsUacQidLink.getQid());
+    ccsLaunchDTO.setActive(ccsUacQidLink.isActive());
+    ccsLaunchDTO.setFormType(mapCCSQuestionnaireTypeToFormType(ccsUacQidLink.getQid()));
+    return ccsLaunchDTO;
   }
 
   @GetMapping(value = "/{caseId}/qid")
@@ -250,6 +252,23 @@ public final class CaseEndpoint {
       default:
         throw new IllegalArgumentException(
             String.format("Invalid QuestionnaireType: '%d'", questionnaireType));
+    }
+  }
+
+  private String mapCCSQuestionnaireTypeToFormType(String qid) {
+    int questionnaireType = Integer.parseInt(qid.substring(0, 2));
+
+    switch (questionnaireType) {
+      case 51:
+      case 53:
+      case 71:
+      case 73:
+        return HH_FORM_TYPE;
+      case 81:
+      case 83:
+        return CE1_FORM_TYPE;
+      default:
+        return null;
     }
   }
 }
