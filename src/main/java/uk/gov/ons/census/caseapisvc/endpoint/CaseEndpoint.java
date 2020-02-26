@@ -130,23 +130,6 @@ public final class CaseEndpoint {
     return ccsLaunchDTO;
   }
 
-  public static String mapCCSQuestionnaireTypeToFormType(String qid) {
-    int questionnaireType = Integer.parseInt(qid.substring(0, 2));
-
-    switch (questionnaireType) {
-      case 51:
-      case 53:
-      case 71:
-      case 73:
-        return HH_FORM_TYPE;
-      case 81:
-      case 83:
-        return CE1_FORM_TYPE;
-      default:
-        return null;
-    }
-  }
-
   @GetMapping(value = "/{caseId}/qid")
   public TelephoneCaptureDTO getNewQidForTelephoneCapture(
       @PathVariable("caseId") String caseId,
@@ -269,6 +252,23 @@ public final class CaseEndpoint {
       default:
         throw new IllegalArgumentException(
             String.format("Invalid QuestionnaireType: '%d'", questionnaireType));
+    }
+  }
+
+  private String mapCCSQuestionnaireTypeToFormType(String qid) {
+    int questionnaireType = Integer.parseInt(qid.substring(0, 2));
+
+    switch (questionnaireType) {
+      case 51:
+      case 53:
+      case 71:
+      case 73:
+        return HH_FORM_TYPE;
+      case 81:
+      case 83:
+        return CE1_FORM_TYPE;
+      default:
+        return null;
     }
   }
 }
