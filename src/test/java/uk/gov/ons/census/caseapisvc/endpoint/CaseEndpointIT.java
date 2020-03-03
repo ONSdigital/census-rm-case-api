@@ -272,7 +272,7 @@ public class CaseEndpointIT {
   @Test
   public void shouldRetrieveACaseWithEventsWhenSearchingByCaseReference() throws Exception {
     Case expectedCase = createOneTestCaseWithEvent();
-    String expectedCaseRef = Integer.toString(expectedCase.getCaseRef());
+    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
@@ -291,7 +291,7 @@ public class CaseEndpointIT {
   @Test
   public void shouldRetrieveACaseWithoutEventsWhenSearchingByCaseReference() throws Exception {
     Case expectedCase = createOneTestCaseWithoutEvents();
-    String expectedCaseRef = Integer.toString(expectedCase.getCaseRef());
+    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
@@ -311,7 +311,7 @@ public class CaseEndpointIT {
   public void shouldRetrieveACaseWithoutEventsByDefaultWhenSearchingByCaseReference()
       throws Exception {
     Case expectedCase = createOneTestCaseWithoutEvents();
-    String expectedCaseRef = Integer.toString(expectedCase.getCaseRef());
+    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))

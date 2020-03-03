@@ -19,10 +19,10 @@ import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 public class DataUtils {
 
   private static final UUID TEST1_CASE_ID = UUID.fromString("2e083ab1-41f7-4dea-a3d9-77f48458b5ca");
-  private static final int TEST1_CASE_REFERENCE_ID = 123;
+  private static final long TEST1_CASE_REFERENCE_ID = 123;
 
   private static final UUID TEST2_CASE_ID = UUID.fromString("3e948f6a-00bb-466d-88a7-b0990a827b53");
-  private static final int TEST2_CASE_REFERENCE_ID = 456;
+  private static final long TEST2_CASE_REFERENCE_ID = 456;
 
   private static final String TEST_UPRN = "123";
 
@@ -49,7 +49,7 @@ public class DataUtils {
         createCase(TEST2_CASE_ID, TEST2_CASE_REFERENCE_ID));
   }
 
-  private static Case createCase(UUID caseId, int caseRef) {
+  private static Case createCase(UUID caseId, long caseRef) {
     List<UacQidLink> uacQidLinks = new LinkedList<>();
     List<Event> events = new LinkedList<>();
 
@@ -77,7 +77,7 @@ public class DataUtils {
     return caze;
   }
 
-  public static Case createCcsCase(UUID caseId, int caseRef, String qid) {
+  public static Case createCcsCase(UUID caseId, long caseRef, String qid) {
     List<UacQidLink> uacQidLinks = new LinkedList<>();
 
     UacQidLink uacQidLink = createCcsUacQidLink(qid, true);

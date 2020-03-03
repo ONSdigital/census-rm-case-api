@@ -226,7 +226,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getACaseWithEventsByCaseReference() throws Exception {
-    when(caseService.findByReference(anyInt())).thenReturn(createSingleCaseWithEvents());
+    when(caseService.findByReference(anyLong())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(
@@ -242,7 +242,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getACaseWithoutEventsByCaseReference() throws Exception {
-    when(caseService.findByReference(anyInt())).thenReturn(createSingleCaseWithEvents());
+    when(caseService.findByReference(anyLong())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(
@@ -258,7 +258,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getACaseWithoutEventsByDefaultByCaseReference() throws Exception {
-    when(caseService.findByReference(anyInt())).thenReturn(createSingleCaseWithEvents());
+    when(caseService.findByReference(anyLong())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
         .perform(
@@ -273,7 +273,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void receiveNotFoundExceptionWhenCaseReferenceDoesNotExist() throws Exception {
-    when(caseService.findByReference(anyInt())).thenThrow(new CaseReferenceNotFoundException(0));
+    when(caseService.findByReference(anyLong())).thenThrow(new CaseReferenceNotFoundException(0));
 
     mockMvc
         .perform(
