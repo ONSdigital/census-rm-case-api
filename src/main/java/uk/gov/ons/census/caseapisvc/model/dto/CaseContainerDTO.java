@@ -25,7 +25,7 @@ public class CaseContainerDTO {
 
   private String surveyType;
 
-  @JsonProperty("caseType")
+  @JsonProperty("addressType")
   private String addressType;
 
   private OffsetDateTime createdDateTime;
