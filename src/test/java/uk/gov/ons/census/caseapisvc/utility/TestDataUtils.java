@@ -16,13 +16,13 @@ import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 
-public class DataUtils {
+public class TestDataUtils {
 
   private static final UUID TEST1_CASE_ID = UUID.fromString("2e083ab1-41f7-4dea-a3d9-77f48458b5ca");
-  private static final long TEST1_CASE_REFERENCE_ID = 123;
+  private static final long TEST1_CASE_REFERENCE_ID = Long.MAX_VALUE;
 
   private static final UUID TEST2_CASE_ID = UUID.fromString("3e948f6a-00bb-466d-88a7-b0990a827b53");
-  private static final long TEST2_CASE_REFERENCE_ID = 456;
+  private static final long TEST2_CASE_REFERENCE_ID = Long.MAX_VALUE;
 
   private static final String TEST_UPRN = "123";
 

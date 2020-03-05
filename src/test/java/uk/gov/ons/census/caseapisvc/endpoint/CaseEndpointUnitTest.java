@@ -13,12 +13,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.CREATED_UAC;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createCcsUacQidLink;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createUacQidCreatedPayload;
+import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.CREATED_UAC;
+import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.TEST_CCS_QID;
+import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createCcsUacQidLink;
+import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createMultipleCasesWithEvents;
+import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createSingleCaseWithEvents;
+import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createUacQidCreatedPayload;
 
 import java.util.List;
 import java.util.UUID;
@@ -50,7 +50,7 @@ public class CaseEndpointUnitTest {
   private static final String METHOD_NAME_FIND_CASES_BY_UPRN = "findCasesByUPRN";
 
   private static final String TEST1_CASE_ID = "2e083ab1-41f7-4dea-a3d9-77f48458b5ca";
-  private static final String TEST1_CASE_REFERENCE_ID = "123";
+  private static final String TEST1_CASE_REFERENCE_ID = "9223372036854775807";
 
   private static final String TEST2_CASE_ID = "3e948f6a-00bb-466d-88a7-b0990a827b53";
   private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
