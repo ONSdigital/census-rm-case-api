@@ -33,7 +33,7 @@ If this query parameter is omitted these case events **will not** be returned wi
   "arid": "DDR190314000000195677",
   "caseEvents": [],
   "caseRef": "31283399",
-  "caseType": "HH",
+  "addressType": "HH",
   "collectionExerciseId": "77c26716-5936-43e8-b56b-f5ca71765603",
   "createdDateTime": "2019-10-25T08:34:34.680556Z",
   "estabArid": "DDR190314000000113742",
