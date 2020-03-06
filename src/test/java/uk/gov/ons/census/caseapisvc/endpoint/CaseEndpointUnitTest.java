@@ -13,12 +13,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.CREATED_UAC;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.TEST_CCS_QID;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createCcsUacQidLink;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createMultipleCasesWithEvents;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createSingleCaseWithEvents;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createUacQidCreatedPayload;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.CREATED_UAC;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createCcsUacQidLink;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createUacQidCreatedPayload;
 
 import java.util.List;
 import java.util.UUID;

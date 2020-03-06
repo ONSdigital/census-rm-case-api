@@ -5,10 +5,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.TEST_CCS_QID;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createMultipleCasesWithEvents;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createSingleCaseWithEvents;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createSingleCcsCaseWithCcsQid;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCcsCaseWithCcsQid;
 
 import java.util.List;
 import java.util.Optional;

@@ -5,8 +5,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.CREATED_UAC;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.createUacQidCreatedPayload;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.CREATED_UAC;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createUacQidCreatedPayload;
 
 import java.util.UUID;
 import org.junit.Before;

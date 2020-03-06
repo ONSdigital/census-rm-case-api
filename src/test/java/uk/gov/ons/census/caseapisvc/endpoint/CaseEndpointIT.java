@@ -2,9 +2,9 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.TEST_CCS_QID;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.extractCaseContainerDTOFromResponse;
-import static uk.gov.ons.census.caseapisvc.utility.TestDataUtils.extractCaseContainerDTOsFromResponse;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOFromResponse;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOsFromResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mashape.unirest.http.HttpResponse;
@@ -44,7 +44,7 @@ import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.EventRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 import uk.gov.ons.census.caseapisvc.utility.RabbitQueueHelper;
-import uk.gov.ons.census.caseapisvc.utility.TestDataUtils;
+import uk.gov.ons.census.caseapisvc.utility.DataUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -347,7 +347,7 @@ public class CaseEndpointIT {
             .header("accept", "application/json")
             .asJson();
 
-    CaseContainerDTO caseContainerDTO = TestDataUtils.extractCaseIdDtoFromResponse(jsonResponse);
+    CaseContainerDTO caseContainerDTO = DataUtils.extractCaseIdDtoFromResponse(jsonResponse);
     assertThat(caseContainerDTO.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
     assertThat(caseContainerDTO.getAddressType()).isEqualTo(ADDRESS_TYPE_TEST);
   }
@@ -356,7 +356,7 @@ public class CaseEndpointIT {
   public void testCorrectCcsQidReturnedWhenRequestedByCaseId()
       throws UnirestException, IOException {
     Case ccsCase = setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
-    setupTestCcsUacQidLink(TestDataUtils.TEST_CCS_QID, ccsCase, true);
+    setupTestCcsUacQidLink(DataUtils.TEST_CCS_QID, ccsCase, true);
 
     HttpResponse<JsonNode> jsonResponse =
         Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
@@ -364,9 +364,9 @@ public class CaseEndpointIT {
             .asJson();
 
     CCSLaunchDTO actualCCSLaunchDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getObject().toString(), CCSLaunchDTO.class);
-    assertThat(actualCCSLaunchDTO.getQuestionnaireId()).isEqualTo(TestDataUtils.TEST_CCS_QID);
+    assertThat(actualCCSLaunchDTO.getQuestionnaireId()).isEqualTo(DataUtils.TEST_CCS_QID);
     assertThat(actualCCSLaunchDTO.isActive()).isTrue();
     assertThat(actualCCSLaunchDTO.getFormType()).isEqualTo("H");
   }
@@ -375,7 +375,7 @@ public class CaseEndpointIT {
   public void testCorrectInactiveCcsQidReturnedWhenRequestedByCaseId()
       throws UnirestException, IOException {
     Case ccsCase = setupTestCcsCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
-    setupTestCcsUacQidLink(TestDataUtils.TEST_CCS_QID, ccsCase, false);
+    setupTestCcsUacQidLink(DataUtils.TEST_CCS_QID, ccsCase, false);
 
     HttpResponse<JsonNode> jsonResponse =
         Unirest.get(createUrl("http://localhost:%d/cases/ccs/%s/qid", port, TEST_CASE_ID_1_EXISTS))
@@ -383,9 +383,9 @@ public class CaseEndpointIT {
             .asJson();
 
     CCSLaunchDTO actualCCSLaunchDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getObject().toString(), CCSLaunchDTO.class);
-    assertThat(actualCCSLaunchDTO.getQuestionnaireId()).isEqualTo(TestDataUtils.TEST_CCS_QID);
+    assertThat(actualCCSLaunchDTO.getQuestionnaireId()).isEqualTo(DataUtils.TEST_CCS_QID);
     assertThat(actualCCSLaunchDTO.isActive()).isFalse();
     assertThat(actualCCSLaunchDTO.getFormType()).isEqualTo("H");
   }
@@ -452,7 +452,7 @@ public class CaseEndpointIT {
 
     // Then
     TelephoneCaptureDTO actualTelephoneCaptureDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
     assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("01");
     assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
@@ -477,7 +477,7 @@ public class CaseEndpointIT {
 
     // Then
     TelephoneCaptureDTO actualTelephoneCaptureDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
     assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("21");
     assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
@@ -498,7 +498,7 @@ public class CaseEndpointIT {
             .header("accept", "application/json")
             .asJson();
     TelephoneCaptureDTO firstTelephoneCaptureDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             firstJsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
 
     HttpResponse<JsonNode> secondJsonResponse =
@@ -506,7 +506,7 @@ public class CaseEndpointIT {
             .header("accept", "application/json")
             .asJson();
     TelephoneCaptureDTO secondTelephoneCaptureDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             secondJsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
 
     // Then
@@ -534,7 +534,7 @@ public class CaseEndpointIT {
 
     // Then
     TelephoneCaptureDTO actualTelephoneCaptureDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
     assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("21");
     assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
@@ -560,14 +560,14 @@ public class CaseEndpointIT {
 
     // Then
     TelephoneCaptureDTO actualTelephoneCaptureDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
     assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("01");
     assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
 
     String message = rabbitQueueHelper.checkExpectedMessageReceived(caseFulfilmentQueue);
     ResponseManagementEvent responseManagementEvent =
-        TestDataUtils.mapper.readValue(message, ResponseManagementEvent.class);
+        DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
 
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
         .isEqualTo("RM_TC");
@@ -619,14 +619,14 @@ public class CaseEndpointIT {
 
     // Then
     TelephoneCaptureDTO actualTelephoneCaptureDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
     assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("21");
     assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
 
     String message = rabbitQueueHelper.checkExpectedMessageReceived(caseFulfilmentQueue);
     ResponseManagementEvent responseManagementEvent =
-        TestDataUtils.mapper.readValue(message, ResponseManagementEvent.class);
+        DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
 
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
         .isEqualTo("RM_TC_HI");
@@ -695,14 +695,14 @@ public class CaseEndpointIT {
 
     // Then
     TelephoneCaptureDTO actualTelephoneCaptureDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
     assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("21");
     assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
 
     String message = rabbitQueueHelper.checkExpectedMessageReceived(caseFulfilmentQueue);
     ResponseManagementEvent responseManagementEvent =
-        TestDataUtils.mapper.readValue(message, ResponseManagementEvent.class);
+        DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
 
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
         .isEqualTo("RM_TC");
@@ -748,7 +748,7 @@ public class CaseEndpointIT {
 
     // Then
     TelephoneCaptureDTO actualTelephoneCaptureDTO =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getObject().toString(), TelephoneCaptureDTO.class);
     assertThat(actualTelephoneCaptureDTO.getQuestionnaireId()).startsWith("31");
     assertThat(actualTelephoneCaptureDTO.getUac()).isNotNull();
@@ -777,7 +777,7 @@ public class CaseEndpointIT {
     // Then
     assertThat(jsonResponse.getBody().isArray()).isTrue();
     List<CaseContainerDTO> foundCases =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getArray().toString(),
             new TypeReference<List<CaseContainerDTO>>() {});
 
@@ -804,7 +804,7 @@ public class CaseEndpointIT {
     // Then
     assertThat(jsonResponse.getBody().isArray()).isTrue();
     List<CaseContainerDTO> foundCases =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getArray().toString(),
             new TypeReference<List<CaseContainerDTO>>() {});
 
@@ -831,7 +831,7 @@ public class CaseEndpointIT {
     // Then
     assertThat(jsonResponse.getBody().isArray()).isTrue();
     List<CaseContainerDTO> foundCases =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getArray().toString(),
             new TypeReference<List<CaseContainerDTO>>() {});
 
@@ -856,7 +856,7 @@ public class CaseEndpointIT {
     // Then
     assertThat(jsonResponse.getBody().isArray()).isTrue();
     List<CaseContainerDTO> foundCases =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getArray().toString(),
             new TypeReference<List<CaseContainerDTO>>() {});
 
@@ -879,7 +879,7 @@ public class CaseEndpointIT {
     // Then
     assertThat(jsonResponse.getBody().isArray()).isTrue();
     List<CaseContainerDTO> foundCases =
-        TestDataUtils.mapper.readValue(
+        DataUtils.mapper.readValue(
             jsonResponse.getBody().getArray().toString(),
             new TypeReference<List<CaseContainerDTO>>() {});
 
