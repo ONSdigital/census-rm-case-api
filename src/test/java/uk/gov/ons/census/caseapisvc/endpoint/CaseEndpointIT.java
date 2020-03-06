@@ -43,8 +43,8 @@ import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.EventRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
-import uk.gov.ons.census.caseapisvc.utility.RabbitQueueHelper;
 import uk.gov.ons.census.caseapisvc.utility.DataUtils;
+import uk.gov.ons.census.caseapisvc.utility.RabbitQueueHelper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
