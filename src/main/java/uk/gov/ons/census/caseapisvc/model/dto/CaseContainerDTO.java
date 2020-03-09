@@ -27,6 +27,8 @@ public class CaseContainerDTO {
 
   private String addressType;
 
+  private String caseType;
+
   private OffsetDateTime createdDateTime;
 
   private String addressLine1;
