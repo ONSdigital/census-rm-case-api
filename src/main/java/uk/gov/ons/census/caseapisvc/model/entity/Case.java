@@ -1,7 +1,9 @@
 package uk.gov.ons.census.caseapisvc.model.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,18 +11,17 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 
 @Data
 @Entity
+@TypeDefs({@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)})
 @Table(name = "cases")
 public class Case {
 
   @Id private UUID caseId;
 
-  // This bad boy allows us to ge;nerate a pseudorandom unique (non-colliding) caseRef
+  // This incrementing column allows us to generate a pseudorandom unique (non-colliding) caseRef
   @Column(columnDefinition = "serial")
   @Generated(GenerationTime.INSERT)
   private int secretSequenceNumber;
@@ -115,6 +116,10 @@ public class Case {
   @UpdateTimestamp
   private OffsetDateTime lastUpdated;
 
-  @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
+  @Column(columnDefinition = "BOOLEAN DEFAULT false")
   private boolean handDelivery;
+
+  @Type(type = "jsonb")
+  @Column(columnDefinition = "jsonb")
+  private Map<String, String> metadata;
 }

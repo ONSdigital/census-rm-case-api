@@ -12,10 +12,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.stream.Collectors;
 import org.jeasy.random.EasyRandom;
@@ -212,6 +209,7 @@ public class CaseEndpointIT {
 
     assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
     assertThat(actualData.getCaseEvents().size()).isEqualTo(1);
+    assertThat(actualData.isCeSecure()).isFalse();
   }
 
   @Test
@@ -230,6 +228,7 @@ public class CaseEndpointIT {
 
     assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
     assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
+    assertThat(actualData.isCeSecure()).isFalse();
   }
 
   @Test
@@ -887,6 +886,46 @@ public class CaseEndpointIT {
     assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
   }
 
+  @Test
+  public void shouldReturnCeSecureStatusTrue() throws Exception {
+
+    setupTestCaseWithMetadata(TEST_CASE_ID_1_EXISTS, true);
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .queryString("caseEvents", "false")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
+
+    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
+    assertThat(actualData.isCeSecure()).isTrue();
+  }
+
+  @Test
+  public void shouldReturnCeSecureStatusFalse() throws Exception {
+
+    setupTestCaseWithMetadata(TEST_CASE_ID_1_EXISTS, false);
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .queryString("caseEvents", "false")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
+
+    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
+    assertThat(actualData.isCeSecure()).isFalse();
+  }
+
   private Case createOneTestCaseWithEvent() {
     return setupTestCaseWithEvent(TEST_CASE_ID_1_EXISTS);
   }
@@ -976,6 +1015,16 @@ public class CaseEndpointIT {
   private Case setupTestCaseWithoutEvents(String caseId, String survey) {
     Case caze = getaCase(caseId);
     caze.setSurvey(survey);
+
+    return saveAndRetreiveCase(caze);
+  }
+
+  private Case setupTestCaseWithMetadata(String caseId, boolean secureEstablishment) {
+    Case caze = getaCase(caseId);
+    Map<String, String> metadata = new HashMap<>();
+    metadata.put("secureEstablishment", Boolean.toString(secureEstablishment));
+    caze.setMetadata(metadata);
+    caze.setCaseType("CE");
 
     return saveAndRetreiveCase(caze);
   }
