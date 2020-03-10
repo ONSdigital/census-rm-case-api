@@ -67,7 +67,7 @@ public class CaseService {
         .orElseThrow(() -> new CaseIdNotFoundException(caseIdUUID.toString()));
   }
 
-  public Case findByReference(int reference) {
+  public Case findByReference(long reference) {
     log.debug("Entering findByReference");
 
     return caseRepo

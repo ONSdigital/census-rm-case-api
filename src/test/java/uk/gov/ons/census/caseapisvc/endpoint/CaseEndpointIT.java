@@ -60,7 +60,7 @@ public class CaseEndpointIT {
   private static final String TEST_HOUSEHOLD_ENGLAND_TREATMENT_CODE = "HH_XXXXXE";
   private static final String TEST_CE_ENGLAND_TREATMENT_CODE = "CE_XXXXXE";
 
-  private static final String TEST_REFERENCE_DOES_NOT_EXIST = "99999999";
+  private static final String TEST_REFERENCE_DOES_NOT_EXIST = "9999999999";
   private static final String TEST_QID = "test_qid";
   private static final String ADDRESS_TYPE_TEST = "addressTypeTest";
 
@@ -271,7 +271,7 @@ public class CaseEndpointIT {
   @Test
   public void shouldRetrieveACaseWithEventsWhenSearchingByCaseReference() throws Exception {
     Case expectedCase = createOneTestCaseWithEvent();
-    String expectedCaseRef = Integer.toString(expectedCase.getCaseRef());
+    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
@@ -290,7 +290,7 @@ public class CaseEndpointIT {
   @Test
   public void shouldRetrieveACaseWithoutEventsWhenSearchingByCaseReference() throws Exception {
     Case expectedCase = createOneTestCaseWithoutEvents();
-    String expectedCaseRef = Integer.toString(expectedCase.getCaseRef());
+    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
@@ -310,7 +310,7 @@ public class CaseEndpointIT {
   public void shouldRetrieveACaseWithoutEventsByDefaultWhenSearchingByCaseReference()
       throws Exception {
     Case expectedCase = createOneTestCaseWithoutEvents();
-    String expectedCaseRef = Integer.toString(expectedCase.getCaseRef());
+    String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/ref/%s", port, expectedCaseRef))
