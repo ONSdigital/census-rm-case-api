@@ -206,7 +206,7 @@ public class CaseEndpointIT {
 
     assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
     assertThat(actualData.getCaseEvents().size()).isEqualTo(1);
-    assertThat(actualData.isCeSecure()).isFalse();
+    assertThat(actualData.getCeSecure()).isNull();
   }
 
   @Test
@@ -225,7 +225,7 @@ public class CaseEndpointIT {
 
     assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
     assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
-    assertThat(actualData.isCeSecure()).isFalse();
+    assertThat(actualData.getCeSecure()).isNull();
   }
 
   @Test
@@ -900,7 +900,7 @@ public class CaseEndpointIT {
 
     assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
     assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
-    assertThat(actualData.isCeSecure()).isTrue();
+    assertThat(actualData.getCeSecure()).isTrue();
   }
 
   @Test
@@ -920,7 +920,7 @@ public class CaseEndpointIT {
 
     assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
     assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
-    assertThat(actualData.isCeSecure()).isFalse();
+    assertThat(actualData.getCeSecure()).isFalse();
   }
 
   private Case createOneTestCaseWithEvent() {

@@ -66,5 +66,5 @@ public class CaseContainerDTO {
 
   private boolean handDelivery;
 
-  private boolean ceSecure;
+  private Boolean ceSecure;
 }
