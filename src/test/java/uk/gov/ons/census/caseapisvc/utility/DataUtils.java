@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
+import uk.gov.ons.census.caseapisvc.model.entity.CaseMetadata;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 
@@ -73,6 +74,7 @@ public class DataUtils {
     caze.setUprn(TEST_UPRN);
     caze.setUacQidLinks(uacQidLinks);
     caze.setSurvey("CENSUS");
+    caze.setMetadata(new CaseMetadata());
 
     return caze;
   }

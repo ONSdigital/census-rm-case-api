@@ -33,10 +33,7 @@ import uk.gov.ons.census.caseapisvc.model.dto.CCSLaunchDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.dto.TelephoneCaptureDTO;
-import uk.gov.ons.census.caseapisvc.model.entity.Case;
-import uk.gov.ons.census.caseapisvc.model.entity.Event;
-import uk.gov.ons.census.caseapisvc.model.entity.EventType;
-import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
+import uk.gov.ons.census.caseapisvc.model.entity.*;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.EventRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
@@ -1021,8 +1018,8 @@ public class CaseEndpointIT {
 
   private Case setupTestCaseWithMetadata(String caseId, boolean secureEstablishment) {
     Case caze = getaCase(caseId);
-    Map<String, String> metadata = new HashMap<>();
-    metadata.put("secureEstablishment", Boolean.toString(secureEstablishment));
+    CaseMetadata metadata = new CaseMetadata();
+    metadata.setSecureEstablishment(secureEstablishment);
     caze.setMetadata(metadata);
     caze.setCaseType("CE");
 

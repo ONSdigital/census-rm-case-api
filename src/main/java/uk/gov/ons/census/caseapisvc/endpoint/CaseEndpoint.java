@@ -201,12 +201,9 @@ public final class CaseEndpoint {
     CaseContainerDTO caseContainerDTO = this.mapperFacade.map(caze, CaseContainerDTO.class);
     caseContainerDTO.setSurveyType(caze.getSurvey());
 
-    if (caze.getCaseType().equals("CE")) {
-      caseContainerDTO.setCeSecure(
-          Boolean.parseBoolean(caze.getMetadata().get("secureEstablishment")));
-    } else {
-      caseContainerDTO.setCeSecure(false);
-    }
+//    if (caze.getMetadata() != null) {
+      caseContainerDTO.setCeSecure(caze.getMetadata().getSecureEstablishment());
+//    }
 
     List<CaseEventDTO> caseEvents = new LinkedList<>();
 
