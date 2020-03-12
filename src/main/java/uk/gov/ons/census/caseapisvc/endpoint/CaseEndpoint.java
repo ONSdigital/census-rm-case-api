@@ -98,7 +98,7 @@ public final class CaseEndpoint {
 
   @GetMapping(value = "/ref/{reference}")
   public CaseContainerDTO findCaseByReference(
-      @PathVariable("reference") int reference,
+      @PathVariable("reference") long reference,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           boolean caseEvents) {
     log.debug("Entering findByReference");

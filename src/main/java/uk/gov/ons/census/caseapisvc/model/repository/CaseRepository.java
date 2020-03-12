@@ -13,7 +13,7 @@ public interface CaseRepository extends JpaRepository<Case, UUID> {
 
   Optional<Case> findByCaseId(UUID caseId);
 
-  Optional<Case> findByCaseRef(int reference);
+  Optional<Case> findByCaseRef(long reference);
 
   @Query(
       "SELECT c FROM Case c WHERE survey='CCS' AND UPPER(REPLACE(postcode, ' ', '')) = UPPER(REPLACE(:postcode, ' ', ''))")
