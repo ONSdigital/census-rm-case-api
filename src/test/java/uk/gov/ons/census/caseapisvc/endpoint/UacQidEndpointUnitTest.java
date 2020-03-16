@@ -38,7 +38,7 @@ public class UacQidEndpointUnitTest {
   public void createUacQidPair() throws Exception {
     UUID caseId = UUID.randomUUID();
     UacQidCreatedPayloadDTO uacQidCreatedPayloadDTO = new UacQidCreatedPayloadDTO();
-    uacQidCreatedPayloadDTO.setQid("0120000000005700");
+    uacQidCreatedPayloadDTO.setQid("0130000000005700");
     uacQidCreatedPayloadDTO.setUac("6ghnj22s5bp8r6rd");
     uacQidCreatedPayloadDTO.setCaseId(caseId.toString());
     when(uacQidService.createAndLinkUacQid(caseId.toString(), 1))
