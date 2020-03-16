@@ -26,7 +26,7 @@ public class DataUtils {
 
   private static final String TEST_UPRN = "123";
 
-  public static final String TEST_CCS_QID = "7120000000000000";
+  public static final String TEST_CCS_QID = "7130000000000000";
   public static final String CREATED_UAC = "created UAC";
 
   public static final ObjectMapper mapper;
