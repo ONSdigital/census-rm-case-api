@@ -65,4 +65,6 @@ public class CaseContainerDTO {
   private List<CaseEventDTO> caseEvents;
 
   private boolean handDelivery;
+
+  private Boolean ceSecure;
 }

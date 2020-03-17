@@ -12,10 +12,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.stream.Collectors;
 import org.jeasy.random.EasyRandom;
@@ -36,10 +33,7 @@ import uk.gov.ons.census.caseapisvc.model.dto.CCSLaunchDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.dto.TelephoneCaptureDTO;
-import uk.gov.ons.census.caseapisvc.model.entity.Case;
-import uk.gov.ons.census.caseapisvc.model.entity.Event;
-import uk.gov.ons.census.caseapisvc.model.entity.EventType;
-import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
+import uk.gov.ons.census.caseapisvc.model.entity.*;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.EventRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
@@ -212,6 +206,7 @@ public class CaseEndpointIT {
 
     assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
     assertThat(actualData.getCaseEvents().size()).isEqualTo(1);
+    assertThat(actualData.getCeSecure()).isNull();
   }
 
   @Test
@@ -230,6 +225,7 @@ public class CaseEndpointIT {
 
     assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
     assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
+    assertThat(actualData.getCeSecure()).isNull();
   }
 
   @Test
@@ -887,6 +883,46 @@ public class CaseEndpointIT {
     assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
   }
 
+  @Test
+  public void shouldReturnCeSecureStatusTrue() throws Exception {
+
+    setupTestCaseWithMetadata(TEST_CASE_ID_1_EXISTS, true);
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .queryString("caseEvents", "false")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
+
+    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
+    assertThat(actualData.getCeSecure()).isTrue();
+  }
+
+  @Test
+  public void shouldReturnCeSecureStatusFalse() throws Exception {
+
+    setupTestCaseWithMetadata(TEST_CASE_ID_1_EXISTS, false);
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/%s", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .queryString("caseEvents", "false")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
+
+    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
+    assertThat(actualData.getCeSecure()).isFalse();
+  }
+
   private Case createOneTestCaseWithEvent() {
     return setupTestCaseWithEvent(TEST_CASE_ID_1_EXISTS);
   }
@@ -976,6 +1012,16 @@ public class CaseEndpointIT {
   private Case setupTestCaseWithoutEvents(String caseId, String survey) {
     Case caze = getaCase(caseId);
     caze.setSurvey(survey);
+
+    return saveAndRetreiveCase(caze);
+  }
+
+  private Case setupTestCaseWithMetadata(String caseId, boolean secureEstablishment) {
+    Case caze = getaCase(caseId);
+    CaseMetadata metadata = new CaseMetadata();
+    metadata.setSecureEstablishment(secureEstablishment);
+    caze.setMetadata(metadata);
+    caze.setCaseType("CE");
 
     return saveAndRetreiveCase(caze);
   }
