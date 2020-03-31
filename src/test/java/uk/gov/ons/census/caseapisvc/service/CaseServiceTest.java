@@ -138,6 +138,7 @@ public class CaseServiceTest {
     when(uacQidLinkRepository.findByQid(TEST_QID)).thenReturn(uacQidLinkOptional);
 
     Case actualCase = caseService.findCaseByQid(TEST_QID);
+
     assertThat(actualCase).isEqualToComparingFieldByField(expectedCase);
   }
 
