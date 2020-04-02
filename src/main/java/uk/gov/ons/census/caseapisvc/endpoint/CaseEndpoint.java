@@ -202,7 +202,7 @@ public final class CaseEndpoint {
     caseContainerDTO.setSurveyType(caze.getSurvey());
 
     if (caze.getMetadata() != null) {
-      caseContainerDTO.setCeSecure(caze.getMetadata().getSecureEstablishment());
+      caseContainerDTO.setSecureEstablishment(caze.getMetadata().getSecureEstablishment());
     }
 
     List<CaseEventDTO> caseEvents = new LinkedList<>();
