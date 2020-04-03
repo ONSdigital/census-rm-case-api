@@ -120,6 +120,5 @@ public class Case {
   @Column(columnDefinition = "jsonb")
   private CaseMetadata metadata;
 
-  @Column
-  private String printBatch;
+  @Column private String printBatch;
 }
