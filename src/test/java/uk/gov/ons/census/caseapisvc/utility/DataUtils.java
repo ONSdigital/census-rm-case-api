@@ -26,6 +26,7 @@ public class DataUtils {
   private static final long TEST2_CASE_REFERENCE_ID = 1234567890;
 
   private static final String TEST_UPRN = "123";
+  private static final String TEST_ESTAB_UPRN = "4567";
 
   public static final String TEST_CCS_QID = "7130000000000000";
   public static final String CREATED_UAC = "created UAC";
@@ -72,6 +73,7 @@ public class DataUtils {
     caze.setCaseRef(caseRef);
     caze.setCaseId(caseId);
     caze.setUprn(TEST_UPRN);
+    caze.setEstabUprn(TEST_ESTAB_UPRN);
     caze.setUacQidLinks(uacQidLinks);
     caze.setSurvey("CENSUS");
     caze.setMetadata(new CaseMetadata());

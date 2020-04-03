@@ -12,13 +12,11 @@ public class CaseContainerDTO {
   @JsonProperty("id")
   private String caseId;
 
-  private String arid;
-
-  private String estabArid;
-
   private String estabType;
 
   private String uprn;
+
+  private String estabUprn;
 
   private String collectionExerciseId;
 

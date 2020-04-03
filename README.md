@@ -30,13 +30,11 @@ If this query parameter is omitted these case events **will not** be returned wi
   "addressLine1": "Flat 53 Francombe House",
   "addressLine2": "Commercial Road",
   "addressLine3": "",
-  "arid": "DDR190314000000195677",
   "caseEvents": [],
   "caseRef": "31283399",
   "addressType": "HH",
   "collectionExerciseId": "77c26716-5936-43e8-b56b-f5ca71765603",
   "createdDateTime": "2019-10-25T08:34:34.680556Z",
-  "estabArid": "DDR190314000000113742",
   "estabType": "Household",
   "id": "040f4608-d054-4ae9-b12f-1eee7e0fa284",
   "lad": "E06000023",
@@ -50,7 +48,8 @@ If this query parameter is omitted these case events **will not** be returned wi
   "region": "E12000009",
   "surveyType": "CENSUS",
   "townName": "Windleybury",
-  "uprn": "10008677190"
+  "uprn": "10008677190",
+  "estabUprn": "103434302134"
 }
 ```
 
