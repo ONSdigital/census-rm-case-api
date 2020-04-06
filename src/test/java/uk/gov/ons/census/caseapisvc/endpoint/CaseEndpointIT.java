@@ -1030,6 +1030,7 @@ public class CaseEndpointIT {
     Case caze = getaCase(caseId);
     caze.setCaseType("HH");
     caze.setTreatmentCode(treatmentCode);
+    caze.setRegion("E1000");
     caze.setAddressLevel("U");
 
     return saveAndRetreiveCase(caze);
@@ -1039,6 +1040,7 @@ public class CaseEndpointIT {
     Case caze = getaCase(caseId);
     caze.setCaseType("CE");
     caze.setTreatmentCode(treatmentCode);
+    caze.setRegion("E1000");
     caze.setAddressLevel("U");
 
     return saveAndRetreiveCase(caze);
@@ -1047,6 +1049,7 @@ public class CaseEndpointIT {
   private Case setUpSPGUnitCaseWithTreatmentCode(String caseId, String treatmentCode) {
     Case caze = getaCase(caseId);
     caze.setTreatmentCode(treatmentCode);
+    caze.setRegion("E1000");
     caze.setAddressLevel("U");
     caze.setCaseType("SPG");
 

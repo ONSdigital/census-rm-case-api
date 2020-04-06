@@ -339,6 +339,8 @@ public class CaseEndpointUnitTest {
   public void getNewUacQidByCaseId() throws Exception {
     Case caze = createSingleCaseWithEvents();
     caze.setTreatmentCode("HH_XXXXXE");
+    caze.setCaseType("HH");
+    caze.setRegion("E1000");
     UacQidCreatedPayloadDTO uacQidCreated =
         createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
     when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
@@ -376,6 +378,8 @@ public class CaseEndpointUnitTest {
     Case parentCase = createSingleCaseWithEvents();
     String individualCaseId = UUID.randomUUID().toString();
     parentCase.setTreatmentCode("HH_XXXXXE");
+    parentCase.setCaseType("HH");
+    parentCase.setRegion("E1000");
     UacQidCreatedPayloadDTO uacQidCreated = createUacQidCreatedPayload(TEST_QID, individualCaseId);
     when(caseService.findByCaseId(eq(parentCase.getCaseId().toString()))).thenReturn(parentCase);
     when(uacQidService.createAndLinkUacQid(eq(individualCaseId), eq(21))).thenReturn(uacQidCreated);
@@ -468,6 +472,7 @@ public class CaseEndpointUnitTest {
     Case caze = createSingleCaseWithEvents();
     caze.setCaseType("SPG");
     caze.setAddressLevel("U");
+    caze.setRegion("E");
     caze.setTreatmentCode("SPG_XXXXXE");
     UacQidCreatedPayloadDTO uacQidCreated =
         createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
@@ -494,6 +499,7 @@ public class CaseEndpointUnitTest {
     Case caze = createSingleCaseWithEvents();
     caze.setCaseType("SPG");
     caze.setAddressLevel("E");
+    caze.setRegion("E");
     caze.setTreatmentCode("SPG_XXXXXE");
     UacQidCreatedPayloadDTO uacQidCreated =
         createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
@@ -519,6 +525,7 @@ public class CaseEndpointUnitTest {
   public void getIndividualResponseForCeEstabCase() throws Exception {
     Case caze = createSingleCaseWithEvents();
     caze.setCaseType("CE");
+    caze.setRegion("E");
     caze.setAddressLevel("E");
     caze.setTreatmentCode("CE_XXXXXE");
     UacQidCreatedPayloadDTO uacQidCreated =
