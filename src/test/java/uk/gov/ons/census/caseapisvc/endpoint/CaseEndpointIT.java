@@ -734,6 +734,8 @@ public class CaseEndpointIT {
     Case CeEstabCase = getaCase(TEST_CASE_ID_1_EXISTS);
     CeEstabCase.setTreatmentCode(TEST_CE_ENGLAND_TREATMENT_CODE);
     CeEstabCase.setAddressLevel("E");
+    CeEstabCase.setRegion("E1000");
+    CeEstabCase.setCaseType("CE");
     CeEstabCase = saveAndRetreiveCase(CeEstabCase);
 
     // When
@@ -984,7 +986,6 @@ public class CaseEndpointIT {
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
     caze.setAddressType(ADDRESS_TYPE_TEST);
-
     caze.setUacQidLinks(null);
     return caze;
   }
