@@ -136,15 +136,15 @@ public class UacQidService {
     return isCeCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_ESTAB) && !individual;
   }
 
-  private static boolean isSpgCaseType(String treatmentCode) {
-    return treatmentCode.startsWith(CASE_TYPE_SPG);
+  private static boolean isSpgCaseType(String caseType) {
+    return caseType.equals(CASE_TYPE_SPG);
   }
 
-  private static boolean isHouseholdCaseType(String treatmentCode) {
-    return treatmentCode.startsWith(CASE_TYPE_HOUSEHOLD);
+  private static boolean isHouseholdCaseType(String caseType) {
+    return caseType.equals(CASE_TYPE_HOUSEHOLD);
   }
 
-  private static boolean isCeCaseType(String treatmentCode) {
-    return treatmentCode.startsWith(CASE_TYPE_CE);
+  private static boolean isCeCaseType(String caseType) {
+    return caseType.equals(CASE_TYPE_CE);
   }
 }
