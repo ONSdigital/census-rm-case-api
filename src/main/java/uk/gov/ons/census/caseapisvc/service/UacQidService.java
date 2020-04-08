@@ -76,18 +76,19 @@ public class UacQidService {
     return responseManagementEvent;
   }
 
-  public static int calculateQuestionnaireType(String treatmentCode, String addressLevel) {
-    return calculateQuestionnaireType(treatmentCode, addressLevel, false);
+  public static int calculateQuestionnaireType(
+      String caseType, String region, String addressLevel) {
+    return calculateQuestionnaireType(caseType, region, addressLevel, false);
   }
 
   public static int calculateQuestionnaireType(
-      String treatmentCode, String addressLevel, boolean individual) {
-    String country = treatmentCode.substring(treatmentCode.length() - 1);
+      String caseType, String region, String addressLevel, boolean individual) {
+    String country = region.substring(0, 1);
     if (!country.equals(COUNTRY_CODE_ENGLAND)
         && !country.equals(COUNTRY_CODE_WALES)
         && !country.equals(COUNTRY_CODE_NORTHERN_IRELAND)) {
       throw new IllegalArgumentException(
-          String.format("Unknown Country for treatment code %s", treatmentCode));
+          String.format("Unknown Country for treatment code %s", caseType));
     }
 
     if (individual) {
@@ -99,7 +100,7 @@ public class UacQidService {
         case COUNTRY_CODE_NORTHERN_IRELAND:
           return 24;
       }
-    } else if (isHouseholdCaseType(treatmentCode) || isSpgCaseType(treatmentCode)) {
+    } else if (isHouseholdCaseType(caseType) || isSpgCaseType(caseType)) {
       switch (country) {
         case COUNTRY_CODE_ENGLAND:
           return 1;
@@ -108,7 +109,7 @@ public class UacQidService {
         case COUNTRY_CODE_NORTHERN_IRELAND:
           return 4;
       }
-    } else if (isCE1RequestForEstabCeCase(treatmentCode, addressLevel, individual)) {
+    } else if (isCE1RequestForEstabCeCase(caseType, addressLevel, individual)) {
       switch (country) {
         case COUNTRY_CODE_ENGLAND:
           return 31;
@@ -121,13 +122,13 @@ public class UacQidService {
       throw new IllegalArgumentException(
           String.format(
               "Unexpected combination of Case Type, Address level and individual request. treatment code: '%s', address level: '%s', individual request: '%s'",
-              treatmentCode, addressLevel, individual));
+              caseType, addressLevel, individual));
     }
 
     throw new RuntimeException(
         String.format(
             "Unprocessable combination of Case Type, Address level and individual request. treatment code: '%s', address level: '%s', individual request: '%s'",
-            treatmentCode, addressLevel, individual));
+            caseType, addressLevel, individual));
   }
 
   private static boolean isCE1RequestForEstabCeCase(
@@ -135,15 +136,15 @@ public class UacQidService {
     return isCeCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_ESTAB) && !individual;
   }
 
-  private static boolean isSpgCaseType(String treatmentCode) {
-    return treatmentCode.startsWith(CASE_TYPE_SPG);
+  private static boolean isSpgCaseType(String caseType) {
+    return caseType.equals(CASE_TYPE_SPG);
   }
 
-  private static boolean isHouseholdCaseType(String treatmentCode) {
-    return treatmentCode.startsWith(CASE_TYPE_HOUSEHOLD);
+  private static boolean isHouseholdCaseType(String caseType) {
+    return caseType.equals(CASE_TYPE_HOUSEHOLD);
   }
 
-  private static boolean isCeCaseType(String treatmentCode) {
-    return treatmentCode.startsWith(CASE_TYPE_CE);
+  private static boolean isCeCaseType(String caseType) {
+    return caseType.equals(CASE_TYPE_CE);
   }
 }

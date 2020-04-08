@@ -151,7 +151,8 @@ public final class CaseEndpoint {
   private TelephoneCaptureDTO handleTelephoneCaptureRequest(Case caze, boolean individual) {
 
     int questionnaireType =
-        calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel(), individual);
+        calculateQuestionnaireType(
+            caze.getCaseType(), caze.getRegion(), caze.getAddressLevel(), individual);
 
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(caze.getCaseId().toString(), questionnaireType);
@@ -171,7 +172,8 @@ public final class CaseEndpoint {
     }
 
     int questionnaireType =
-        calculateQuestionnaireType(caze.getTreatmentCode(), caze.getAddressLevel(), true);
+        calculateQuestionnaireType(
+            caze.getCaseType(), caze.getRegion(), caze.getAddressLevel(), true);
 
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(individualCaseId, questionnaireType);
