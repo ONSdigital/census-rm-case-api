@@ -7,15 +7,31 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.*;
+import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.UpdateTimestamp;
 
+// The bidirectional relationships with other entities can cause stack overflows with the default
+// toString
+@ToString(onlyExplicitlyIncluded = true)
 @Data
 @Entity
 @TypeDefs({@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)})
-@Table(name = "cases")
+@Table(
+    name = "cases",
+    indexes = {
+      @Index(name = "cases_case_ref_idx", columnList = "case_ref"),
+      @Index(name = "lsoa_idx", columnList = "lsoa")
+    })
 public class Case {
 
   @Id private UUID caseId;
@@ -25,7 +41,8 @@ public class Case {
   @Generated(GenerationTime.INSERT)
   private int secretSequenceNumber;
 
-  @Column private Long caseRef;
+  @Column(name = "case_ref")
+  private Long caseRef;
 
   @Column private String uprn;
 
@@ -59,7 +76,8 @@ public class Case {
 
   @Column private String oa;
 
-  @Column private String lsoa;
+  @Column(name = "lsoa")
+  private String lsoa;
 
   @Column private String msoa;
 
@@ -89,6 +107,7 @@ public class Case {
   private String survey;
 
   @Column(columnDefinition = "timestamp with time zone")
+  @CreationTimestamp
   private OffsetDateTime createdDateTime;
 
   @OneToMany(mappedBy = "caze")
