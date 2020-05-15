@@ -22,8 +22,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Entity
 @Table(
     indexes = {
-        @Index(name = "qid_idx", columnList = "qid"),
-        @Index(name = "uac_qid_caze_case_id", columnList = "caze_case_id")
+      @Index(name = "qid_idx", columnList = "qid"),
+      @Index(name = "uac_qid_caze_case_id", columnList = "caze_case_id")
     })
 public class UacQidLink {
   @Id private UUID id;
