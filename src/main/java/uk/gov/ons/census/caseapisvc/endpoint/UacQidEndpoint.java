@@ -2,6 +2,7 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import io.micrometer.core.annotation.Timed;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import uk.gov.ons.census.caseapisvc.service.UacQidService;
 
 @RestController
 @RequestMapping(value = "/uacqid")
+@Timed
 public class UacQidEndpoint {
 
   private static final Logger log = LoggerFactory.getLogger(UacQidEndpoint.class);

@@ -5,6 +5,7 @@ import static uk.gov.ons.census.caseapisvc.service.UacQidService.calculateQuesti
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import io.micrometer.core.annotation.Timed;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +40,7 @@ import uk.gov.ons.census.caseapisvc.validation.RequestValidator;
 
 @RestController
 @RequestMapping(value = "/cases")
+@Timed
 public final class CaseEndpoint {
   private static final Logger log = LoggerFactory.getLogger(CaseEndpoint.class);
   private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
