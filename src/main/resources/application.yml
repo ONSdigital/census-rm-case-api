@@ -41,7 +41,7 @@ management:
     enabled-by-default: false
     web:
       exposure:
-        include: info, health, metrics, prometheus
+        include: info, health, prometheus
   endpoint:
     info:
       enabled: true
@@ -49,11 +49,9 @@ management:
       enabled: true
     prometheus:
       enabled: true
-    metrics:
-      enabled: true
   metrics:
     tags:
-      application: "CaseAPI"
+      application: Case API
 
 uacservice:
   connection:
