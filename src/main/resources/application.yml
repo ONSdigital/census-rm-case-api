@@ -53,7 +53,7 @@ management:
       enabled: true
   metrics:
     tags:
-      application: ${spring.application.name}
+      application: "CaseAPI"
 
 uacservice:
   connection:
