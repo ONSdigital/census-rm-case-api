@@ -41,7 +41,7 @@ management:
     enabled-by-default: false
     web:
       exposure:
-        include: info, health, prometheus
+        include: info, health, metrics, prometheus
   endpoint:
     info:
       enabled: true
@@ -49,6 +49,11 @@ management:
       enabled: true
     prometheus:
       enabled: true
+    metrics:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 uacservice:
   connection:
