@@ -48,6 +48,8 @@ management:
     health:
       enabled: true
   metrics:
+    tags:
+      application: Case API
     export:
       stackdriver:
         project-id: dummy-project-id
