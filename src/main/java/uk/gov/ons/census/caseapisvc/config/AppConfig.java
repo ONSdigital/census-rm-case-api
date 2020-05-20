@@ -3,6 +3,8 @@ package uk.gov.ons.census.caseapisvc.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.micrometer.stackdriver.StackdriverConfig;
+import io.micrometer.stackdriver.StackdriverMeterRegistry;
 import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 import ma.glasnost.orika.MapperFacade;
@@ -44,4 +46,23 @@ public class AppConfig {
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     return new Jackson2JsonMessageConverter(objectMapper);
   }
-}
+
+  @Bean
+  StackdriverConfig stackdriverConfig() {
+    return new StackdriverConfig() {
+      @Override
+      public String projectId() {
+        return "Case API";
+      }
+
+      @Override
+      public String get(String key) {
+        return null;
+      }
+    };
+  }
+
+  @Bean
+  StackdriverMeterRegistry meterRegistry(StackdriverConfig stackdriverConfig) {
+    return StackdriverMeterRegistry.builder(stackdriverConfig).build();
+  }}
