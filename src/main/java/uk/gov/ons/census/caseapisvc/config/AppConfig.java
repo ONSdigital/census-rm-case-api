@@ -65,4 +65,5 @@ public class AppConfig {
   @Bean
   StackdriverMeterRegistry meterRegistry(StackdriverConfig stackdriverConfig) {
     return StackdriverMeterRegistry.builder(stackdriverConfig).build();
-  }}
+  }
+}
