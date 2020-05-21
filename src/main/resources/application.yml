@@ -54,7 +54,7 @@ management:
       stackdriver:
         project-id: dummy-project-id
         enabled: false
-        step: 15s
+        step: PT1M
 
 uacservice:
   connection:
