@@ -71,7 +71,6 @@
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-registry-stackdriver</artifactId>
-      <version>1.5.1</version>
     </dependency>
 
     <!--    Test Dependencies below this point -->
