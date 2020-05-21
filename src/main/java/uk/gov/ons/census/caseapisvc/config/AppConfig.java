@@ -3,6 +3,9 @@ package uk.gov.ons.census.caseapisvc.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.config.MeterFilter;
+import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.stackdriver.StackdriverConfig;
 import io.micrometer.stackdriver.StackdriverMeterRegistry;
 import java.time.Duration;
@@ -83,6 +86,18 @@ public class AppConfig {
     };
   }
 
+  @Bean
+  public MeterFilter meterFilter() {
+    return new MeterFilter() {
+      @Override
+      public MeterFilterReply accept(Meter.Id id) {
+        if(id.getName().startsWith("rabbit.")) {
+          return MeterFilterReply.DENY;
+        }
+        return MeterFilterReply.NEUTRAL;
+      }
+    };
+  }
   @Bean
   StackdriverMeterRegistry meterRegistry(StackdriverConfig stackdriverConfig) {
     return StackdriverMeterRegistry.builder(stackdriverConfig).build();
