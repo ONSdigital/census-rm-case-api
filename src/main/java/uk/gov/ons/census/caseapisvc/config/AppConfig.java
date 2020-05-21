@@ -91,7 +91,7 @@ public class AppConfig {
     return new MeterFilter() {
       @Override
       public MeterFilterReply accept(Meter.Id id) {
-        if (id.getName().startsWith("rabbit.")) {
+        if (id.getName().startsWith("rabbitmq")) {
           return MeterFilterReply.DENY;
         }
         return MeterFilterReply.NEUTRAL;
