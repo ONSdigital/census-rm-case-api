@@ -91,13 +91,14 @@ public class AppConfig {
     return new MeterFilter() {
       @Override
       public MeterFilterReply accept(Meter.Id id) {
-        if(id.getName().startsWith("rabbit.")) {
+        if (id.getName().startsWith("rabbit.")) {
           return MeterFilterReply.DENY;
         }
         return MeterFilterReply.NEUTRAL;
       }
     };
   }
+
   @Bean
   StackdriverMeterRegistry meterRegistry(StackdriverConfig stackdriverConfig) {
     return StackdriverMeterRegistry.builder(stackdriverConfig).build();
