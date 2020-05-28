@@ -41,17 +41,20 @@ management:
     enabled-by-default: false
     web:
       exposure:
-        include: info, health, prometheus
+        include: info, health
   endpoint:
     info:
       enabled: true
     health:
       enabled: true
-    prometheus:
-      enabled: true
   metrics:
     tags:
       application: Case API
+    export:
+      stackdriver:
+        project-id: dummy-project-id
+        enabled: false
+        step: PT1M
 
 uacservice:
   connection:
