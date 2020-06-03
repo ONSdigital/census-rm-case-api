@@ -4,12 +4,7 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,6 +14,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.UpdateTimestamp;
+import uk.gov.ons.census.caseapisvc.model.dto.RefusalType;
 
 // The bidirectional relationships with other entities can cause stack overflows with the default
 // toString
@@ -119,8 +115,9 @@ public class Case {
   @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
   private boolean receiptReceived;
 
-  @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
-  private boolean refusalReceived;
+  @Enumerated(EnumType.STRING)
+  @Column
+  private RefusalType refusalReceived;
 
   @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
   private boolean addressInvalid;
