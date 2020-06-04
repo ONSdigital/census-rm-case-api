@@ -11,6 +11,8 @@ import uk.gov.ons.census.caseapisvc.model.entity.Case;
 public interface CaseRepository extends JpaRepository<Case, UUID> {
   Optional<List<Case>> findByUprn(String uprn);
 
+  Optional<List<Case>> findByUprnAndAddressInvalidNot(String uprn, boolean validAddressOnly);
+
   Optional<Case> findByCaseId(UUID caseId);
 
   Optional<Case> findByCaseRef(long reference);

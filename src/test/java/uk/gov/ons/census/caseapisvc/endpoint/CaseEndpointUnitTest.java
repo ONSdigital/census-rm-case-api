@@ -83,7 +83,8 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getMultipleCasesWithEventsByUPRN() throws Exception {
-    when(caseService.findByUPRN(anyString())).thenReturn(createMultipleCasesWithEvents());
+    when(caseService.findByUPRN(anyString(), eq(false)))
+        .thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
         .perform(
@@ -101,7 +102,8 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getMultipleCasesWithoutEventsByUPRN() throws Exception {
-    when(caseService.findByUPRN(anyString())).thenReturn(createMultipleCasesWithEvents());
+    when(caseService.findByUPRN(anyString(), eq(false)))
+        .thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
         .perform(
@@ -118,7 +120,8 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getMultipleCasesWithoutEventsByDefaultByUPRN() throws Exception {
-    when(caseService.findByUPRN(anyString())).thenReturn(createMultipleCasesWithEvents());
+    when(caseService.findByUPRN(anyString(), eq(false)))
+        .thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
         .perform(get(createUrl("/cases/uprn/%s", TEST_UPRN)).accept(MediaType.APPLICATION_JSON))
@@ -132,7 +135,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void receiveNotFoundExceptionWhenUPRNDoesNotExist() throws Exception {
-    when(caseService.findByUPRN(any())).thenThrow(new UPRNNotFoundException("a uprn"));
+    when(caseService.findByUPRN(any(), eq(false))).thenThrow(new UPRNNotFoundException("a uprn"));
 
     mockMvc
         .perform(get(createUrl("/cases/uprn/%s", TEST_UPRN)).accept(MediaType.APPLICATION_JSON))

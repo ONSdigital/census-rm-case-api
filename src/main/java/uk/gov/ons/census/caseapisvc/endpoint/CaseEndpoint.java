@@ -65,12 +65,14 @@ public final class CaseEndpoint {
   public List<CaseContainerDTO> findCasesByUPRN(
       @PathVariable("uprn") String uprn,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
-          boolean caseEvents) {
+          boolean caseEvents,
+      @RequestParam(value = "validAddressOnly", required = false, defaultValue = "false")
+          boolean validAddressOnly) {
     log.debug("Entering findByUPRN");
 
     List<CaseContainerDTO> caseContainerDTOs = new LinkedList<>();
 
-    for (Case caze : caseService.findByUPRN(uprn)) {
+    for (Case caze : caseService.findByUPRN(uprn, validAddressOnly)) {
       caseContainerDTOs.add(buildCaseContainerDTO(caze, caseEvents));
     }
 

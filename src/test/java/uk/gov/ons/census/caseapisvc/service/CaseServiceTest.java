@@ -64,7 +64,7 @@ public class CaseServiceTest {
   public void getMultipleCasesWhenUPRNExists() {
     when(caseRepo.findByUprn(anyString())).thenReturn(Optional.of(createMultipleCasesWithEvents()));
 
-    List<Case> actualCases = caseService.findByUPRN(TEST_UPRN);
+    List<Case> actualCases = caseService.findByUPRN(TEST_UPRN, eq(false));
     assertThat(actualCases.size()).isEqualTo(2);
 
     ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -77,7 +77,7 @@ public class CaseServiceTest {
   public void shouldThrowUPRNNotFoundExceptionWhenUPRNDoesNotExist() {
     when(caseRepo.findByUprn(any())).thenReturn(Optional.empty());
 
-    caseService.findByUPRN(TEST_UPRN);
+    caseService.findByUPRN(TEST_UPRN, eq(false));
   }
 
   @Test
