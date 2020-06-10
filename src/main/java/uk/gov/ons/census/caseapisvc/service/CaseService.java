@@ -56,7 +56,7 @@ public class CaseService {
 
     if (validAddressOnly == true) {
       return caseRepo
-          .findByUprnAndAddressInvalidNot(uprn, true)
+          .findByUprnAndAddressInvalidFalse(uprn)
           .orElseThrow(() -> new UPRNNotFoundException(uprn));
     } else {
       return caseRepo.findByUprn(uprn).orElseThrow(() -> new UPRNNotFoundException(uprn));
