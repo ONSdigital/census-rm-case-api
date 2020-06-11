@@ -54,7 +54,7 @@ public class CaseService {
   public List<Case> findByUPRN(String uprn, boolean validAddressOnly) {
     log.debug("Entering findByUPRN");
 
-    if (validAddressOnly == true) {
+    if (validAddressOnly) {
       return caseRepo
           .findByUprnAndAddressInvalidFalse(uprn)
           .orElseThrow(() -> new UPRNNotFoundException(uprn));
