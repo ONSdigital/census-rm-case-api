@@ -209,7 +209,7 @@ public class CaseEndpointIT {
 
     CaseContainerDTO case1 = actualData.get(0);
     assertThat(case1.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
-    assertThat(case1.getAddressInvalid()).isFalse();
+    assertThat(case1.isAddressInvalid()).isFalse();
   }
 
   @Test
@@ -231,7 +231,7 @@ public class CaseEndpointIT {
 
     CaseContainerDTO case1 = actualData.get(0);
     assertThat(case1.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
-    assertThat(case1.getAddressInvalid()).isTrue();
+    assertThat(case1.isAddressInvalid()).isTrue();
   }
 
   @Test
