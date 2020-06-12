@@ -65,4 +65,6 @@ public class CaseContainerDTO {
   private boolean handDelivery;
 
   private Boolean secureEstablishment;
+
+  private boolean addressInvalid;
 }

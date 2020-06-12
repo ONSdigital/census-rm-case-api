@@ -191,6 +191,63 @@ public class CaseEndpointIT {
   }
 
   @Test
+  public void shouldOnlyRetrieveACaseWithValidAddressWhenSearchingByUPRN() throws Exception {
+    setupTestCaseWithoutEvents(TEST_CASE_ID_1_EXISTS);
+    setupTestCaseWithAddressInvalid(TEST_CASE_ID_2_EXISTS);
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_EXISTS))
+            .header("accept", "application/json")
+            .queryString("validAddressOnly", "true")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    List<CaseContainerDTO> actualData = extractCaseContainerDTOsFromResponse(response);
+
+    assertThat(actualData.size()).isEqualTo(1);
+
+    CaseContainerDTO case1 = actualData.get(0);
+    assertThat(case1.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
+    assertThat(case1.isAddressInvalid()).isFalse();
+  }
+
+  @Test
+  public void shouldRetrieveCaseCasesWhenSearchingByUPRNAndValidAddressOnlyFalse()
+      throws Exception {
+    setupTestCaseWithAddressInvalid(TEST_CASE_ID_1_EXISTS);
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_EXISTS))
+            .header("accept", "application/json")
+            .queryString("validAddressOnly", "false")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    List<CaseContainerDTO> actualData = extractCaseContainerDTOsFromResponse(response);
+
+    assertThat(actualData.size()).isEqualTo(1);
+
+    CaseContainerDTO case1 = actualData.get(0);
+    assertThat(case1.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
+    assertThat(case1.isAddressInvalid()).isTrue();
+  }
+
+  @Test
+  public void shouldReturn404WhenUPRNButAddressInvalid() throws Exception {
+    setupTestCaseWithAddressInvalid(TEST_CASE_ID_1_EXISTS);
+
+    HttpResponse<JsonNode> jsonResponse =
+        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_EXISTS))
+            .header("accept", "application/json")
+            .queryString("validAddressOnly", "true")
+            .asJson();
+
+    assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
+  }
+
+  @Test
   public void shouldRetrieveACaseWithEventsWhenSearchingByCaseId() throws Exception {
     createOneTestCaseWithEvent();
 
@@ -1023,6 +1080,13 @@ public class CaseEndpointIT {
     metadata.setSecureEstablishment(secureEstablishment);
     caze.setMetadata(metadata);
     caze.setCaseType("CE");
+
+    return saveAndRetreiveCase(caze);
+  }
+
+  private Case setupTestCaseWithAddressInvalid(String caseId) {
+    Case caze = getaCase(caseId);
+    caze.setAddressInvalid(true);
 
     return saveAndRetreiveCase(caze);
   }

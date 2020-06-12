@@ -51,10 +51,16 @@ public class CaseService {
     this.rabbitTemplate = rabbitTemplate;
   }
 
-  public List<Case> findByUPRN(String uprn) {
+  public List<Case> findByUPRN(String uprn, boolean validAddressOnly) {
     log.debug("Entering findByUPRN");
 
-    return caseRepo.findByUprn(uprn).orElseThrow(() -> new UPRNNotFoundException(uprn));
+    if (validAddressOnly) {
+      return caseRepo
+          .findByUprnAndAddressInvalidFalse(uprn)
+          .orElseThrow(() -> new UPRNNotFoundException(uprn));
+    } else {
+      return caseRepo.findByUprn(uprn).orElseThrow(() -> new UPRNNotFoundException(uprn));
+    }
   }
 
   public Case findByCaseId(String caseId) {
