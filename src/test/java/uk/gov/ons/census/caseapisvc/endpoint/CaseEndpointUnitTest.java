@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.CREATED_UAC;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createCasesWithAddressInvalid;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createCcsUacQidLink;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
@@ -83,7 +84,8 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getMultipleCasesWithEventsByUPRN() throws Exception {
-    when(caseService.findByUPRN(anyString())).thenReturn(createMultipleCasesWithEvents());
+    when(caseService.findByUPRN(anyString(), eq(false)))
+        .thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
         .perform(
@@ -101,7 +103,8 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getMultipleCasesWithoutEventsByUPRN() throws Exception {
-    when(caseService.findByUPRN(anyString())).thenReturn(createMultipleCasesWithEvents());
+    when(caseService.findByUPRN(anyString(), eq(false)))
+        .thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
         .perform(
@@ -118,7 +121,8 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void getMultipleCasesWithoutEventsByDefaultByUPRN() throws Exception {
-    when(caseService.findByUPRN(anyString())).thenReturn(createMultipleCasesWithEvents());
+    when(caseService.findByUPRN(anyString(), eq(false)))
+        .thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
         .perform(get(createUrl("/cases/uprn/%s", TEST_UPRN)).accept(MediaType.APPLICATION_JSON))
@@ -132,11 +136,44 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void receiveNotFoundExceptionWhenUPRNDoesNotExist() throws Exception {
-    when(caseService.findByUPRN(any())).thenThrow(new UPRNNotFoundException("a uprn"));
+    when(caseService.findByUPRN(any(), eq(false))).thenThrow(new UPRNNotFoundException("a uprn"));
 
     mockMvc
         .perform(get(createUrl("/cases/uprn/%s", TEST_UPRN)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void getMultipleCasesWithAddressInvalidByUPRN() throws Exception {
+    when(caseService.findByUPRN(anyString(), eq(false)))
+        .thenReturn(createCasesWithAddressInvalid());
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/uprn/%s", TEST_UPRN))
+                .param("validAddressOnly", "false")
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().methodName(METHOD_NAME_FIND_CASES_BY_UPRN))
+        .andExpect(jsonPath("$[0].id", is(TEST1_CASE_ID)))
+        .andExpect(jsonPath("$[0].addressInvalid", is(false)))
+        .andExpect(jsonPath("$[1].id", is(TEST2_CASE_ID)))
+        .andExpect(jsonPath("$[1].addressInvalid", is(true)));
+  }
+
+  @Test
+  public void getOnlyCasesWithValidAddressByUPRN() throws Exception {
+    when(caseService.findByUPRN(anyString(), eq(true))).thenReturn(createCasesWithAddressInvalid());
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/uprn/%s", TEST_UPRN))
+                .param("validAddressOnly", "true")
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().methodName(METHOD_NAME_FIND_CASES_BY_UPRN))
+        .andExpect(jsonPath("$[0].id", is(TEST1_CASE_ID)))
+        .andExpect(jsonPath("$[0].addressInvalid", is(false)));
   }
 
   @Test

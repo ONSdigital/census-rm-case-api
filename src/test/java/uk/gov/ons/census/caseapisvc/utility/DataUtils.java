@@ -51,6 +51,14 @@ public class DataUtils {
         createCase(TEST2_CASE_ID, TEST2_CASE_REFERENCE_ID));
   }
 
+  public static List<Case> createCasesWithAddressInvalid() {
+    Case addressValidCase = createCase(TEST1_CASE_ID, TEST1_CASE_REFERENCE_ID);
+    Case addressInvalidCase = createCase(TEST2_CASE_ID, TEST2_CASE_REFERENCE_ID);
+
+    addressInvalidCase.setAddressInvalid(true);
+    return Arrays.asList(addressValidCase, addressInvalidCase);
+  }
+
   private static Case createCase(UUID caseId, long caseRef) {
     List<UacQidLink> uacQidLinks = new LinkedList<>();
     List<Event> events = new LinkedList<>();
