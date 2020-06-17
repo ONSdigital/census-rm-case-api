@@ -14,7 +14,6 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.UpdateTimestamp;
-import uk.gov.ons.census.caseapisvc.model.dto.RefusalType;
 
 // The bidirectional relationships with other entities can cause stack overflows with the default
 // toString

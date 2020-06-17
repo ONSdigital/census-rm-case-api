@@ -1,4 +1,4 @@
-package uk.gov.ons.census.caseapisvc.model.dto;
+package uk.gov.ons.census.caseapisvc.model.entity;
 
 public enum RefusalType {
   HARD_REFUSAL,
