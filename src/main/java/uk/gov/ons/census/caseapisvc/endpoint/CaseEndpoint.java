@@ -204,7 +204,7 @@ public final class CaseEndpoint {
 
   private CaseContainerDTO buildCaseContainerDTO(Case caze, boolean includeCaseEvents) {
 
-    CaseContainerDTO caseContainerDTO = this.mapperFacade.map(caze, CaseContainerDTO.class);
+    CaseContainerDTO caseContainerDTO = mapperFacade.map(caze, CaseContainerDTO.class);
     caseContainerDTO.setSurveyType(caze.getSurvey());
 
     if (caze.getMetadata() != null) {
@@ -220,12 +220,12 @@ public final class CaseEndpoint {
         List<Event> events = uacQidLink.getEvents();
 
         for (Event event : events) {
-          caseEvents.add(this.mapperFacade.map(event, CaseEventDTO.class));
+          caseEvents.add(mapperFacade.map(event, CaseEventDTO.class));
         }
       }
       if (caze.getEvents() != null) {
         for (Event event : caze.getEvents()) {
-          caseEvents.add(this.mapperFacade.map(event, CaseEventDTO.class));
+          caseEvents.add(mapperFacade.map(event, CaseEventDTO.class));
         }
       }
     }

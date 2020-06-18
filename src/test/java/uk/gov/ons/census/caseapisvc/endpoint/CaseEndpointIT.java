@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -64,9 +63,6 @@ public class CaseEndpointIT {
   private static final String TEST_POSTCODE_NO_SPACE = "AB12BC";
   private static final String TEST_POSTCODE_WITH_SPACE = "AB1 2BC";
 
-  @Value("${queueconfig.uac-qid-created-queue}")
-  private String uacQidCreatedQueueName;
-
   @LocalServerPort private int port;
 
   @Autowired private CaseRepository caseRepo;
@@ -90,10 +86,9 @@ public class CaseEndpointIT {
       clearDown();
     }
 
-    rabbitQueueHelper.purgeQueue(uacQidCreatedQueueName);
     rabbitQueueHelper.purgeQueue(caseFulfilmentsQueueName);
 
-    this.easyRandom = new EasyRandom(new EasyRandomParameters().randomizationDepth(1));
+    easyRandom = new EasyRandom(new EasyRandomParameters().randomizationDepth(1));
   }
 
   public void clearDown() {

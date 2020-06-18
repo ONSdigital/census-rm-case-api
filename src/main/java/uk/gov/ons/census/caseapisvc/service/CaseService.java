@@ -6,7 +6,6 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -33,7 +32,7 @@ public class CaseService {
 
   private final CaseRepository caseRepo;
   private final UacQidLinkRepository uacQidLinkRepository;
-  private RabbitTemplate rabbitTemplate;
+  private final RabbitTemplate rabbitTemplate;
 
   @Value("${queueconfig.events-exchange}")
   private String eventsExchange;
@@ -41,7 +40,6 @@ public class CaseService {
   @Value("${queueconfig.fulfilment-event-routing-key}")
   private String fulfilmentEventRoutingKey;
 
-  @Autowired
   public CaseService(
       CaseRepository caseRepo,
       UacQidLinkRepository uacQidLinkRepository,

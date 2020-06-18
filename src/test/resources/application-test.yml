@@ -7,6 +7,3 @@ spring:
 uacservice:
   connection:
     port: 18164
-
-queueconfig:
-  uac-qid-created-queue: case.uac-qid-created
