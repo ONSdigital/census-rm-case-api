@@ -74,7 +74,7 @@ public class CaseEndpointUnitTest {
   public void setUp() {
     initMocks(this);
 
-    this.mockMvc = MockMvcBuilders.standaloneSetup(caseEndpoint).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(caseEndpoint).build();
   }
 
   @After

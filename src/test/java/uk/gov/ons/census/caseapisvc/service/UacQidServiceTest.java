@@ -2,7 +2,6 @@ package uk.gov.ons.census.caseapisvc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.CREATED_UAC;
@@ -11,19 +10,12 @@ import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createUacQidCreated
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
-import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 
 public class UacQidServiceTest {
-
-  @Value("${queueconfig.uac-qid-created-exchange}")
-  private String uacQidCreatedExchange;
 
   private String NEW_QID = "newly created QID";
   private String ADDRESS_LEVEL_UNIT = "U";
@@ -31,7 +23,6 @@ public class UacQidServiceTest {
   private int TEST_QUESTIONNAIRE_TYPE = 1;
 
   @Mock private UacQidServiceClient uacQidServiceClient;
-  @Mock private RabbitTemplate rabbitTemplate;
 
   @InjectMocks private UacQidService uacQidService;
 
@@ -70,28 +61,6 @@ public class UacQidServiceTest {
         uacQidService.createAndLinkUacQid(caseId, TEST_QUESTIONNAIRE_TYPE);
 
     assertThat(actualResult).isEqualTo(expectedResult);
-  }
-
-  @Test
-  public void sendUacQidCreatedEventSendsRmUacCreatedEvent() {
-    String caseId = UUID.randomUUID().toString();
-    UacQidCreatedPayloadDTO thingToSend = createUacQidCreatedPayload(NEW_QID, caseId);
-
-    uacQidService.sendUacQidCreatedEvent(thingToSend);
-
-    // Then
-    ArgumentCaptor<ResponseManagementEvent> uacQidCreatedCaptor =
-        ArgumentCaptor.forClass(ResponseManagementEvent.class);
-    verify(rabbitTemplate)
-        .convertAndSend(eq(uacQidCreatedExchange), eq(""), uacQidCreatedCaptor.capture());
-    ResponseManagementEvent sentResponseManagementEvent = uacQidCreatedCaptor.getValue();
-    assertThat(sentResponseManagementEvent.getEvent().getType()).isEqualTo("RM_UAC_CREATED");
-    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getCaseId())
-        .isEqualTo(caseId);
-    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getQid())
-        .isEqualTo(NEW_QID);
-    assertThat(sentResponseManagementEvent.getPayload().getUacQidCreated().getUac())
-        .isEqualTo(CREATED_UAC);
   }
 
   @Test

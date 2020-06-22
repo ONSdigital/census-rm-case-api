@@ -53,29 +53,10 @@ If this query parameter is omitted these case events **will not** be returned wi
 }
 ```
 
-## Create, return and link a new UAC QID pair for a case:
-
-* `POST /uacqid/create`
-
-### Example Request Rody
-```json
-{
-"caseId": "820c9ebc-ac8c-483c-a9ec-0c2546d15d01",
-"questionnaireType": "01"
-}
-```
-
-### Example UAC QID JSON Response
-```json
-{
-  "caseId": "820c9ebc-ac8c-483c-a9ec-0c2546d15d01",
-  "qid": "0130000000000200",
-  "uac": "f7hhksdgtk4vj59h"
-}
-```
+## Create, return and link a new UAC QID pair for a telephone capture case:
 
 * `GET /cases/<case_id>/qid` 
-    Returns a newly generated QID/UAC pair every time based on the case type and links it to the case by eventual consistency (not synchronously)
+    Returns a newly generated QID/UAC pair based on the case type and links it to the case by eventual consistency (not synchronously)
 
 ### Example UAC QID JSON Response
 ```json
@@ -98,9 +79,6 @@ If this query parameter is omitted these case events **will not** be returned wi
   "formType": "H"
 }
 ```
-
-# Queues
-The creation of a Uac Qid Link emits a RM_UAC_CREATED message to the uac-qid-created-exchange
 
 # Configuration
 
