@@ -256,7 +256,7 @@ public class CaseEndpointIT {
 
     CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
 
-    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseId()).isEqualTo(UUID.fromString(TEST_CASE_ID_1_EXISTS));
     assertThat(actualData.getCaseEvents().size()).isEqualTo(1);
     assertThat(actualData.getSecureEstablishment()).isNull();
   }
@@ -275,7 +275,7 @@ public class CaseEndpointIT {
 
     CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
 
-    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseId()).isEqualTo(UUID.fromString(TEST_CASE_ID_1_EXISTS));
     assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
     assertThat(actualData.getSecureEstablishment()).isNull();
   }
@@ -293,7 +293,7 @@ public class CaseEndpointIT {
 
     CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
 
-    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseId()).isEqualTo(UUID.fromString(TEST_CASE_ID_1_EXISTS));
     assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
   }
 
@@ -314,7 +314,7 @@ public class CaseEndpointIT {
             .header("accept", "application/json")
             .asJson();
 
-    assertThat(jsonResponse.getStatus()).isEqualTo(NOT_FOUND.value());
+    assertThat(jsonResponse.getStatus()).isEqualTo(BAD_REQUEST.value());
   }
 
   @Test
@@ -396,7 +396,7 @@ public class CaseEndpointIT {
             .asJson();
 
     CaseContainerDTO caseContainerDTO = DataUtils.extractCaseIdDtoFromResponse(jsonResponse);
-    assertThat(caseContainerDTO.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(caseContainerDTO.getCaseId()).isEqualTo(UUID.fromString(TEST_CASE_ID_1_EXISTS));
     assertThat(caseContainerDTO.getAddressType()).isEqualTo(ADDRESS_TYPE_TEST);
   }
 
@@ -620,7 +620,7 @@ public class CaseEndpointIT {
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
         .isEqualTo("RM_TC");
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getCaseId())
-        .isEqualTo(caze.getCaseId().toString());
+        .isEqualTo(caze.getCaseId());
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getIndividualCaseId())
         .isNull();
 
@@ -630,7 +630,7 @@ public class CaseEndpointIT {
                 .getFulfilmentRequest()
                 .getUacQidCreated()
                 .getCaseId())
-        .isEqualTo(caze.getCaseId().toString());
+        .isEqualTo(caze.getCaseId());
     assertThat(
             responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated().getQid())
         .startsWith("01");
@@ -679,9 +679,9 @@ public class CaseEndpointIT {
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
         .isEqualTo("RM_TC_HI");
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getCaseId())
-        .isEqualTo(parentCase.getCaseId().toString());
+        .isEqualTo(parentCase.getCaseId());
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getIndividualCaseId())
-        .isEqualTo(individualCaseId.toString());
+        .isEqualTo(individualCaseId);
 
     assertThat(
             responseManagementEvent
@@ -689,7 +689,7 @@ public class CaseEndpointIT {
                 .getFulfilmentRequest()
                 .getUacQidCreated()
                 .getCaseId())
-        .isEqualTo(individualCaseId.toString());
+        .isEqualTo(individualCaseId);
     assertThat(
             responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated().getQid())
         .startsWith("21");
@@ -755,7 +755,7 @@ public class CaseEndpointIT {
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
         .isEqualTo("RM_TC");
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getCaseId())
-        .isEqualTo(caze.getCaseId().toString());
+        .isEqualTo(caze.getCaseId());
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getIndividualCaseId())
         .isNull();
 
@@ -765,7 +765,7 @@ public class CaseEndpointIT {
                 .getFulfilmentRequest()
                 .getUacQidCreated()
                 .getCaseId())
-        .isEqualTo(caze.getCaseId().toString());
+        .isEqualTo(caze.getCaseId());
     assertThat(
             responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated().getQid())
         .startsWith("21");
@@ -832,7 +832,7 @@ public class CaseEndpointIT {
             new TypeReference<List<CaseContainerDTO>>() {});
 
     assertThat(foundCases).hasSize(1);
-    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
+    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId());
   }
 
   @Test
@@ -840,8 +840,8 @@ public class CaseEndpointIT {
 
     // Given
     Case[] matchCases = setupCcsCasesWithPostcode(TEST_POSTCODE_NO_SPACE, 3);
-    Set<String> expectedCaseIds =
-        Arrays.stream(matchCases).map(c -> c.getCaseId().toString()).collect(Collectors.toSet());
+    Set<UUID> expectedCaseIds =
+        Arrays.stream(matchCases).map(c -> c.getCaseId()).collect(Collectors.toSet());
 
     // When
     HttpResponse<JsonNode> jsonResponse =
@@ -859,7 +859,7 @@ public class CaseEndpointIT {
             new TypeReference<List<CaseContainerDTO>>() {});
 
     assertThat(foundCases).hasSize(3);
-    Set<String> actualCaseIds =
+    Set<UUID> actualCaseIds =
         foundCases.stream().map(CaseContainerDTO::getCaseId).collect(Collectors.toSet());
     assertThat(actualCaseIds).isEqualTo(expectedCaseIds);
   }
@@ -886,7 +886,7 @@ public class CaseEndpointIT {
             new TypeReference<List<CaseContainerDTO>>() {});
 
     assertThat(foundCases).hasSize(1);
-    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
+    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId());
   }
 
   @Test
@@ -911,7 +911,7 @@ public class CaseEndpointIT {
             new TypeReference<List<CaseContainerDTO>>() {});
 
     assertThat(foundCases).hasSize(1);
-    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
+    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId());
   }
 
   @Test
@@ -934,7 +934,7 @@ public class CaseEndpointIT {
             new TypeReference<List<CaseContainerDTO>>() {});
 
     assertThat(foundCases).hasSize(1);
-    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId().toString());
+    assertThat(foundCases.get(0).getCaseId()).isEqualTo(ccsCase.getCaseId());
   }
 
   @Test
@@ -952,7 +952,7 @@ public class CaseEndpointIT {
 
     CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
 
-    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseId()).isEqualTo(UUID.fromString(TEST_CASE_ID_1_EXISTS));
     assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
     assertThat(actualData.getSecureEstablishment()).isTrue();
   }
@@ -972,7 +972,7 @@ public class CaseEndpointIT {
 
     CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
 
-    assertThat(actualData.getCaseId()).isEqualTo(TEST_CASE_ID_1_EXISTS);
+    assertThat(actualData.getCaseId()).isEqualTo(UUID.fromString(TEST_CASE_ID_1_EXISTS));
     assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
     assertThat(actualData.getSecureEstablishment()).isFalse();
   }
@@ -1136,7 +1136,7 @@ public class CaseEndpointIT {
     caseRepo.saveAndFlush(caze);
 
     return caseRepo
-        .findByCaseId(UUID.fromString(caze.getCaseId().toString()))
+        .findByCaseId(caze.getCaseId())
         .orElseThrow(() -> new RuntimeException("Case not found!"));
   }
 

@@ -3,6 +3,7 @@ package uk.gov.ons.census.caseapisvc.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.Data;
 
 @Data
@@ -10,7 +11,7 @@ public class CaseContainerDTO {
   private String caseRef;
 
   @JsonProperty("id")
-  private String caseId;
+  private UUID caseId;
 
   private String estabType;
 
@@ -18,7 +19,7 @@ public class CaseContainerDTO {
 
   private String estabUprn;
 
-  private String collectionExerciseId;
+  private UUID collectionExerciseId;
 
   private String surveyType;
 

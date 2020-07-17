@@ -20,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
-import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
@@ -36,9 +35,8 @@ import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 public class CaseServiceTest {
   private static final int TEST_CASE_REFERENCE_ID_EXISTS = 123;
   private static final String RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL = "RM_TC_HI";
-  private static final String TEST_CASE_ID_EXISTS = "2e083ab1-41f7-4dea-a3d9-77f48458b5ca";
-  private static final String TEST_CASE_ID_DOES_NOT_EXIST = "590179eb-f8ce-4e2d-8cb6-ca4013a2ccf0";
-  private static final String TEST_INVALID_CASE_ID = "anything";
+  private static final UUID TEST_CASE_ID_EXISTS = UUID.randomUUID();
+  private static final UUID TEST_CASE_ID_DOES_NOT_EXIST = UUID.randomUUID();
 
   private static final String TEST_UPRN = "123";
   public static final String TEST_QID = "test_qid";
@@ -92,7 +90,7 @@ public class CaseServiceTest {
     ArgumentCaptor<UUID> captor = ArgumentCaptor.forClass(UUID.class);
     verify(caseRepo).findByCaseId(captor.capture());
     UUID actualCaseId = captor.getValue();
-    assertThat(actualCaseId).isEqualTo(UUID.fromString(TEST_CASE_ID_EXISTS));
+    assertThat(actualCaseId).isEqualTo(TEST_CASE_ID_EXISTS);
   }
 
   @Test(expected = CaseIdNotFoundException.class)
@@ -100,11 +98,6 @@ public class CaseServiceTest {
     when(caseRepo.findByCaseId(any())).thenReturn(Optional.empty());
 
     caseService.findByCaseId(TEST_CASE_ID_DOES_NOT_EXIST);
-  }
-
-  @Test(expected = CaseIdInvalidException.class)
-  public void shouldThrowCaseIdInvalidExceptionWhenCaseIdDoesNotExist() {
-    caseService.findByCaseId(TEST_INVALID_CASE_ID);
   }
 
   @Test
@@ -162,11 +155,10 @@ public class CaseServiceTest {
     Case ccsCase = createSingleCcsCaseWithCcsQid();
     UacQidLink ccsUacQidLink = ccsCase.getUacQidLinks().get(0);
     when(uacQidLinkRepository.findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeSurvey(
-            UUID.fromString(TEST_CASE_ID_EXISTS), "CCS"))
+            ccsCase.getCaseId(), "CCS"))
         .thenReturn(Optional.of(ccsUacQidLink));
 
-    UacQidLink actualCcsUacQidLink =
-        caseService.findCCSUacQidLinkByCaseId(ccsCase.getCaseId().toString());
+    UacQidLink actualCcsUacQidLink = caseService.findCCSUacQidLinkByCaseId(ccsCase.getCaseId());
     assertThat(actualCcsUacQidLink.getQid()).isEqualTo(TEST_CCS_QID);
     assertThat(actualCcsUacQidLink.isActive()).isEqualTo(true);
   }
@@ -174,7 +166,7 @@ public class CaseServiceTest {
   @Test(expected = QidNotFoundException.class)
   public void testFindCcsQidByCaseIdNoCcsQidFound() {
     when(uacQidLinkRepository.findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeSurvey(
-            UUID.fromString(TEST_CASE_ID_DOES_NOT_EXIST), "CCS"))
+            TEST_CASE_ID_DOES_NOT_EXIST, "CCS"))
         .thenReturn(Optional.empty());
     caseService.findCCSUacQidLinkByCaseId(TEST_CASE_ID_EXISTS);
   }
@@ -188,10 +180,7 @@ public class CaseServiceTest {
 
     // When
     caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
-        parentCaseId.toString(),
-        RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL,
-        individualCaseId.toString(),
-        uacQidCreated);
+        parentCaseId, RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL, individualCaseId, uacQidCreated);
 
     // Then
     ArgumentCaptor<ResponseManagementEvent> eventArgumentCaptor =
@@ -203,9 +192,9 @@ public class CaseServiceTest {
     ResponseManagementEvent responseManagementEvent = eventArgumentCaptor.getValue();
     assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("FULFILMENT_REQUESTED");
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getCaseId())
-        .isEqualTo(parentCaseId.toString());
+        .isEqualTo(parentCaseId);
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getIndividualCaseId())
-        .isEqualTo(individualCaseId.toString());
+        .isEqualTo(individualCaseId);
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getFulfilmentCode())
         .isEqualTo("RM_TC_HI");
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated())

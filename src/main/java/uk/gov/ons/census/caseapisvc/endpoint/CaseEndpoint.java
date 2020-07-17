@@ -9,6 +9,7 @@ import io.micrometer.core.annotation.Timed;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import ma.glasnost.orika.MapperFacade;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
@@ -81,7 +81,7 @@ public final class CaseEndpoint {
 
   @GetMapping(value = "/{caseId}")
   public CaseContainerDTO findCaseByCaseId(
-      @PathVariable("caseId") String caseId,
+      @PathVariable("caseId") UUID caseId,
       @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           boolean caseEvents) {
     log.debug("Entering findByCaseId");
@@ -94,7 +94,7 @@ public final class CaseEndpoint {
     log.debug("Entering findByQid");
     Case caze = caseService.findCaseByQid(qid);
     CaseContainerDTO caseContainerDTO = new CaseContainerDTO();
-    caseContainerDTO.setCaseId(caze.getCaseId().toString());
+    caseContainerDTO.setCaseId(caze.getCaseId());
     caseContainerDTO.setAddressType(caze.getAddressType());
 
     return caseContainerDTO;
@@ -123,7 +123,7 @@ public final class CaseEndpoint {
   }
 
   @GetMapping(value = "/ccs/{caseId}/qid")
-  public CCSLaunchDTO findCCSQidByCaseId(@PathVariable("caseId") String caseId) {
+  public CCSLaunchDTO findCCSQidByCaseId(@PathVariable("caseId") UUID caseId) {
     log.debug("Entering findByCaseId");
     UacQidLink ccsUacQidLink = caseService.findCCSUacQidLinkByCaseId(caseId);
 
@@ -136,10 +136,10 @@ public final class CaseEndpoint {
 
   @GetMapping(value = "/{caseId}/qid")
   public TelephoneCaptureDTO getNewQidForTelephoneCapture(
-      @PathVariable("caseId") String caseId,
+      @PathVariable("caseId") UUID caseId,
       @RequestParam(value = "individual", required = false, defaultValue = "false")
           boolean individual,
-      @RequestParam(value = "individualCaseId", required = false) String individualCaseId) {
+      @RequestParam(value = "individualCaseId", required = false) UUID individualCaseId) {
     log.debug("Entering getNewQidByCaseId");
 
     Case caze = caseService.findByCaseId(caseId);
@@ -159,16 +159,16 @@ public final class CaseEndpoint {
             caze.getCaseType(), caze.getRegion(), caze.getAddressLevel(), individual);
 
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
-        uacQidService.createAndLinkUacQid(caze.getCaseId().toString(), questionnaireType);
+        uacQidService.createAndLinkUacQid(caze.getCaseId(), questionnaireType);
 
     caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
-        caze.getCaseId().toString(), RM_TELEPHONE_CAPTURE, null, uacQidCreatedPayload);
+        caze.getCaseId(), RM_TELEPHONE_CAPTURE, null, uacQidCreatedPayload);
 
     return buildTelephoneCaptureDTO(uacQidCreatedPayload, questionnaireType);
   }
 
   private TelephoneCaptureDTO handleNewIndividualTelephoneCaptureRequest(
-      Case caze, String individualCaseId) {
+      Case caze, UUID individualCaseId) {
     if (caseService.caseExistsByCaseId(individualCaseId)) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST,
@@ -183,7 +183,7 @@ public final class CaseEndpoint {
         uacQidService.createAndLinkUacQid(individualCaseId, questionnaireType);
 
     caseService.buildAndSendTelephoneCaptureFulfilmentRequest(
-        caze.getCaseId().toString(),
+        caze.getCaseId(),
         RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL,
         individualCaseId,
         uacQidCreatedPayload);
@@ -194,7 +194,6 @@ public final class CaseEndpoint {
   @ExceptionHandler({
     UPRNNotFoundException.class,
     CaseIdNotFoundException.class,
-    CaseIdInvalidException.class,
     CaseReferenceNotFoundException.class,
     QidNotFoundException.class
   })

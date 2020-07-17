@@ -121,7 +121,7 @@ public class DataUtils {
     return uacQidCreatedPayloadDTO;
   }
 
-  public static UacQidCreatedPayloadDTO createUacQidCreatedPayload(String qid, String caseId) {
+  public static UacQidCreatedPayloadDTO createUacQidCreatedPayload(String qid, UUID caseId) {
     UacQidCreatedPayloadDTO uacQidCreatedPayloadDTO = createUacQidCreatedPayload(qid);
     uacQidCreatedPayloadDTO.setCaseId(caseId);
     return uacQidCreatedPayloadDTO;
