@@ -254,7 +254,7 @@ public class CaseEndpointUnitTest {
 
   @Test
   public void receiveNotFoundExceptionWhenCaseIdDoesNotExist() throws Exception {
-    when(caseService.findByCaseId(any())).thenThrow(new CaseIdNotFoundException("a case id"));
+    when(caseService.findByCaseId(any())).thenThrow(new CaseIdNotFoundException(UUID.randomUUID()));
 
     mockMvc
         .perform(get(createUrl("/cases/%s", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
@@ -352,11 +352,11 @@ public class CaseEndpointUnitTest {
   @Test
   public void getCcsQidByCaseIdCcsCaseNotFound() throws Exception {
     when(caseService.findCCSUacQidLinkByCaseId(any()))
-        .thenThrow(new CaseIdNotFoundException("test"));
+        .thenThrow(new CaseIdNotFoundException(UUID.randomUUID()));
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_REFERENCE_ID))
+            get(createUrl("/cases/ccs/%s/qid", UUID.randomUUID().toString()))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
@@ -367,7 +367,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_REFERENCE_ID))
+            get(createUrl("/cases/ccs/%s/qid", UUID.randomUUID().toString()))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
@@ -378,11 +378,9 @@ public class CaseEndpointUnitTest {
     caze.setTreatmentCode("HH_XXXXXE");
     caze.setCaseType("HH");
     caze.setRegion("E1000");
-    UacQidCreatedPayloadDTO uacQidCreated =
-        createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
-    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
-    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId().toString()), eq(1)))
-        .thenReturn(uacQidCreated);
+    UacQidCreatedPayloadDTO uacQidCreated = createUacQidCreatedPayload(TEST_QID, caze.getCaseId());
+    when(caseService.findByCaseId(eq(caze.getCaseId()))).thenReturn(caze);
+    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId()), eq(1))).thenReturn(uacQidCreated);
 
     mockMvc
         .perform(
@@ -395,15 +393,15 @@ public class CaseEndpointUnitTest {
         .andExpect(jsonPath("$.formType", is("H")))
         .andExpect(jsonPath("$.questionnaireType", is("01")));
 
-    verify(uacQidService).createAndLinkUacQid(eq(caze.getCaseId().toString()), anyInt());
+    verify(uacQidService).createAndLinkUacQid(eq(caze.getCaseId()), anyInt());
     verify(caseService)
         .buildAndSendTelephoneCaptureFulfilmentRequest(
-            eq(caze.getCaseId().toString()), eq(RM_TELEPHONE_CAPTURE), isNull(), eq(uacQidCreated));
+            eq(caze.getCaseId()), eq(RM_TELEPHONE_CAPTURE), isNull(), eq(uacQidCreated));
   }
 
   @Test
   public void getNewUacQidByCaseIdNotFound() throws Exception {
-    when(caseService.findByCaseId(any())).thenThrow(new CaseIdNotFoundException("a case id"));
+    when(caseService.findByCaseId(any())).thenThrow(new CaseIdNotFoundException(UUID.randomUUID()));
 
     mockMvc
         .perform(get(createUrl("/cases/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
@@ -413,12 +411,12 @@ public class CaseEndpointUnitTest {
   @Test
   public void getNewIndividualUacQidByCaseId() throws Exception {
     Case parentCase = createSingleCaseWithEvents();
-    String individualCaseId = UUID.randomUUID().toString();
+    UUID individualCaseId = UUID.randomUUID();
     parentCase.setTreatmentCode("HH_XXXXXE");
     parentCase.setCaseType("HH");
     parentCase.setRegion("E1000");
     UacQidCreatedPayloadDTO uacQidCreated = createUacQidCreatedPayload(TEST_QID, individualCaseId);
-    when(caseService.findByCaseId(eq(parentCase.getCaseId().toString()))).thenReturn(parentCase);
+    when(caseService.findByCaseId(eq(parentCase.getCaseId()))).thenReturn(parentCase);
     when(uacQidService.createAndLinkUacQid(eq(individualCaseId), eq(21))).thenReturn(uacQidCreated);
     when(caseService.caseExistsByCaseId(eq(individualCaseId))).thenReturn(false);
 
@@ -426,7 +424,7 @@ public class CaseEndpointUnitTest {
         .perform(
             get(String.format(
                     "/cases/%s/qid?individual=true&individualCaseId=%s",
-                    parentCase.getCaseId().toString(), individualCaseId))
+                    parentCase.getCaseId(), individualCaseId))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
@@ -437,7 +435,7 @@ public class CaseEndpointUnitTest {
 
     verify(caseService)
         .buildAndSendTelephoneCaptureFulfilmentRequest(
-            eq(parentCase.getCaseId().toString()),
+            eq(parentCase.getCaseId()),
             eq(RM_TELEPHONE_CAPTURE_HOUSEHOLD_INDIVIDUAL),
             eq(individualCaseId),
             eq(uacQidCreated));
@@ -446,16 +444,16 @@ public class CaseEndpointUnitTest {
   @Test
   public void getNewIndividualUacQidButIndividualCaseExists() throws Exception {
     Case parentCase = createSingleCaseWithEvents();
-    String individualCaseId = UUID.randomUUID().toString();
+    UUID individualCaseId = UUID.randomUUID();
     parentCase.setTreatmentCode("HH_XXXXXE");
-    when(caseService.findByCaseId(eq(parentCase.getCaseId().toString()))).thenReturn(parentCase);
+    when(caseService.findByCaseId(eq(parentCase.getCaseId()))).thenReturn(parentCase);
     when(caseService.caseExistsByCaseId(eq(individualCaseId))).thenReturn(true);
 
     mockMvc
         .perform(
             get(String.format(
                     "/cases/%s/qid?individual=true&individualCaseId=%s",
-                    parentCase.getCaseId().toString(), individualCaseId))
+                    parentCase.getCaseId(), individualCaseId))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(handler().handlerType(CaseEndpoint.class));
@@ -468,14 +466,13 @@ public class CaseEndpointUnitTest {
   @Test
   public void getNewIndividualUacQidButIndividualParamNotGiven() throws Exception {
     Case parentCase = createSingleCaseWithEvents();
-    when(caseService.findByCaseId(anyString())).thenReturn(parentCase);
+    when(caseService.findByCaseId(any())).thenReturn(parentCase);
     String individualCaseId = UUID.randomUUID().toString();
 
     mockMvc
         .perform(
             get(String.format(
-                    "/cases/%s/qid?individualCaseId=%s",
-                    parentCase.getCaseId().toString(), individualCaseId))
+                    "/cases/%s/qid?individualCaseId=%s", parentCase.getCaseId(), individualCaseId))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(handler().handlerType(CaseEndpoint.class));
@@ -488,20 +485,20 @@ public class CaseEndpointUnitTest {
     Case caze = createSingleCaseWithEvents();
     caze.setCaseType("SPG");
     caze.setAddressLevel("U");
-    String individualCaseId = UUID.randomUUID().toString();
-    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
+    UUID individualCaseId = UUID.randomUUID();
+    when(caseService.findByCaseId(eq(caze.getCaseId()))).thenReturn(caze);
     when(caseService.caseExistsByCaseId(eq(individualCaseId))).thenReturn(false);
 
     mockMvc
         .perform(
             get(String.format(
                     "/cases/%s/qid?individual=true&individualCaseId=%s",
-                    caze.getCaseId().toString(), individualCaseId))
+                    caze.getCaseId(), individualCaseId))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(handler().handlerType(CaseEndpoint.class));
 
-    verify(caseService).findByCaseId(caze.getCaseId().toString());
+    verify(caseService).findByCaseId(caze.getCaseId());
   }
 
   @Test
@@ -511,15 +508,13 @@ public class CaseEndpointUnitTest {
     caze.setAddressLevel("U");
     caze.setRegion("E");
     caze.setTreatmentCode("SPG_XXXXXE");
-    UacQidCreatedPayloadDTO uacQidCreated =
-        createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
-    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
-    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId().toString()), eq(21)))
-        .thenReturn(uacQidCreated);
+    UacQidCreatedPayloadDTO uacQidCreated = createUacQidCreatedPayload(TEST_QID, caze.getCaseId());
+    when(caseService.findByCaseId(eq(caze.getCaseId()))).thenReturn(caze);
+    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId()), eq(21))).thenReturn(uacQidCreated);
 
     mockMvc
         .perform(
-            get(String.format("/cases/%s/qid?individual=true", caze.getCaseId().toString()))
+            get(String.format("/cases/%s/qid?individual=true", caze.getCaseId()))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
@@ -528,7 +523,7 @@ public class CaseEndpointUnitTest {
         .andExpect(jsonPath("$.formType", is("I")))
         .andExpect(jsonPath("$.questionnaireType", is("21")));
 
-    verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
+    verify(caseService, never()).caseExistsByCaseId(caze.getCaseId());
   }
 
   @Test
@@ -538,15 +533,13 @@ public class CaseEndpointUnitTest {
     caze.setAddressLevel("E");
     caze.setRegion("E");
     caze.setTreatmentCode("SPG_XXXXXE");
-    UacQidCreatedPayloadDTO uacQidCreated =
-        createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
-    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
-    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId().toString()), eq(21)))
-        .thenReturn(uacQidCreated);
+    UacQidCreatedPayloadDTO uacQidCreated = createUacQidCreatedPayload(TEST_QID, caze.getCaseId());
+    when(caseService.findByCaseId(eq(caze.getCaseId()))).thenReturn(caze);
+    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId()), eq(21))).thenReturn(uacQidCreated);
 
     mockMvc
         .perform(
-            get(String.format("/cases/%s/qid?individual=true", caze.getCaseId().toString()))
+            get(String.format("/cases/%s/qid?individual=true", caze.getCaseId()))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
@@ -555,7 +548,7 @@ public class CaseEndpointUnitTest {
         .andExpect(jsonPath("$.formType", is("I")))
         .andExpect(jsonPath("$.questionnaireType", is("21")));
 
-    verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
+    verify(caseService, never()).caseExistsByCaseId(caze.getCaseId());
   }
 
   @Test
@@ -565,15 +558,13 @@ public class CaseEndpointUnitTest {
     caze.setRegion("E");
     caze.setAddressLevel("E");
     caze.setTreatmentCode("CE_XXXXXE");
-    UacQidCreatedPayloadDTO uacQidCreated =
-        createUacQidCreatedPayload(TEST_QID, caze.getCaseId().toString());
-    when(caseService.findByCaseId(eq(caze.getCaseId().toString()))).thenReturn(caze);
-    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId().toString()), eq(21)))
-        .thenReturn(uacQidCreated);
+    UacQidCreatedPayloadDTO uacQidCreated = createUacQidCreatedPayload(TEST_QID, caze.getCaseId());
+    when(caseService.findByCaseId(eq(caze.getCaseId()))).thenReturn(caze);
+    when(uacQidService.createAndLinkUacQid(eq(caze.getCaseId()), eq(21))).thenReturn(uacQidCreated);
 
     mockMvc
         .perform(
-            get(String.format("/cases/%s/qid?individual=true", caze.getCaseId().toString()))
+            get(String.format("/cases/%s/qid?individual=true", caze.getCaseId()))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
@@ -582,7 +573,7 @@ public class CaseEndpointUnitTest {
         .andExpect(jsonPath("$.formType", is("I")))
         .andExpect(jsonPath("$.questionnaireType", is("21")));
 
-    verify(caseService, never()).caseExistsByCaseId(caze.getCaseId().toString());
+    verify(caseService, never()).caseExistsByCaseId(caze.getCaseId());
   }
 
   @Test

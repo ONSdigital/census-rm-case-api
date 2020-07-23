@@ -9,7 +9,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import uk.gov.ons.census.caseapisvc.exception.CaseIdInvalidException;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
@@ -61,14 +60,10 @@ public class CaseService {
     }
   }
 
-  public Case findByCaseId(String caseId) {
+  public Case findByCaseId(UUID caseId) {
     log.debug("Entering findByCaseId");
 
-    UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
-
-    return caseRepo
-        .findByCaseId(caseIdUUID)
-        .orElseThrow(() -> new CaseIdNotFoundException(caseIdUUID.toString()));
+    return caseRepo.findByCaseId(caseId).orElseThrow(() -> new CaseIdNotFoundException(caseId));
   }
 
   public Case findByReference(long reference) {
@@ -94,34 +89,20 @@ public class CaseService {
     return caseRepo.findCCSCasesByPostcodeIgnoringCaseAndSpaces(postcode);
   }
 
-  public boolean caseExistsByCaseId(String caseId) {
-    UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
-    return caseRepo.existsCaseByCaseId(caseIdUUID);
+  public boolean caseExistsByCaseId(UUID caseId) {
+    return caseRepo.existsCaseByCaseId(caseId);
   }
 
-  public UacQidLink findCCSUacQidLinkByCaseId(String caseId) {
-    UUID caseIdUUID = validateAndConvertCaseIdToUUID(caseId);
+  public UacQidLink findCCSUacQidLinkByCaseId(UUID caseId) {
     return uacQidLinkRepository
-        .findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeSurvey(caseIdUUID, "CCS")
-        .orElseThrow(() -> new QidNotFoundException(caseIdUUID));
-  }
-
-  private UUID validateAndConvertCaseIdToUUID(String caseId) {
-    UUID caseIdUUID;
-
-    try {
-      caseIdUUID = UUID.fromString(caseId);
-    } catch (IllegalArgumentException iae) {
-      throw new CaseIdInvalidException(caseId);
-    }
-
-    return caseIdUUID;
+        .findOneByCcsCaseIsTrueAndCazeCaseIdAndCazeSurvey(caseId, "CCS")
+        .orElseThrow(() -> new QidNotFoundException(caseId));
   }
 
   public void buildAndSendTelephoneCaptureFulfilmentRequest(
-      String caseId,
+      UUID caseId,
       String fulfilmentCode,
-      String individualCaseId,
+      UUID individualCaseId,
       UacQidCreatedPayloadDTO uacQidCreated) {
     FulfilmentRequestDTO fulfilmentRequestDTO = new FulfilmentRequestDTO();
     fulfilmentRequestDTO.setCaseId(caseId);
@@ -131,7 +112,7 @@ public class CaseService {
     EventDTO eventDTO = new EventDTO();
     eventDTO.setType(FULFILMENT_REQUEST_EVENT_TYPE);
     eventDTO.setDateTime(OffsetDateTime.now());
-    eventDTO.setTransactionId(UUID.randomUUID().toString());
+    eventDTO.setTransactionId(UUID.randomUUID());
 
     if (!StringUtils.isEmpty(individualCaseId)) {
       fulfilmentRequestDTO.setIndividualCaseId(individualCaseId);

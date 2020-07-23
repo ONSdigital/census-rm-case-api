@@ -1,5 +1,6 @@
 package uk.gov.ons.census.caseapisvc.service;
 
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
@@ -22,7 +23,7 @@ public class UacQidService {
     this.uacQidServiceClient = uacQidServiceClient;
   }
 
-  public UacQidCreatedPayloadDTO createAndLinkUacQid(String caseId, int questionnaireType) {
+  public UacQidCreatedPayloadDTO createAndLinkUacQid(UUID caseId, int questionnaireType) {
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidServiceClient.generateUacQid(questionnaireType);
     uacQidCreatedPayload.setCaseId(caseId);

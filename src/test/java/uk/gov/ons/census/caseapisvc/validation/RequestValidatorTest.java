@@ -11,7 +11,7 @@ public class RequestValidatorTest {
   @Test
   public void testAllTheValidGetNewQidByCaseIdRequests() {
     testValidGetNewQidByCaseIdCombination("HH", "U", false, null);
-    testValidGetNewQidByCaseIdCombination("HH", "U", true, "test_case_id");
+    testValidGetNewQidByCaseIdCombination("HH", "U", true, UUID.randomUUID());
 
     testValidGetNewQidByCaseIdCombination("CE", "E", false, null);
     testValidGetNewQidByCaseIdCombination("CE", "E", true, null);
@@ -28,20 +28,20 @@ public class RequestValidatorTest {
   @Test
   public void testAllTheInvalidGetNewQidByCaseIdRequests() {
     testInvalidGetNewQidByCaseIdCombination("HH", "U", true, null);
-    testInvalidGetNewQidByCaseIdCombination("HH", "U", false, "test_case_id");
-    testInvalidGetNewQidByCaseIdCombination("CE", "E", false, "test_case_id");
-    testInvalidGetNewQidByCaseIdCombination("CE", "E", true, "test_case_id");
+    testInvalidGetNewQidByCaseIdCombination("HH", "U", false, UUID.randomUUID());
+    testInvalidGetNewQidByCaseIdCombination("CE", "E", false, UUID.randomUUID());
+    testInvalidGetNewQidByCaseIdCombination("CE", "E", true, UUID.randomUUID());
     testInvalidGetNewQidByCaseIdCombination("CE", "U", false, null);
-    testInvalidGetNewQidByCaseIdCombination("CE", "U", false, "test_case_id");
-    testInvalidGetNewQidByCaseIdCombination("CE", "U", true, "test_case_id");
-    testInvalidGetNewQidByCaseIdCombination("SPG", "E", false, "test_case_id");
-    testInvalidGetNewQidByCaseIdCombination("SPG", "E", true, "test_case_id");
-    testInvalidGetNewQidByCaseIdCombination("SPG", "U", false, "test_case_id");
-    testInvalidGetNewQidByCaseIdCombination("SPG", "U", true, "test_case_id");
+    testInvalidGetNewQidByCaseIdCombination("CE", "U", false, UUID.randomUUID());
+    testInvalidGetNewQidByCaseIdCombination("CE", "U", true, UUID.randomUUID());
+    testInvalidGetNewQidByCaseIdCombination("SPG", "E", false, UUID.randomUUID());
+    testInvalidGetNewQidByCaseIdCombination("SPG", "E", true, UUID.randomUUID());
+    testInvalidGetNewQidByCaseIdCombination("SPG", "U", false, UUID.randomUUID());
+    testInvalidGetNewQidByCaseIdCombination("SPG", "U", true, UUID.randomUUID());
   }
 
   private void testValidGetNewQidByCaseIdCombination(
-      String caseType, String addressLevel, boolean individual, String individualCaseId) {
+      String caseType, String addressLevel, boolean individual, UUID individualCaseId) {
     UUID caseId = UUID.randomUUID();
     Case caze = new Case();
     caze.setCaseId(caseId);
@@ -52,7 +52,7 @@ public class RequestValidatorTest {
   }
 
   private void testInvalidGetNewQidByCaseIdCombination(
-      String caseType, String addressLevel, boolean individual, String individualCaseId) {
+      String caseType, String addressLevel, boolean individual, UUID individualCaseId) {
     UUID caseId = UUID.randomUUID();
     Case caze = new Case();
     caze.setCaseId(caseId);

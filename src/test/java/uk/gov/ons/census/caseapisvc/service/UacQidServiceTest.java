@@ -34,7 +34,7 @@ public class UacQidServiceTest {
   @Test
   public void createAndLinkUacQid() {
     // Given
-    String caseId = UUID.randomUUID().toString();
+    UUID caseId = UUID.randomUUID();
     when(uacQidServiceClient.generateUacQid(eq(TEST_QUESTIONNAIRE_TYPE)))
         .thenReturn(createUacQidCreatedPayload(NEW_QID));
 
@@ -51,7 +51,7 @@ public class UacQidServiceTest {
   @Test
   public void createAndLinkUacQidReturnsALovelyObjectWhichIAmVeryFondOf() {
     // Given
-    String caseId = UUID.randomUUID().toString();
+    UUID caseId = UUID.randomUUID();
     UacQidCreatedPayloadDTO expectedResult = createUacQidCreatedPayload(NEW_QID);
     when(uacQidServiceClient.generateUacQid(eq(TEST_QUESTIONNAIRE_TYPE)))
         .thenReturn(expectedResult);
