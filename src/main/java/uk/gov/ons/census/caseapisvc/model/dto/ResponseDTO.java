@@ -1,9 +1,10 @@
 package uk.gov.ons.census.caseapisvc.model.dto;
 
+import java.time.OffsetDateTime;
 import lombok.Data;
 
 @Data
 class ResponseDTO {
-  private String dateTime;
+  private OffsetDateTime dateTime;
   private String inboundChannel;
 }
