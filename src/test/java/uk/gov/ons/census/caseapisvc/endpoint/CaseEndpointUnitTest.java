@@ -607,7 +607,8 @@ public class CaseEndpointUnitTest {
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$").isArray())
         .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].id", is(caze.getCaseId().toString())));
+        .andExpect(jsonPath("$[0].id", is(caze.getCaseId().toString())))
+        .andExpect(jsonPath("$[0].postcode", is(caze.getPostcode())));
   }
 
   private String createUrl(String urlFormat, String param1) {

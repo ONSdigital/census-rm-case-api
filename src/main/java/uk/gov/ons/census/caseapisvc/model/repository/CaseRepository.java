@@ -19,7 +19,7 @@ public interface CaseRepository extends JpaRepository<Case, UUID> {
 
   @Query(
       "SELECT c FROM Case c WHERE UPPER(REPLACE(postcode, ' ', '')) = UPPER(REPLACE(:postcode, ' ', ''))")
-  List<Case> findByPostcode(String postcode);
+  List<Case> findByPostcode(@Param("postcode") String postcode);
 
   @Query(
       "SELECT c FROM Case c WHERE survey='CCS' AND UPPER(REPLACE(postcode, ' ', '')) = UPPER(REPLACE(:postcode, ' ', ''))")
