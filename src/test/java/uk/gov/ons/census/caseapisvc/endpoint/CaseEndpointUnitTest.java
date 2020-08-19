@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.CREATED_UAC;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_POSTCODE;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createCasesWithAddressInvalid;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createCcsUacQidLink;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
@@ -592,6 +593,21 @@ public class CaseEndpointUnitTest {
         .andExpect(jsonPath("$", hasSize(1)))
         .andExpect(jsonPath("$[0].id", is(ccsCase.getCaseId().toString())))
         .andExpect(jsonPath("$[0].postcode", is(ccsCase.getPostcode())));
+  }
+
+  @Test
+  public void getCasesByPostcode() throws Exception {
+    Case caze = createSingleCaseWithEvents();
+    when(caseService.findByPostcode(TEST_POSTCODE)).thenReturn(List.of((caze)));
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/postcode/%s", TEST_POSTCODE)).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].id", is(caze.getCaseId().toString())));
   }
 
   private String createUrl(String urlFormat, String param1) {

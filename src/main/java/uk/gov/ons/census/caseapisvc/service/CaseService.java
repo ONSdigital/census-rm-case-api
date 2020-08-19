@@ -99,6 +99,10 @@ public class CaseService {
         .orElseThrow(() -> new QidNotFoundException(caseId));
   }
 
+  public List<Case> findByPostcode(String postcode) {
+    return caseRepo.findByPostcode(postcode);
+  }
+
   public void buildAndSendTelephoneCaptureFulfilmentRequest(
       UUID caseId,
       String fulfilmentCode,

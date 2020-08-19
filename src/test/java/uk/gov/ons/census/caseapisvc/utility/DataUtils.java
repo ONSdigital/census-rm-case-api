@@ -30,6 +30,7 @@ public class DataUtils {
 
   public static final String TEST_CCS_QID = "7130000000000000";
   public static final String CREATED_UAC = "created UAC";
+  public static final String TEST_POSTCODE = "AB1 2BC";
 
   public static final ObjectMapper mapper;
 
@@ -85,6 +86,7 @@ public class DataUtils {
     caze.setUacQidLinks(uacQidLinks);
     caze.setSurvey("CENSUS");
     caze.setMetadata(new CaseMetadata());
+    caze.setPostcode(TEST_POSTCODE);
 
     return caze;
   }
