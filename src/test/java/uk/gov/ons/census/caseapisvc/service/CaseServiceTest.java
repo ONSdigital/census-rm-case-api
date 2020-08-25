@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_POSTCODE;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createMultipleCasesWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCaseWithEvents;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createSingleCcsCaseWithCcsQid;
@@ -199,5 +200,26 @@ public class CaseServiceTest {
         .isEqualTo("RM_TC_HI");
     assertThat(responseManagementEvent.getPayload().getFulfilmentRequest().getUacQidCreated())
         .isEqualTo(uacQidCreated);
+  }
+
+  @Test
+  public void testFindCasesByPostcode() {
+    // Given
+    Case expectedCase = createSingleCaseWithEvents();
+    expectedCase.setPostcode(TEST_POSTCODE);
+
+    when(caseRepo.findByPostcode(eq(TEST_POSTCODE))).thenReturn(List.of(expectedCase));
+
+    // When
+    List<Case> actualCases = caseService.findByPostcode(TEST_POSTCODE);
+
+    // Then
+    assertThat(actualCases).hasSize(1);
+    assertThat(actualCases.get(0)).isEqualTo(expectedCase);
+
+    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+    verify(caseRepo).findByPostcode(captor.capture());
+    String actualPostcode = captor.getValue();
+    assertThat(actualPostcode).isEqualTo(TEST_POSTCODE);
   }
 }

@@ -3,6 +3,7 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_POSTCODE;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOFromResponse;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOsFromResponse;
 
@@ -973,8 +974,30 @@ public class CaseEndpointIT {
     CaseContainerDTO actualData = extractCaseContainerDTOFromResponse(response);
 
     assertThat(actualData.getCaseId()).isEqualTo(UUID.fromString(TEST_CASE_ID_1_EXISTS));
-    assertThat(actualData.getCaseEvents().size()).isEqualTo(0);
+    assertThat(actualData.getCaseEvents().size()).isZero();
     assertThat(actualData.getSecureEstablishment()).isFalse();
+  }
+
+  @Test
+  public void getCasesByPostcode() throws IOException, UnirestException {
+    createTwoTestCasesWithEvents();
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/postcode/%s", port, TEST_POSTCODE))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    List<CaseContainerDTO> actualData = extractCaseContainerDTOsFromResponse(response);
+
+    assertThat(actualData.size()).isEqualTo(2);
+
+    CaseContainerDTO case1 = actualData.get(0);
+    CaseContainerDTO case2 = actualData.get(1);
+
+    assertThat(case1.getPostcode()).isEqualTo(TEST_POSTCODE);
+    assertThat(case2.getPostcode()).isEqualTo(TEST_POSTCODE);
   }
 
   private Case createOneTestCaseWithEvent() {
@@ -1001,6 +1024,7 @@ public class CaseEndpointIT {
     caze.setEvents(null);
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
+    caze.setPostcode(TEST_POSTCODE);
     caseRepo.saveAndFlush(caze);
 
     UacQidLink uacQidLink = new UacQidLink();
