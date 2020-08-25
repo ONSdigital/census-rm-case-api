@@ -152,6 +152,13 @@ public final class CaseEndpoint {
     return handleTelephoneCaptureRequest(caze, individual);
   }
 
+  @GetMapping(value = "/postcode/{postcode}")
+  public List<CaseContainerDTO> getCasesByPostcode(@PathVariable("postcode") String postcode) {
+    log.with("postcode", postcode).debug("Entering getCasesByPostcode");
+    List<Case> cases = caseService.findByPostcode(postcode);
+    return cases.stream().map(c -> buildCaseContainerDTO(c, false)).collect(Collectors.toList());
+  }
+
   private TelephoneCaptureDTO handleTelephoneCaptureRequest(Case caze, boolean individual) {
 
     int questionnaireType =

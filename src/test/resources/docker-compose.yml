@@ -39,8 +39,8 @@ services:
       - QUEUECONFIG_UAC_QID_CREATED_QUEUE=dummy.uac-qid-created
       - JAVA_OPTS=-Xmx128m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5121 -Dspring.profiles.active=dev
       - CASEREFGENERATORKEY=6+VLkvz5XYkF7vFLVX7FDnfxavQ7M+iY
-      - SPRING_CLOUD_GCP_PUBSUB_EMULATOR_HOST=dummy:0
-      - SPRING_CLOUD_GCP_PUBSUB_PROJECT_ID=dummy
+      - SPRING_CLOUD_GCP_PUBSUB_EMULATOR_HOST=localhost:18538
+      - SPRING_CLOUD_GCP_PUBSUB_PROJECT_ID=aims-new-address-project
     healthcheck:
       test: ["CMD", "cat", "/tmp/case-service-healthy"]
       interval: 30s
