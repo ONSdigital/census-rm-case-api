@@ -11,11 +11,9 @@ import java.util.List;
 import java.util.UUID;
 import org.json.JSONArray;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.CaseDetailsDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
-import uk.gov.ons.census.caseapisvc.model.entity.Case;
-import uk.gov.ons.census.caseapisvc.model.entity.CaseMetadata;
-import uk.gov.ons.census.caseapisvc.model.entity.Event;
-import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
+import uk.gov.ons.census.caseapisvc.model.entity.*;
 
 public class DataUtils {
 
@@ -72,6 +70,7 @@ public class DataUtils {
     event.setId(UUID.randomUUID());
     event.setEventDescription("Case created");
     event.setUacQidLink(uacQidLink);
+    event.setEventType(EventType.CASE_CREATED);
     events.add(event);
 
     uacQidLink.setEvents(events);
@@ -150,4 +149,10 @@ public class DataUtils {
 
     return dtos;
   }
+
+  public static CaseDetailsDTO extractCaseDetailsDTOsFromResponse(
+          HttpResponse<JsonNode> response) throws IOException {
+    return mapper.readValue(response.getBody().getObject().toString(), CaseDetailsDTO.class);
+
+    }
 }

@@ -41,6 +41,7 @@ import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
+import uk.gov.ons.census.caseapisvc.model.entity.EventType;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 import uk.gov.ons.census.caseapisvc.service.UacQidService;
@@ -609,6 +610,36 @@ public class CaseEndpointUnitTest {
         .andExpect(jsonPath("$", hasSize(1)))
         .andExpect(jsonPath("$[0].id", is(caze.getCaseId().toString())))
         .andExpect(jsonPath("$[0].postcode", is(caze.getPostcode())));
+  }
+
+  @Test
+  public void getAllCaseDetails() throws Exception {
+    Case caze = createSingleCaseWithEvents();
+    when(caseService.findByCaseId(UUID.fromString(TEST1_CASE_ID))).thenReturn(caze);
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/case_details/%s", TEST1_CASE_ID))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$.id", is(caze.getCaseId().toString())));
+  }
+
+  @Test
+  public void uacNotPresentWhenEventIsRmUacCreated() throws Exception {
+    Case caze = createSingleCaseWithEvents();
+    caze.getUacQidLinks().get(0).getEvents().get(0).setEventType(EventType.RM_UAC_CREATED);
+    when(caseService.findByCaseId(UUID.fromString(TEST1_CASE_ID))).thenReturn(caze);
+
+    mockMvc
+        .perform(
+            get(createUrl("/cases/case_details/%s", TEST1_CASE_ID))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(handler().handlerType(CaseEndpoint.class))
+        .andExpect(jsonPath("$.id", is(caze.getCaseId().toString())))
+        .andExpect(jsonPath("$.events", hasSize(0)));
   }
 
   private String createUrl(String urlFormat, String param1) {
