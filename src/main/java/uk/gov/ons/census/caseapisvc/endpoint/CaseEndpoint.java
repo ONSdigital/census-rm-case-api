@@ -26,13 +26,10 @@ import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.CaseReferenceNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.UPRNNotFoundException;
-import uk.gov.ons.census.caseapisvc.model.dto.CCSLaunchDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.CaseEventDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.TelephoneCaptureDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.*;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.Event;
+import uk.gov.ons.census.caseapisvc.model.entity.EventType;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 import uk.gov.ons.census.caseapisvc.service.UacQidService;
@@ -159,6 +156,13 @@ public final class CaseEndpoint {
     return cases.stream().map(c -> buildCaseContainerDTO(c, false)).collect(Collectors.toList());
   }
 
+  @GetMapping(value = "/case_details/{case_id}")
+  public CaseDetailsDTO getAllCaseDetailsByCaseId(@PathVariable("case_id") UUID caseId) {
+    log.with("case_id", caseId).debug("Entering getAllCaseDetailsByCaseId");
+    Case caze = caseService.findByCaseId(caseId);
+    return buildCaseDetailsDTO(caze);
+  }
+
   private TelephoneCaptureDTO handleTelephoneCaptureRequest(Case caze, boolean individual) {
 
     int questionnaireType =
@@ -206,6 +210,35 @@ public final class CaseEndpoint {
   })
   public void handleCaseIdNotFoundAndInvalid(HttpServletResponse response) throws IOException {
     response.sendError(NOT_FOUND.value());
+  }
+
+  private CaseDetailsDTO buildCaseDetailsDTO(Case caze) {
+
+    CaseDetailsDTO caseDetailsDTO = mapperFacade.map(caze, CaseDetailsDTO.class);
+
+    List<CaseDetailsEventDTO> caseEvents = new LinkedList<>();
+
+    List<UacQidLink> uacQidLinks = caze.getUacQidLinks();
+
+    for (UacQidLink uacQidLink : uacQidLinks) {
+      List<Event> events = uacQidLink.getEvents();
+
+      for (Event event : events) {
+        if (event.getEventType().equals(EventType.RM_UAC_CREATED)) {
+          continue;
+        }
+        caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
+      }
+    }
+    if (caze.getEvents() != null) {
+      for (Event event : caze.getEvents()) {
+        caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
+      }
+    }
+
+    caseDetailsDTO.setEvents(caseEvents);
+
+    return caseDetailsDTO;
   }
 
   private CaseContainerDTO buildCaseContainerDTO(Case caze, boolean includeCaseEvents) {
