@@ -15,9 +15,15 @@ public class CaseDetailsEventDTO {
 
   private OffsetDateTime eventDate;
 
-  private String type;
+  private String eventChannel = "RM";
 
-  private String channel = "RM";
+  private UUID eventTransactionId;
 
-  private UUID transactionId;
+  private OffsetDateTime rmEventProcessed;
+
+  private String eventSource;
+
+  private String eventPayload;
+
+  private OffsetDateTime messageTimestamp;
 }
