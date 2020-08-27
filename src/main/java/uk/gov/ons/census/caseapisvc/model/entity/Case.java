@@ -4,7 +4,14 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,7 +33,6 @@ import org.hibernate.annotations.UpdateTimestamp;
     indexes = {
       @Index(name = "cases_case_ref_idx", columnList = "case_ref"),
       @Index(name = "lsoa_idx", columnList = "lsoa"),
-      @Index(name = "postcode_idx", columnList = "postcode")
     })
 public class Case {
 
