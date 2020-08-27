@@ -623,11 +623,12 @@ public class CaseEndpointUnitTest {
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
-        .andExpect(jsonPath("$.id", is(caze.getCaseId().toString())));
+        .andExpect(jsonPath("$.id", is(caze.getCaseId().toString())))
+        .andExpect(jsonPath("$.events", hasSize(1)));
   }
 
   @Test
-  public void uacNotPresentWhenEventIsRmUacCreated() throws Exception {
+  public void rmUacCreatedEventNotPresent() throws Exception {
     Case caze = createSingleCaseWithEvents();
     caze.getUacQidLinks().get(0).getEvents().get(0).setEventType(EventType.RM_UAC_CREATED);
     when(caseService.findByCaseId(UUID.fromString(TEST1_CASE_ID))).thenReturn(caze);

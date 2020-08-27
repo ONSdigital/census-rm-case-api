@@ -999,16 +999,48 @@ public class CaseEndpointIT {
     Case caze = createOneTestCaseWithEvent();
 
     HttpResponse<JsonNode> response =
-            Unirest.get(createUrl("http://localhost:%d/cases/case_details/%s", port, TEST_CASE_ID_1_EXISTS))
-                    .header("accept", "application/json")
-                    .asJson();
+        Unirest.get(
+                createUrl("http://localhost:%d/cases/case_details/%s", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
 
     assertThat(response.getStatus()).isEqualTo(OK.value());
 
     CaseDetailsDTO actualCaseDetails = extractCaseDetailsDTOsFromResponse(response);
 
     assertThat(actualCaseDetails.getCaseId()).isEqualTo(caze.getCaseId());
+  }
 
+  @Test
+  public void rmUacCreatedEventNotPresent() throws IOException, UnirestException {
+    Case caze = createOneTestCaseWithEvent();
+
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setId(UUID.randomUUID());
+    uacQidLink.setActive(true);
+    uacQidLink.setCaze(caze);
+    uacQidLinkRepository.save(uacQidLink);
+
+    Event event = new Event();
+    event.setId(UUID.randomUUID());
+    event.setEventType(EventType.RM_UAC_CREATED);
+    event.setUacQidLink(uacQidLink);
+    eventRepository.saveAndFlush(event);
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(
+                createUrl("http://localhost:%d/cases/case_details/%s", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    CaseDetailsDTO actualCaseDetails = extractCaseDetailsDTOsFromResponse(response);
+
+    assertThat(actualCaseDetails.getCaseId()).isEqualTo(caze.getCaseId());
+    assertThat(actualCaseDetails.getEvents().size()).isEqualTo(1);
+    assertThat(actualCaseDetails.getEvents().get(0).getEventType())
+        .isEqualTo(EventType.CASE_CREATED.toString());
   }
 
   private Case createOneTestCaseWithEvent() {

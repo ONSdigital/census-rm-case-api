@@ -150,9 +150,8 @@ public class DataUtils {
     return dtos;
   }
 
-  public static CaseDetailsDTO extractCaseDetailsDTOsFromResponse(
-          HttpResponse<JsonNode> response) throws IOException {
+  public static CaseDetailsDTO extractCaseDetailsDTOsFromResponse(HttpResponse<JsonNode> response)
+      throws IOException {
     return mapper.readValue(response.getBody().getObject().toString(), CaseDetailsDTO.class);
-
-    }
+  }
 }
