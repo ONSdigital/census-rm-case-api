@@ -1000,7 +1000,7 @@ public class CaseEndpointIT {
 
     HttpResponse<JsonNode> response =
         Unirest.get(
-                createUrl("http://localhost:%d/cases/case_details/%s", port, TEST_CASE_ID_1_EXISTS))
+                createUrl("http://localhost:%d/cases/case-details/%s", port, TEST_CASE_ID_1_EXISTS))
             .header("accept", "application/json")
             .asJson();
 
@@ -1029,7 +1029,7 @@ public class CaseEndpointIT {
 
     HttpResponse<JsonNode> response =
         Unirest.get(
-                createUrl("http://localhost:%d/cases/case_details/%s", port, TEST_CASE_ID_1_EXISTS))
+                createUrl("http://localhost:%d/cases/case-details/%s", port, TEST_CASE_ID_1_EXISTS))
             .header("accept", "application/json")
             .asJson();
 

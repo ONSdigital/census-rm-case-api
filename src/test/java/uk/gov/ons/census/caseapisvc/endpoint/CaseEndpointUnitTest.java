@@ -619,7 +619,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/case_details/%s", TEST1_CASE_ID))
+            get(createUrl("/cases/case-details/%s", TEST1_CASE_ID))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
@@ -635,7 +635,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/case_details/%s", TEST1_CASE_ID))
+            get(createUrl("/cases/case-details/%s", TEST1_CASE_ID))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))

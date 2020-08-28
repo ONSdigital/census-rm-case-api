@@ -156,7 +156,7 @@ public final class CaseEndpoint {
     return cases.stream().map(c -> buildCaseContainerDTO(c, false)).collect(Collectors.toList());
   }
 
-  @GetMapping(value = "/case_details/{case_id}")
+  @GetMapping(value = "/case-details/{case_id}")
   public CaseDetailsDTO getAllCaseDetailsByCaseId(@PathVariable("case_id") UUID caseId) {
     log.with("case_id", caseId).debug("Entering getAllCaseDetailsByCaseId");
     Case caze = caseService.findByCaseId(caseId);
