@@ -224,18 +224,18 @@ public final class CaseEndpoint {
       List<Event> events = uacQidLink.getEvents();
 
       for (Event event : events) {
-        if (event.getEventType().equals(EventType.RM_UAC_CREATED)) {
-          continue;
+        if (!event.getEventType().equals(EventType.RM_UAC_CREATED)) {
+          caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
         }
-        caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
+      }
+      if (caze.getEvents() != null) {
+        for (Event event : caze.getEvents()) {
+          if (!event.getEventType().equals(EventType.RM_UAC_CREATED)) {
+            caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
+          }
+        }
       }
     }
-    if (caze.getEvents() != null) {
-      for (Event event : caze.getEvents()) {
-        caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
-      }
-    }
-
     caseDetailsDTO.setEvents(caseEvents);
 
     return caseDetailsDTO;
