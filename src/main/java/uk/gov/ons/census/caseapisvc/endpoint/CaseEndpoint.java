@@ -156,9 +156,9 @@ public final class CaseEndpoint {
     return cases.stream().map(c -> buildCaseContainerDTO(c, false)).collect(Collectors.toList());
   }
 
-  @GetMapping(value = "/case-details/{case_id}")
-  public CaseDetailsDTO getAllCaseDetailsByCaseId(@PathVariable("case_id") UUID caseId) {
-    log.with("case_id", caseId).debug("Entering getAllCaseDetailsByCaseId");
+  @GetMapping(value = "/case-details/{caseId}")
+  public CaseDetailsDTO getAllCaseDetailsByCaseId(@PathVariable("caseId") UUID caseId) {
+    log.with("caseId", caseId).debug("Entering getAllCaseDetailsByCaseId");
     Case caze = caseService.findByCaseId(caseId);
     return buildCaseDetailsDTO(caze);
   }
@@ -223,6 +223,7 @@ public final class CaseEndpoint {
     for (UacQidLink uacQidLink : uacQidLinks) {
       List<Event> events = uacQidLink.getEvents();
 
+      //      RM_UAC_CREATED event redacted to stop personal information being displayed
       for (Event event : events) {
         if (!event.getEventType().equals(EventType.RM_UAC_CREATED)) {
           caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
