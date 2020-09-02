@@ -2,10 +2,7 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_CCS_QID;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.TEST_POSTCODE;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOFromResponse;
-import static uk.gov.ons.census.caseapisvc.utility.DataUtils.extractCaseContainerDTOsFromResponse;
+import static uk.gov.ons.census.caseapisvc.utility.DataUtils.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mashape.unirest.http.HttpResponse;
@@ -29,10 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ons.census.caseapisvc.model.dto.CCSLaunchDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
-import uk.gov.ons.census.caseapisvc.model.dto.TelephoneCaptureDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.*;
 import uk.gov.ons.census.caseapisvc.model.entity.*;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.EventRepository;
@@ -998,6 +992,55 @@ public class CaseEndpointIT {
 
     assertThat(case1.getPostcode()).isEqualTo(TEST_POSTCODE);
     assertThat(case2.getPostcode()).isEqualTo(TEST_POSTCODE);
+  }
+
+  @Test
+  public void getAllCaseDetails() throws IOException, UnirestException {
+    Case caze = createOneTestCaseWithEvent();
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(
+                createUrl("http://localhost:%d/cases/case-details/%s", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    CaseDetailsDTO actualCaseDetails = extractCaseDetailsDTOsFromResponse(response);
+
+    assertThat(actualCaseDetails.getCaseId()).isEqualTo(caze.getCaseId());
+  }
+
+  @Test
+  public void rmUacCreatedEventNotPresent() throws IOException, UnirestException {
+    Case caze = createOneTestCaseWithEvent();
+
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setId(UUID.randomUUID());
+    uacQidLink.setActive(true);
+    uacQidLink.setCaze(caze);
+    uacQidLinkRepository.save(uacQidLink);
+
+    Event event = new Event();
+    event.setId(UUID.randomUUID());
+    event.setEventType(EventType.RM_UAC_CREATED);
+    event.setUacQidLink(uacQidLink);
+    eventRepository.saveAndFlush(event);
+
+    HttpResponse<JsonNode> response =
+        Unirest.get(
+                createUrl("http://localhost:%d/cases/case-details/%s", port, TEST_CASE_ID_1_EXISTS))
+            .header("accept", "application/json")
+            .asJson();
+
+    assertThat(response.getStatus()).isEqualTo(OK.value());
+
+    CaseDetailsDTO actualCaseDetails = extractCaseDetailsDTOsFromResponse(response);
+
+    assertThat(actualCaseDetails.getCaseId()).isEqualTo(caze.getCaseId());
+    assertThat(actualCaseDetails.getEvents().size()).isEqualTo(1);
+    assertThat(actualCaseDetails.getEvents().get(0).getEventType())
+        .isEqualTo(EventType.CASE_CREATED.toString());
   }
 
   private Case createOneTestCaseWithEvent() {
