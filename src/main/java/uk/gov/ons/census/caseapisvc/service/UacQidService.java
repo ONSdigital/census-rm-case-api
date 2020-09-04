@@ -3,7 +3,6 @@ package uk.gov.ons.census.caseapisvc.service;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -132,22 +131,22 @@ public class UacQidService {
   }
 
   public void buildAndSendQuestionnaireLinkedEvent(UacQidLink uacQidLink, Case caseToLink) {
-      UacDTO uacDTO = new UacDTO();
-      uacDTO.setCaseId(caseToLink.getCaseId());
-      uacDTO.setQuestionnaireId(uacQidLink.getQid());
+    UacDTO uacDTO = new UacDTO();
+    uacDTO.setCaseId(caseToLink.getCaseId());
+    uacDTO.setQuestionnaireId(uacQidLink.getQid());
 
-      EventDTO eventDTO = new EventDTO();
-      eventDTO.setType(QUESTIONNAIRE_LINKED_EVENT_TYPE);
-      eventDTO.setDateTime(OffsetDateTime.now());
-      eventDTO.setTransactionId(UUID.randomUUID());
+    EventDTO eventDTO = new EventDTO();
+    eventDTO.setType(QUESTIONNAIRE_LINKED_EVENT_TYPE);
+    eventDTO.setDateTime(OffsetDateTime.now());
+    eventDTO.setTransactionId(UUID.randomUUID());
 
-      PayloadDTO payloadDTO = new PayloadDTO();
-      payloadDTO.setUac(uacDTO);
+    PayloadDTO payloadDTO = new PayloadDTO();
+    payloadDTO.setUac(uacDTO);
 
-      ResponseManagementEvent responseManagementEvent =
-          new ResponseManagementEvent(eventDTO, payloadDTO);
+    ResponseManagementEvent responseManagementEvent =
+        new ResponseManagementEvent(eventDTO, payloadDTO);
 
-      rabbitTemplate.convertAndSend(
-          eventsExchange, questionnaireLinkedEventRoutingKey, responseManagementEvent);
+    rabbitTemplate.convertAndSend(
+        eventsExchange, questionnaireLinkedEventRoutingKey, responseManagementEvent);
   }
 }
