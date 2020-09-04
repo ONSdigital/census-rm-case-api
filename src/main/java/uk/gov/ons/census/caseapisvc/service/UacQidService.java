@@ -41,7 +41,7 @@ public class UacQidService {
   private String questionnaireLinkedEventRoutingKey;
 
   @Autowired
-  public UacQidService(UacQidServiceClient uacQidServiceClient, RabbitTemplate rabbitTemplate) {
+  public UacQidService(UacQidServiceClient uacQidServiceClient, RabbitTemplate rabbitTemplate, UacQidLinkRepository uacQidLinkRepository) {
     this.uacQidServiceClient = uacQidServiceClient;
     this.rabbitTemplate = rabbitTemplate;
     this.uacQidLinkRepository = uacQidLinkRepository;
