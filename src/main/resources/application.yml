@@ -65,3 +65,4 @@ uacservice:
 queueconfig:
   events-exchange: events
   fulfilment-event-routing-key: event.fulfilment.request
+  questionnaire-linked-event-routing-key: event.questionnaire.update

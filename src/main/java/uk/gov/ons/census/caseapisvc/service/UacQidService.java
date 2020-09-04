@@ -1,9 +1,22 @@
 package uk.gov.ons.census.caseapisvc.service;
 
+import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
+import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.PayloadDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
+import uk.gov.ons.census.caseapisvc.model.dto.UacDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
+import uk.gov.ons.census.caseapisvc.model.entity.Case;
+import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
+import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 
 @Service
 public class UacQidService {
@@ -16,11 +29,23 @@ public class UacQidService {
   private static final String CASE_TYPE_HOUSEHOLD = "HH";
   private static final String CASE_TYPE_SPG = "SPG";
   private static final String CASE_TYPE_CE = "CE";
+  private static final String QUESTIONNAIRE_LINKED_EVENT_TYPE = "QUESTIONNAIRE_LINKED";
 
   private UacQidServiceClient uacQidServiceClient;
+  private UacQidLinkRepository uacQidLinkRepository;
+  private RabbitTemplate rabbitTemplate;
 
-  public UacQidService(UacQidServiceClient uacQidServiceClient) {
+  @Value("${queueconfig.events-exchange}")
+  private String eventsExchange;
+
+  @Value("${queueconfig.questionnaire-linked-event-routing-key}")
+  private String questionnaireLinkedEventRoutingKey;
+
+  @Autowired
+  public UacQidService(UacQidServiceClient uacQidServiceClient, RabbitTemplate rabbitTemplate) {
     this.uacQidServiceClient = uacQidServiceClient;
+    this.rabbitTemplate = rabbitTemplate;
+    this.uacQidLinkRepository = uacQidLinkRepository;
   }
 
   public UacQidCreatedPayloadDTO createAndLinkUacQid(UUID caseId, int questionnaireType) {
@@ -28,6 +53,10 @@ public class UacQidService {
         uacQidServiceClient.generateUacQid(questionnaireType);
     uacQidCreatedPayload.setCaseId(caseId);
     return uacQidCreatedPayload;
+  }
+
+  public Optional<UacQidLink> findUacQidLinkByQid(String qid) {
+    return uacQidLinkRepository.findByQid(qid);
   }
 
   public static int calculateQuestionnaireType(
@@ -100,5 +129,25 @@ public class UacQidService {
 
   private static boolean isCeCaseType(String caseType) {
     return caseType.equals(CASE_TYPE_CE);
+  }
+
+  public void buildAndSendQuestionnaireLinkedEvent(UacQidLink uacQidLink, Case caseToLink) {
+      UacDTO uacDTO = new UacDTO();
+      uacDTO.setCaseId(caseToLink.getCaseId());
+      uacDTO.setQuestionnaireId(uacQidLink.getQid());
+
+      EventDTO eventDTO = new EventDTO();
+      eventDTO.setType(QUESTIONNAIRE_LINKED_EVENT_TYPE);
+      eventDTO.setDateTime(OffsetDateTime.now());
+      eventDTO.setTransactionId(UUID.randomUUID());
+
+      PayloadDTO payloadDTO = new PayloadDTO();
+      payloadDTO.setUac(uacDTO);
+
+      ResponseManagementEvent responseManagementEvent =
+          new ResponseManagementEvent(eventDTO, payloadDTO);
+
+      rabbitTemplate.convertAndSend(
+          eventsExchange, questionnaireLinkedEventRoutingKey, responseManagementEvent);
   }
 }

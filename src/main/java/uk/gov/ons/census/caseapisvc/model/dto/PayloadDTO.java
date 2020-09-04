@@ -9,4 +9,5 @@ import lombok.Data;
 public class PayloadDTO {
   private UacQidCreatedPayloadDTO uacQidCreated;
   private FulfilmentRequestDTO fulfilmentRequest;
+  private UacDTO uac;
 }
