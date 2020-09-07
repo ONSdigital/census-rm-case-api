@@ -1,13 +1,13 @@
 package uk.gov.ons.census.caseapisvc.service;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
+import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
 import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.PayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
@@ -41,7 +41,10 @@ public class UacQidService {
   private String questionnaireLinkedEventRoutingKey;
 
   @Autowired
-  public UacQidService(UacQidServiceClient uacQidServiceClient, RabbitTemplate rabbitTemplate, UacQidLinkRepository uacQidLinkRepository) {
+  public UacQidService(
+      UacQidServiceClient uacQidServiceClient,
+      RabbitTemplate rabbitTemplate,
+      UacQidLinkRepository uacQidLinkRepository) {
     this.uacQidServiceClient = uacQidServiceClient;
     this.rabbitTemplate = rabbitTemplate;
     this.uacQidLinkRepository = uacQidLinkRepository;
@@ -54,8 +57,8 @@ public class UacQidService {
     return uacQidCreatedPayload;
   }
 
-  public Optional<UacQidLink> findUacQidLinkByQid(String qid) {
-    return uacQidLinkRepository.findByQid(qid);
+  public UacQidLink findUacQidLinkByQid(String qid) {
+    return uacQidLinkRepository.findByQid(qid).orElseThrow(() -> new QidNotFoundException(qid));
   }
 
   public static int calculateQuestionnaireType(

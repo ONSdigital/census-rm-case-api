@@ -4,7 +4,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import io.micrometer.core.annotation.Timed;
 import java.io.IOException;
-import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,8 +35,8 @@ public class QidEndpoint {
   }
 
   @GetMapping(value = "/{qid}")
-  public QidLink findUacQidLinkByQid(@PathVariable("qid") String qid) {
-    UacQidLink uacQidLink = getUacQidLinkByQid(qid);
+  public QidLink getUacQidLinkByQid(@PathVariable("qid") String qid) {
+    UacQidLink uacQidLink = uacQidService.findUacQidLinkByQid(qid);
     QidLink qidDetails = new QidLink();
     qidDetails.setQuestionnaireId(uacQidLink.getQid());
     if (uacQidLink.getCaze() != null) {
@@ -46,17 +45,10 @@ public class QidEndpoint {
     return qidDetails;
   }
 
-  private UacQidLink getUacQidLinkByQid(String qid) {
-    Optional<UacQidLink> uacQidLinkOptional = uacQidService.findUacQidLinkByQid(qid);
-    return uacQidLinkOptional.orElseThrow(() -> new QidNotFoundException(qid));
-  }
-
   @PutMapping(value = "/link")
-  public void putQidLink(@RequestBody QidLink qidLink) {
-    UacQidLink uacQidLink = getUacQidLinkByQid(qidLink.getQuestionnaireId());
-    Case caseToLink =
-        caseService.findByCaseId(
-            qidLink.getCaseId()); // Throws CaseIdNotFoundException if not found
+  public void putQidLinkToCase(@RequestBody QidLink qidLink) {
+    UacQidLink uacQidLink = uacQidService.findUacQidLinkByQid(qidLink.getQuestionnaireId());
+    Case caseToLink = caseService.findByCaseId(qidLink.getCaseId());
 
     uacQidService.buildAndSendQuestionnaireLinkedEvent(uacQidLink, caseToLink);
   }
