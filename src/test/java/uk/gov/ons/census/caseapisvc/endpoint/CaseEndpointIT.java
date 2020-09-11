@@ -589,6 +589,7 @@ public class CaseEndpointIT {
   @DirtiesContext
   public void testGetNewUacQidForCaseDistributesFulfilmentEvent()
       throws UnirestException, IOException, InterruptedException {
+    // TODO This test can fail intermittently, needs improving
     // Given
     Case caze =
         setupUnitTestCaseWithTreatmentCode(
