@@ -67,7 +67,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForHouseholdEngland() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("HH", "E1000", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("HH", "E1000", "CENSUS", ADDRESS_LEVEL_UNIT);
 
     // Then
     assertThat(questionnaireType).isEqualTo(1);
@@ -77,7 +77,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForHouseholdWales() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("HH", "W1000", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("HH", "W1000", ADDRESS_LEVEL_UNIT, "CENSUS");
 
     // Then
     assertThat(questionnaireType).isEqualTo(2);
@@ -87,7 +87,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForHouseholdNI() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("HH", "N1000", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("HH", "N1000", ADDRESS_LEVEL_UNIT, "CENSUS");
 
     // Then
     assertThat(questionnaireType).isEqualTo(4);
@@ -97,7 +97,7 @@ public class UacQidServiceTest {
   public void calculateIndividualQuestionnaireTypeForCeUnitEngland() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE", "E1000", ADDRESS_LEVEL_UNIT, true);
+        UacQidService.calculateQuestionnaireType("CE", "E1000", ADDRESS_LEVEL_UNIT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(21);
@@ -107,7 +107,7 @@ public class UacQidServiceTest {
   public void calculateIndividualQuestionnaireTypeForCeUnitWales() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE", "W1000", ADDRESS_LEVEL_UNIT, true);
+        UacQidService.calculateQuestionnaireType("CE", "W1000", ADDRESS_LEVEL_UNIT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(22);
@@ -117,7 +117,7 @@ public class UacQidServiceTest {
   public void calculateIndividualQuestionnaireTypeForCeUnitNI() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE", "N1000", ADDRESS_LEVEL_UNIT, true);
+        UacQidService.calculateQuestionnaireType("CE", "N1000", ADDRESS_LEVEL_UNIT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(24);
@@ -127,7 +127,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualHHEngland() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("HH", "E1000", ADDRESS_LEVEL_UNIT, true);
+        UacQidService.calculateQuestionnaireType("HH", "E1000", ADDRESS_LEVEL_UNIT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(21);
@@ -137,7 +137,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualHHWales() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("HH", "W1000", ADDRESS_LEVEL_UNIT, true);
+        UacQidService.calculateQuestionnaireType("HH", "W1000", ADDRESS_LEVEL_UNIT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(22);
@@ -147,7 +147,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualHHNI() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("HH", "N1000", ADDRESS_LEVEL_UNIT, true);
+        UacQidService.calculateQuestionnaireType("HH", "N1000", ADDRESS_LEVEL_UNIT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(24);
@@ -157,7 +157,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForSpgEnglandUnit() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "E1000", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("SPG", "E1000", ADDRESS_LEVEL_UNIT, "CENSUS");
 
     // Then
     assertThat(questionnaireType).isEqualTo(1);
@@ -167,7 +167,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForSpgWalesUnit() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "W1000", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("SPG", "W1000", ADDRESS_LEVEL_UNIT, "CENSUS");
 
     // Then
     assertThat(questionnaireType).isEqualTo(2);
@@ -177,7 +177,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForSpgNIUnit() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "N1000", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("SPG", "N1000", ADDRESS_LEVEL_UNIT, "CENSUS");
 
     // Then
     assertThat(questionnaireType).isEqualTo(4);
@@ -187,7 +187,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForSpgEnglandEstab() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "E1000", ADDRESS_LEVEL_ESTABLISHMENT);
+        UacQidService.calculateQuestionnaireType(
+            "SPG", "E1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS");
 
     // Then
     assertThat(questionnaireType).isEqualTo(1);
@@ -197,7 +198,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForSpgWalesEstab() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "W1000", ADDRESS_LEVEL_ESTABLISHMENT);
+        UacQidService.calculateQuestionnaireType(
+            "SPG", "W1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS");
 
     // Then
     assertThat(questionnaireType).isEqualTo(2);
@@ -207,7 +209,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForSpgNiEstab() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "N1000", ADDRESS_LEVEL_ESTABLISHMENT);
+        UacQidService.calculateQuestionnaireType(
+            "SPG", "N1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS");
 
     // Then
     assertThat(questionnaireType).isEqualTo(4);
@@ -217,7 +220,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualSpgEnglandEstab() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "E1000", ADDRESS_LEVEL_ESTABLISHMENT, true);
+        UacQidService.calculateQuestionnaireType(
+            "SPG", "E1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(21);
@@ -227,7 +231,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualSpgWalesEstab() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "W1000", ADDRESS_LEVEL_ESTABLISHMENT, true);
+        UacQidService.calculateQuestionnaireType(
+            "SPG", "W1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(22);
@@ -237,7 +242,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualSpgNiEstab() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "N1000", ADDRESS_LEVEL_ESTABLISHMENT, true);
+        UacQidService.calculateQuestionnaireType(
+            "SPG", "N1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(24);
@@ -247,7 +253,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualSpgEUnit() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "E1000", ADDRESS_LEVEL_UNIT, true);
+        UacQidService.calculateQuestionnaireType(
+            "SPG", "E1000", ADDRESS_LEVEL_UNIT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(21);
@@ -257,7 +264,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualSpgWUnit() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "W1000", ADDRESS_LEVEL_UNIT, true);
+        UacQidService.calculateQuestionnaireType(
+            "SPG", "W1000", ADDRESS_LEVEL_UNIT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(22);
@@ -267,7 +275,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualSpgNiUnit() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("SPG", "N1000", ADDRESS_LEVEL_UNIT, true);
+        UacQidService.calculateQuestionnaireType(
+            "SPG", "N1000", ADDRESS_LEVEL_UNIT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(24);
@@ -277,7 +286,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualCEEstabEngland() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE", "E1000", ADDRESS_LEVEL_ESTABLISHMENT, true);
+        UacQidService.calculateQuestionnaireType(
+            "CE", "E1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(21);
@@ -287,7 +297,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualCEEstabWales() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE", "W1000", ADDRESS_LEVEL_ESTABLISHMENT, true);
+        UacQidService.calculateQuestionnaireType(
+            "CE", "W1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(22);
@@ -297,7 +308,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForIndividualCEEstabNI() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE", "N1000", ADDRESS_LEVEL_ESTABLISHMENT, true);
+        UacQidService.calculateQuestionnaireType(
+            "CE", "N1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS", true);
 
     // Then
     assertThat(questionnaireType).isEqualTo(24);
@@ -307,7 +319,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForNonIndividualCeEEstab() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE", "E1000", ADDRESS_LEVEL_ESTABLISHMENT, false);
+        UacQidService.calculateQuestionnaireType(
+            "CE", "E1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS", false);
 
     // Then
     assertThat(questionnaireType).isEqualTo(31);
@@ -317,7 +330,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForNonIndividualCeWEstab() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE", "W1000", ADDRESS_LEVEL_ESTABLISHMENT, false);
+        UacQidService.calculateQuestionnaireType(
+            "CE", "W1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS", false);
 
     // Then
     assertThat(questionnaireType).isEqualTo(32);
@@ -327,7 +341,8 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForNonIndividualCeNiEstab() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("CE", "N1000", ADDRESS_LEVEL_ESTABLISHMENT, false);
+        UacQidService.calculateQuestionnaireType(
+            "CE", "N1000", ADDRESS_LEVEL_ESTABLISHMENT, "CENSUS", false);
 
     // Then
     assertThat(questionnaireType).isEqualTo(34);
@@ -336,18 +351,28 @@ public class UacQidServiceTest {
   @Test(expected = IllegalArgumentException.class)
   public void calculateQuestionnaireTypeUnKnownCaseType() {
     // When, then throws
-    UacQidService.calculateQuestionnaireType("UN", "E1000", ADDRESS_LEVEL_UNIT);
+    UacQidService.calculateQuestionnaireType("UN", "E1000", ADDRESS_LEVEL_UNIT, "CENSUS");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void calculateQuestionnaireTypeUnKnownCountryCode() {
     // When, then throws
-    UacQidService.calculateQuestionnaireType("HH", "Z1000", ADDRESS_LEVEL_UNIT);
+    UacQidService.calculateQuestionnaireType("HH", "Z1000", ADDRESS_LEVEL_UNIT, "CENSUS");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void calculateQuestionnaireTypeCeInvalidAddressLevel() {
     // When, then throws
-    UacQidService.calculateQuestionnaireType("CE", "E1000", "NOT_VALID_AL");
+    UacQidService.calculateQuestionnaireType("CE", "E1000", "NOT_VALID_AL", "CENSUS");
+  }
+
+  @Test
+  public void calculateQuestionnaireTypeFoCCSCaseNotInd() {
+    // When
+    int questionnaireType =
+        UacQidService.calculateQuestionnaireType("HH", null, ADDRESS_LEVEL_UNIT, "CCS", false);
+
+    // Then
+    assertThat(questionnaireType).isEqualTo(71);
   }
 }

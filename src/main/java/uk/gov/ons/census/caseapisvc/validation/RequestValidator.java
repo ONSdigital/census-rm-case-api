@@ -8,7 +8,11 @@ import uk.gov.ons.census.caseapisvc.model.entity.Case;
 public class RequestValidator {
   public static void validateGetNewQidByCaseIdRequest(
       Case caze, boolean individual, UUID individualCaseId) {
-    if (caze.getCaseType().equals("HH") && individual && individualCaseId == null) {
+    if (caze.getSurvey().equals("CCS") && individual) {
+      throwBadRequest();
+    } else if (caze.getSurvey().equals("CCS") && caze.getCaseType().equals("CE")) {
+      throwBadRequest();
+    } else if (caze.getCaseType().equals("HH") && individual && individualCaseId == null) {
       throwBadRequest();
     } else if (caze.getCaseType().equals("HH") && !individual && individualCaseId != null) {
       throwBadRequest();

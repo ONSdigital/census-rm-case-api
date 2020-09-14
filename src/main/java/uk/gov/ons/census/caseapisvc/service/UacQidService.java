@@ -31,12 +31,17 @@ public class UacQidService {
   }
 
   public static int calculateQuestionnaireType(
-      String caseType, String region, String addressLevel) {
-    return calculateQuestionnaireType(caseType, region, addressLevel, false);
+      String caseType, String region, String addressLevel, String surveyType) {
+    return calculateQuestionnaireType(caseType, region, addressLevel, surveyType, false);
   }
 
   public static int calculateQuestionnaireType(
-      String caseType, String region, String addressLevel, boolean individual) {
+      String caseType, String region, String addressLevel, String surveyType, boolean individual) {
+
+    if (surveyType.equals("CCS")) {
+      return 71;
+    }
+
     String country = region.substring(0, 1);
     if (!country.equals(COUNTRY_CODE_ENGLAND)
         && !country.equals(COUNTRY_CODE_WALES)

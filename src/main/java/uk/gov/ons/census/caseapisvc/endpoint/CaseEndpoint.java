@@ -167,7 +167,11 @@ public final class CaseEndpoint {
 
     int questionnaireType =
         calculateQuestionnaireType(
-            caze.getCaseType(), caze.getRegion(), caze.getAddressLevel(), individual);
+            caze.getCaseType(),
+            caze.getRegion(),
+            caze.getAddressLevel(),
+            caze.getSurvey(),
+            individual);
 
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(caze.getCaseId(), questionnaireType);
@@ -188,7 +192,7 @@ public final class CaseEndpoint {
 
     int questionnaireType =
         calculateQuestionnaireType(
-            caze.getCaseType(), caze.getRegion(), caze.getAddressLevel(), true);
+            caze.getCaseType(), caze.getRegion(), caze.getAddressLevel(), caze.getSurvey(), true);
 
     UacQidCreatedPayloadDTO uacQidCreatedPayload =
         uacQidService.createAndLinkUacQid(individualCaseId, questionnaireType);
@@ -290,6 +294,7 @@ public final class CaseEndpoint {
       case 1:
       case 2:
       case 4:
+      case 71:
         return HH_FORM_TYPE;
       case 21:
       case 22:
