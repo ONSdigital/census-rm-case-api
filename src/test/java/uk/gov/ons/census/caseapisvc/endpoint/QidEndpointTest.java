@@ -16,18 +16,16 @@ import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createUrl;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.mapper;
 
 import java.util.UUID;
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
+import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.QidLink;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
@@ -42,9 +40,6 @@ public class QidEndpointTest {
 
   @Mock private CaseService caseService;
   @Mock private UacQidService uacQidService;
-
-  @Spy
-  private MapperFacade mapperFacade = new DefaultMapperFactory.Builder().build().getMapperFacade();
 
   @InjectMocks private QidEndpoint qidEndpoint;
 
@@ -118,17 +113,23 @@ public class QidEndpointTest {
     qidLink.setCaseId(caseToLink.getCaseId());
     qidLink.setQuestionnaireId(uacQidLink.getQid());
 
+    NewQidLink newQidLink = new NewQidLink();
+    newQidLink.setQidLink(qidLink);
+    newQidLink.setChannel("test_channel");
+    newQidLink.setTransactionId(UUID.randomUUID());
+
     // When
     mockMvc
         .perform(
             put("/qids/link")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(mapper.writeValueAsString(qidLink)))
+                .content(mapper.writeValueAsString(newQidLink)))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(QidEndpoint.class));
 
     // Then
-    verify(uacQidService).buildAndSendQuestionnaireLinkedEvent(eq(uacQidLink), eq(caseToLink));
+    verify(uacQidService)
+        .buildAndSendQuestionnaireLinkedEvent(eq(uacQidLink), eq(caseToLink), eq(newQidLink));
   }
 
   @Test
@@ -143,12 +144,17 @@ public class QidEndpointTest {
     qidLink.setCaseId(caseToLink.getCaseId());
     qidLink.setQuestionnaireId(INVALID_QID);
 
+    NewQidLink newQidLink = new NewQidLink();
+    newQidLink.setQidLink(qidLink);
+    newQidLink.setChannel("test_channel");
+    newQidLink.setTransactionId(UUID.randomUUID());
+
     // When, then
     mockMvc
         .perform(
             put("/qids/link")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(mapper.writeValueAsString(qidLink)))
+                .content(mapper.writeValueAsString(newQidLink)))
         .andExpect(status().isNotFound())
         .andExpect(handler().handlerType(QidEndpoint.class));
   }
@@ -167,12 +173,17 @@ public class QidEndpointTest {
     qidLink.setCaseId(invalidCaseId);
     qidLink.setQuestionnaireId(uacQidLink.getQid());
 
+    NewQidLink newQidLink = new NewQidLink();
+    newQidLink.setQidLink(qidLink);
+    newQidLink.setChannel("test_channel");
+    newQidLink.setTransactionId(UUID.randomUUID());
+
     // When, then
     mockMvc
         .perform(
             put("/qids/link")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(mapper.writeValueAsString(qidLink)))
+                .content(mapper.writeValueAsString(newQidLink)))
         .andExpect(status().isNotFound())
         .andExpect(handler().handlerType(QidEndpoint.class));
   }

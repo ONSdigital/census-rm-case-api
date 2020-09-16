@@ -8,11 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
-import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.PayloadDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
-import uk.gov.ons.census.caseapisvc.model.dto.UacDTO;
-import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
+import uk.gov.ons.census.caseapisvc.model.dto.*;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
@@ -133,7 +129,8 @@ public class UacQidService {
     return caseType.equals(CASE_TYPE_CE);
   }
 
-  public void buildAndSendQuestionnaireLinkedEvent(UacQidLink uacQidLink, Case caseToLink) {
+  public void buildAndSendQuestionnaireLinkedEvent(
+      UacQidLink uacQidLink, Case caseToLink, NewQidLink newQidLink) {
     UacDTO uacDTO = new UacDTO();
     uacDTO.setCaseId(caseToLink.getCaseId());
     uacDTO.setQuestionnaireId(uacQidLink.getQid());
@@ -141,7 +138,8 @@ public class UacQidService {
     EventDTO eventDTO = new EventDTO();
     eventDTO.setType(QUESTIONNAIRE_LINKED_EVENT_TYPE);
     eventDTO.setDateTime(OffsetDateTime.now());
-    eventDTO.setTransactionId(UUID.randomUUID());
+    eventDTO.setTransactionId(newQidLink.getTransactionId());
+    eventDTO.setChannel(newQidLink.getChannel());
 
     PayloadDTO payloadDTO = new PayloadDTO();
     payloadDTO.setUac(uacDTO);

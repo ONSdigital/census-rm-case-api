@@ -22,6 +22,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.QidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
@@ -105,6 +106,10 @@ public class QidEndpointIT {
     requestQidLink.setCaseId(caseToLink.getCaseId());
     requestQidLink.setQuestionnaireId(VALID_QID);
 
+    NewQidLink newQidLink = new NewQidLink();
+    newQidLink.setQidLink(requestQidLink);
+    newQidLink.setTransactionId(UUID.randomUUID());
+
     BlockingQueue<String> questionnaireLinkQueue =
         rabbitQueueHelper.listen(questionnaireLinkEventQueueName);
 
@@ -112,7 +117,7 @@ public class QidEndpointIT {
     HttpResponse<JsonNode> jsonResponse =
         Unirest.put(String.format("http://localhost:%d/qids/link", port))
             .header("content-type", "application/json")
-            .body(DataUtils.mapper.writeValueAsString(requestQidLink))
+            .body(DataUtils.mapper.writeValueAsString(newQidLink))
             .asJson();
 
     // Then

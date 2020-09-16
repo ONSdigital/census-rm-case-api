@@ -6,15 +6,10 @@ import io.micrometer.core.annotation.Timed;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.ons.census.caseapisvc.exception.CaseIdNotFoundException;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
+import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.QidLink;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
@@ -46,11 +41,12 @@ public class QidEndpoint {
   }
 
   @PutMapping(value = "/link")
-  public void putQidLinkToCase(@RequestBody QidLink qidLink) {
-    UacQidLink uacQidLink = uacQidService.findUacQidLinkByQid(qidLink.getQuestionnaireId());
-    Case caseToLink = caseService.findByCaseId(qidLink.getCaseId());
+  public void putQidLinkToCase(@RequestBody NewQidLink newQidLink) {
+    UacQidLink uacQidLink =
+        uacQidService.findUacQidLinkByQid(newQidLink.getQidLink().getQuestionnaireId());
+    Case caseToLink = caseService.findByCaseId(newQidLink.getQidLink().getCaseId());
 
-    uacQidService.buildAndSendQuestionnaireLinkedEvent(uacQidLink, caseToLink);
+    uacQidService.buildAndSendQuestionnaireLinkedEvent(uacQidLink, caseToLink, newQidLink);
   }
 
   @ExceptionHandler({CaseIdNotFoundException.class, QidNotFoundException.class})

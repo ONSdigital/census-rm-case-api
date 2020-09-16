@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
 import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
+import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.entity.Case;
@@ -372,8 +373,12 @@ public class UacQidServiceTest {
 
     Case caseToLink = DataUtils.createSingleCaseWithEvents();
 
+    NewQidLink newQidLink = new NewQidLink();
+    newQidLink.setChannel("test_channel");
+    newQidLink.setTransactionId(UUID.randomUUID());
+
     // When
-    uacQidService.buildAndSendQuestionnaireLinkedEvent(uacQidLink, caseToLink);
+    uacQidService.buildAndSendQuestionnaireLinkedEvent(uacQidLink, caseToLink, newQidLink);
 
     // Then
     ArgumentCaptor<ResponseManagementEvent> eventArgumentCaptor =
@@ -385,7 +390,7 @@ public class UacQidServiceTest {
     assertThat(actualSentEvent.getPayload().getUac().getQuestionnaireId())
         .isEqualTo(uacQidLink.getQid());
     assertThat(actualSentEvent.getEvent().getType()).isEqualTo("QUESTIONNAIRE_LINKED");
-    assertThat(actualSentEvent.getEvent().getChannel()).isEqualTo("RM");
+    assertThat(actualSentEvent.getEvent().getChannel()).isEqualTo("test_channel");
     assertThat(actualSentEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
     assertThat(actualSentEvent.getEvent().getTransactionId()).isNotNull();
     assertThat(actualSentEvent.getEvent().getDateTime()).isNotNull();
