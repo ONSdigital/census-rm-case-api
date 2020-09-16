@@ -7,9 +7,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
 import org.apache.http.HttpStatus;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -31,6 +29,7 @@ import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.EventRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 import uk.gov.ons.census.caseapisvc.utility.DataUtils;
+import uk.gov.ons.census.caseapisvc.utility.QueueSpy;
 import uk.gov.ons.census.caseapisvc.utility.RabbitQueueHelper;
 
 @RunWith(SpringRunner.class)
@@ -96,43 +95,44 @@ public class QidEndpointIT {
   }
 
   @Test
-  public void testPutQidLinkToCase() throws UnirestException, IOException, InterruptedException {
-    // Given
-    Case caseToLink = easyRandom.nextObject(Case.class);
-    caseToLink = saveAndRetrieveCase(caseToLink);
-    UacQidLink uacQidLink = setupUnlinkedUacQid(VALID_QID);
+  public void testPutQidLinkToCase() throws Exception {
+    try (QueueSpy questionnaireLinkedEventQueueSpy =
+        rabbitQueueHelper.listen(questionnaireLinkEventQueueName)) {
 
-    QidLink requestQidLink = new QidLink();
-    requestQidLink.setCaseId(caseToLink.getCaseId());
-    requestQidLink.setQuestionnaireId(VALID_QID);
+      // Given
+      Case caseToLink = easyRandom.nextObject(Case.class);
+      caseToLink = saveAndRetrieveCase(caseToLink);
+      UacQidLink uacQidLink = setupUnlinkedUacQid(VALID_QID);
 
-    NewQidLink newQidLink = new NewQidLink();
-    newQidLink.setQidLink(requestQidLink);
-    newQidLink.setTransactionId(UUID.randomUUID());
+      QidLink requestQidLink = new QidLink();
+      requestQidLink.setCaseId(caseToLink.getCaseId());
+      requestQidLink.setQuestionnaireId(VALID_QID);
 
-    BlockingQueue<String> questionnaireLinkQueue =
-        rabbitQueueHelper.listen(questionnaireLinkEventQueueName);
+      NewQidLink newQidLink = new NewQidLink();
+      newQidLink.setQidLink(requestQidLink);
+      newQidLink.setTransactionId(UUID.randomUUID());
 
-    // When
-    HttpResponse<JsonNode> jsonResponse =
-        Unirest.put(String.format("http://localhost:%d/qids/link", port))
-            .header("content-type", "application/json")
-            .body(DataUtils.mapper.writeValueAsString(newQidLink))
-            .asJson();
+      // When
+      HttpResponse<JsonNode> jsonResponse =
+          Unirest.put(String.format("http://localhost:%d/qids/link", port))
+              .header("content-type", "application/json")
+              .body(DataUtils.mapper.writeValueAsString(newQidLink))
+              .asJson();
 
-    // Then
-    assertThat(jsonResponse.getStatus()).isEqualTo(HttpStatus.SC_OK);
+      // Then
+      assertThat(jsonResponse.getStatus()).isEqualTo(HttpStatus.SC_OK);
 
-    // Check the proper QUESTIONNAIRE_LINKED event is sent
-    String message = rabbitQueueHelper.checkExpectedMessageReceived(questionnaireLinkQueue);
-    ResponseManagementEvent responseManagementEvent =
-        DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
+      // Check the proper QUESTIONNAIRE_LINKED event is sent
+      String message = questionnaireLinkedEventQueueSpy.checkExpectedMessageReceived();
+      ResponseManagementEvent responseManagementEvent =
+          DataUtils.mapper.readValue(message, ResponseManagementEvent.class);
 
-    assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("QUESTIONNAIRE_LINKED");
-    assertThat(responseManagementEvent.getPayload().getUac().getCaseId())
-        .isEqualTo(requestQidLink.getCaseId());
-    assertThat(responseManagementEvent.getPayload().getUac().getQuestionnaireId())
-        .isEqualTo(requestQidLink.getQuestionnaireId());
+      assertThat(responseManagementEvent.getEvent().getType()).isEqualTo("QUESTIONNAIRE_LINKED");
+      assertThat(responseManagementEvent.getPayload().getUac().getCaseId())
+          .isEqualTo(requestQidLink.getCaseId());
+      assertThat(responseManagementEvent.getPayload().getUac().getQuestionnaireId())
+          .isEqualTo(requestQidLink.getQuestionnaireId());
+    }
   }
 
   private Case saveAndRetrieveCase(Case caze) {
