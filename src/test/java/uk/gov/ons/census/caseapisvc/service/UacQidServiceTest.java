@@ -67,7 +67,7 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeForHouseholdEngland() {
     // When
     int questionnaireType =
-        UacQidService.calculateQuestionnaireType("HH", "E1000", "CENSUS", ADDRESS_LEVEL_UNIT);
+        UacQidService.calculateQuestionnaireType("HH", "E1000", ADDRESS_LEVEL_UNIT, "CENSUS");
 
     // Then
     assertThat(questionnaireType).isEqualTo(1);
