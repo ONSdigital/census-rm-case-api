@@ -167,6 +167,13 @@
       "arguments": {}
     },
     {
+      "name": "case.rm.unInvalidateAddress",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
       "name": "dummy.case.fulfilments",
       "vhost": "/",
       "durable": true,
