@@ -1,19 +1,31 @@
 package uk.gov.ons.census.caseapisvc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.CREATED_UAC;
 import static uk.gov.ons.census.caseapisvc.utility.DataUtils.createUacQidCreatedPayload;
 
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
+import uk.gov.ons.census.caseapisvc.exception.QidNotFoundException;
+import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
+import uk.gov.ons.census.caseapisvc.model.dto.ResponseManagementEvent;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
+import uk.gov.ons.census.caseapisvc.model.entity.Case;
+import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
+import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
+import uk.gov.ons.census.caseapisvc.utility.DataUtils;
 
 public class UacQidServiceTest {
 
@@ -23,6 +35,8 @@ public class UacQidServiceTest {
   private int TEST_QUESTIONNAIRE_TYPE = 1;
 
   @Mock private UacQidServiceClient uacQidServiceClient;
+  @Mock private RabbitTemplate rabbitTemplate;
+  @Mock private UacQidLinkRepository uacQidLinkRepository;
 
   @InjectMocks private UacQidService uacQidService;
 
@@ -349,5 +363,59 @@ public class UacQidServiceTest {
   public void calculateQuestionnaireTypeCeInvalidAddressLevel() {
     // When, then throws
     UacQidService.calculateQuestionnaireType("CE", "E1000", "NOT_VALID_AL");
+  }
+
+  @Test
+  public void buildAndSendQuestionnaireLinkedEvent() {
+    // Given
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setQid(NEW_QID);
+
+    Case caseToLink = DataUtils.createSingleCaseWithEvents();
+
+    NewQidLink newQidLink = new NewQidLink();
+    newQidLink.setChannel("test_channel");
+    newQidLink.setTransactionId(UUID.randomUUID());
+
+    // When
+    uacQidService.buildAndSendQuestionnaireLinkedEvent(uacQidLink, caseToLink, newQidLink);
+
+    // Then
+    ArgumentCaptor<ResponseManagementEvent> eventArgumentCaptor =
+        ArgumentCaptor.forClass(ResponseManagementEvent.class);
+    verify(rabbitTemplate).convertAndSend(any(), any(), eventArgumentCaptor.capture());
+    ResponseManagementEvent actualSentEvent = eventArgumentCaptor.getValue();
+
+    assertThat(actualSentEvent.getPayload().getUac().getCaseId()).isEqualTo(caseToLink.getCaseId());
+    assertThat(actualSentEvent.getPayload().getUac().getQuestionnaireId())
+        .isEqualTo(uacQidLink.getQid());
+    assertThat(actualSentEvent.getEvent().getType()).isEqualTo("QUESTIONNAIRE_LINKED");
+    assertThat(actualSentEvent.getEvent().getChannel()).isEqualTo("test_channel");
+    assertThat(actualSentEvent.getEvent().getSource()).isEqualTo("RESPONSE_MANAGEMENT");
+    assertThat(actualSentEvent.getEvent().getTransactionId()).isNotNull();
+    assertThat(actualSentEvent.getEvent().getDateTime()).isNotNull();
+  }
+
+  @Test
+  public void findUacQidLinkByQid() {
+    // Given
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setQid(NEW_QID);
+    when(uacQidLinkRepository.findByQid(uacQidLink.getQid())).thenReturn(Optional.of(uacQidLink));
+
+    // When
+    UacQidLink actualUacQidLink = uacQidService.findUacQidLinkByQid(uacQidLink.getQid());
+
+    // Then
+    assertThat(actualUacQidLink).isEqualTo(uacQidLink);
+  }
+
+  @Test(expected = QidNotFoundException.class)
+  public void findUacQidLinkByQidRaisesQidNotFound() {
+    // Given
+    when(uacQidLinkRepository.findByQid(NEW_QID)).thenReturn(Optional.empty());
+
+    // When
+    uacQidService.findUacQidLinkByQid(NEW_QID);
   }
 }
