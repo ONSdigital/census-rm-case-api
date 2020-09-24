@@ -45,6 +45,7 @@ import uk.gov.ons.census.caseapisvc.model.entity.EventType;
 import uk.gov.ons.census.caseapisvc.model.entity.UacQidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 import uk.gov.ons.census.caseapisvc.service.UacQidService;
+import uk.gov.ons.census.caseapisvc.utility.DataUtils;
 
 public class CaseEndpointUnitTest {
 
@@ -91,7 +92,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/uprn/%s", TEST_UPRN))
+            get(DataUtils.createUrl("/cases/uprn/%s", TEST_UPRN))
                 .param("caseEvents", "true")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -110,7 +111,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/uprn/%s", TEST_UPRN))
+            get(DataUtils.createUrl("/cases/uprn/%s", TEST_UPRN))
                 .param("caseEvents", "false")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -127,7 +128,9 @@ public class CaseEndpointUnitTest {
         .thenReturn(createMultipleCasesWithEvents());
 
     mockMvc
-        .perform(get(createUrl("/cases/uprn/%s", TEST_UPRN)).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get(DataUtils.createUrl("/cases/uprn/%s", TEST_UPRN))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASES_BY_UPRN))
         .andExpect(jsonPath("$[0].id", is(TEST1_CASE_ID)))
@@ -141,7 +144,9 @@ public class CaseEndpointUnitTest {
     when(caseService.findByUPRN(any(), eq(false))).thenThrow(new UPRNNotFoundException("a uprn"));
 
     mockMvc
-        .perform(get(createUrl("/cases/uprn/%s", TEST_UPRN)).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get(DataUtils.createUrl("/cases/uprn/%s", TEST_UPRN))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
@@ -152,7 +157,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/uprn/%s", TEST_UPRN))
+            get(DataUtils.createUrl("/cases/uprn/%s", TEST_UPRN))
                 .param("validAddressOnly", "false")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -169,7 +174,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/uprn/%s", TEST_UPRN))
+            get(DataUtils.createUrl("/cases/uprn/%s", TEST_UPRN))
                 .param("validAddressOnly", "true")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -184,7 +189,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/%s", TEST1_CASE_ID))
+            get(DataUtils.createUrl("/cases/%s", TEST1_CASE_ID))
                 .param("caseEvents", "true")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -200,7 +205,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/%s", TEST1_CASE_ID))
+            get(DataUtils.createUrl("/cases/%s", TEST1_CASE_ID))
                 .param("caseEvents", "false")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -219,7 +224,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/%s", TEST1_CASE_ID))
+            get(DataUtils.createUrl("/cases/%s", TEST1_CASE_ID))
                 .param("caseEvents", "false")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -235,7 +240,8 @@ public class CaseEndpointUnitTest {
     when(caseService.findByCaseId(any())).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
-        .perform(get(createUrl("/cases/%s", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get(DataUtils.createUrl("/cases/%s", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(handler().methodName(METHOD_NAME_FIND_CASE_BY_ID))
@@ -248,7 +254,8 @@ public class CaseEndpointUnitTest {
     when(caseService.findCaseByQid(TEST_QID)).thenReturn(createSingleCaseWithEvents());
 
     mockMvc
-        .perform(get(createUrl("/cases/qid/%s", TEST_QID)).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get(DataUtils.createUrl("/cases/qid/%s", TEST_QID)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.id", is(TEST1_CASE_ID)));
@@ -259,7 +266,8 @@ public class CaseEndpointUnitTest {
     when(caseService.findByCaseId(any())).thenThrow(new CaseIdNotFoundException(UUID.randomUUID()));
 
     mockMvc
-        .perform(get(createUrl("/cases/%s", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get(DataUtils.createUrl("/cases/%s", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
@@ -269,7 +277,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
+            get(DataUtils.createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
                 .param("caseEvents", "true")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -285,7 +293,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
+            get(DataUtils.createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
                 .param("caseEvents", "false")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -301,7 +309,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
+            get(DataUtils.createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
@@ -316,7 +324,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
+            get(DataUtils.createUrl("/cases/ref/%s", TEST1_CASE_REFERENCE_ID))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
@@ -328,7 +336,8 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
+            get(DataUtils.createUrl("/cases/ccs/%s/qid", TEST1_CASE_ID))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_CCS_QID)))
@@ -343,7 +352,8 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ccs/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
+            get(DataUtils.createUrl("/cases/ccs/%s/qid", TEST1_CASE_ID))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.questionnaireId", is(TEST_CCS_QID)))
@@ -358,7 +368,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ccs/%s/qid", UUID.randomUUID().toString()))
+            get(DataUtils.createUrl("/cases/ccs/%s/qid", UUID.randomUUID().toString()))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
@@ -369,7 +379,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ccs/%s/qid", UUID.randomUUID().toString()))
+            get(DataUtils.createUrl("/cases/ccs/%s/qid", UUID.randomUUID().toString()))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
@@ -386,7 +396,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/%s/qid", caze.getCaseId().toString()))
+            get(DataUtils.createUrl("/cases/%s/qid", caze.getCaseId().toString()))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
@@ -406,7 +416,9 @@ public class CaseEndpointUnitTest {
     when(caseService.findByCaseId(any())).thenThrow(new CaseIdNotFoundException(UUID.randomUUID()));
 
     mockMvc
-        .perform(get(createUrl("/cases/%s/qid", TEST1_CASE_ID)).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get(DataUtils.createUrl("/cases/%s/qid", TEST1_CASE_ID))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
@@ -587,7 +599,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/ccs/postcode/%s", ccsCase.getPostcode()))
+            get(DataUtils.createUrl("/cases/ccs/postcode/%s", ccsCase.getPostcode()))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
@@ -603,7 +615,8 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/postcode/%s", TEST_POSTCODE)).accept(MediaType.APPLICATION_JSON))
+            get(DataUtils.createUrl("/cases/postcode/%s", TEST_POSTCODE))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$").isArray())
@@ -619,7 +632,7 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/case-details/%s", TEST1_CASE_ID))
+            get(DataUtils.createUrl("/cases/case-details/%s", TEST1_CASE_ID))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
@@ -635,15 +648,11 @@ public class CaseEndpointUnitTest {
 
     mockMvc
         .perform(
-            get(createUrl("/cases/case-details/%s", TEST1_CASE_ID))
+            get(DataUtils.createUrl("/cases/case-details/%s", TEST1_CASE_ID))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(handler().handlerType(CaseEndpoint.class))
         .andExpect(jsonPath("$.id", is(caze.getCaseId().toString())))
         .andExpect(jsonPath("$.events", hasSize(0)));
-  }
-
-  private String createUrl(String urlFormat, String param1) {
-    return String.format(urlFormat, param1);
   }
 }

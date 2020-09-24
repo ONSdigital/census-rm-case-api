@@ -227,17 +227,18 @@ public final class CaseEndpoint {
     for (UacQidLink uacQidLink : uacQidLinks) {
       List<Event> events = uacQidLink.getEvents();
 
-      //      RM_UAC_CREATED event redacted to stop personal information being displayed
       for (Event event : events) {
+        // RM_UAC_CREATED event redacted remove UACs
         if (!event.getEventType().equals(EventType.RM_UAC_CREATED)) {
           caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
         }
       }
-      if (caze.getEvents() != null) {
-        for (Event event : caze.getEvents()) {
-          if (!event.getEventType().equals(EventType.RM_UAC_CREATED)) {
-            caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
-          }
+    }
+
+    if (caze.getEvents() != null) {
+      for (Event event : caze.getEvents()) {
+        if (!event.getEventType().equals(EventType.RM_UAC_CREATED)) {
+          caseEvents.add(mapperFacade.map(event, CaseDetailsEventDTO.class));
         }
       }
     }

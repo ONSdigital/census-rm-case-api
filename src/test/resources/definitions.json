@@ -167,7 +167,21 @@
       "arguments": {}
     },
     {
+      "name": "case.rm.unInvalidateAddress",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
       "name": "dummy.case.fulfilments",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "dummy.questionnaire.updates",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -273,6 +287,14 @@
       "destination": "dummy.case.fulfilments",
       "destination_type": "queue",
       "routing_key": "event.fulfilment.request",
+      "arguments": {}
+    },
+    {
+      "source": "events",
+      "vhost": "/",
+      "destination": "dummy.questionnaire.updates",
+      "destination_type": "queue",
+      "routing_key": "event.questionnaire.update",
       "arguments": {}
     },
     {

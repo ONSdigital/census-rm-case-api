@@ -62,9 +62,7 @@ public class DataUtils {
     List<UacQidLink> uacQidLinks = new LinkedList<>();
     List<Event> events = new LinkedList<>();
 
-    UacQidLink uacQidLink = new UacQidLink();
-    uacQidLink.setId(UUID.randomUUID());
-    uacQidLink.setUac("any UAC");
+    UacQidLink uacQidLink = createUacQidLink();
 
     Event event = new Event();
     event.setId(UUID.randomUUID());
@@ -153,5 +151,17 @@ public class DataUtils {
   public static CaseDetailsDTO extractCaseDetailsDTOsFromResponse(HttpResponse<JsonNode> response)
       throws IOException {
     return mapper.readValue(response.getBody().getObject().toString(), CaseDetailsDTO.class);
+  }
+
+  public static UacQidLink createUacQidLink() {
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setId(UUID.randomUUID());
+    uacQidLink.setUac("any UAC");
+    uacQidLink.setQid("any QID");
+    return uacQidLink;
+  }
+
+  public static String createUrl(String urlFormat, String param1) {
+    return String.format(urlFormat, param1);
   }
 }
