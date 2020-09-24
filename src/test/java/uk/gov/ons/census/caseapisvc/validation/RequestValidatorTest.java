@@ -10,19 +10,23 @@ import uk.gov.ons.census.caseapisvc.model.entity.Case;
 public class RequestValidatorTest {
   @Test
   public void testAllTheValidGetNewQidByCaseIdRequests() {
-    testValidGetNewQidByCaseIdCombination("HH", "U", false, null);
-    testValidGetNewQidByCaseIdCombination("HH", "U", true, UUID.randomUUID());
+    testValidGetNewQidByCaseIdCombination("HH", "U", "CENSUS", false, null);
+    testValidGetNewQidByCaseIdCombination("HH", "U", "CENSUS", true, UUID.randomUUID());
 
-    testValidGetNewQidByCaseIdCombination("CE", "E", false, null);
-    testValidGetNewQidByCaseIdCombination("CE", "E", true, null);
+    testValidGetNewQidByCaseIdCombination("CE", "E", "CENSUS", false, null);
+    testValidGetNewQidByCaseIdCombination("CE", "E", "CENSUS", true, null);
 
-    testValidGetNewQidByCaseIdCombination("CE", "U", true, null);
+    testValidGetNewQidByCaseIdCombination("CE", "U", "CENSUS", true, null);
 
-    testValidGetNewQidByCaseIdCombination("SPG", "E", false, null);
-    testValidGetNewQidByCaseIdCombination("SPG", "E", true, null);
+    testValidGetNewQidByCaseIdCombination("SPG", "E", "CENSUS", false, null);
+    testValidGetNewQidByCaseIdCombination("SPG", "E", "CENSUS", true, null);
 
-    testValidGetNewQidByCaseIdCombination("SPG", "U", false, null);
-    testValidGetNewQidByCaseIdCombination("SPG", "U", true, null);
+    testValidGetNewQidByCaseIdCombination("SPG", "U", "CENSUS", false, null);
+    testValidGetNewQidByCaseIdCombination("SPG", "U", "CENSUS", true, null);
+
+    testValidGetNewQidByCaseIdCombination("HH", "U", "CCS", false, null);
+    testValidGetNewQidByCaseIdCombination("SPG", "E", "CCS", false, null);
+    testValidGetNewQidByCaseIdCombination("SPG", "U", "CCS", false, null);
   }
 
   @Test
@@ -40,27 +44,63 @@ public class RequestValidatorTest {
     testInvalidGetNewQidByCaseIdCombination("SPG", "U", true, UUID.randomUUID());
   }
 
+  @Test(expected = ResponseStatusException.class)
+  public void testCCSAndIndividualFails() {
+    Case caze = new Case();
+    caze.setCaseId(UUID.randomUUID());
+    caze.setSurvey("CCS");
+
+    RequestValidator.validateGetNewQidByCaseIdRequest(caze, true, null);
+  }
+
+  @Test(expected = ResponseStatusException.class)
+  public void testCCSAndCEFails() {
+    Case caze = new Case();
+    caze.setCaseId(UUID.randomUUID());
+    caze.setSurvey("CCS");
+    caze.setCaseType("CE");
+
+    RequestValidator.validateGetNewQidByCaseIdRequest(caze, false, null);
+  }
+
   private void testValidGetNewQidByCaseIdCombination(
-      String caseType, String addressLevel, boolean individual, UUID individualCaseId) {
+      String caseType,
+      String addressLevel,
+      String surveyType,
+      boolean individual,
+      UUID individualCaseId) {
     UUID caseId = UUID.randomUUID();
     Case caze = new Case();
     caze.setCaseId(caseId);
     caze.setCaseType(caseType);
     caze.setAddressLevel(addressLevel);
+    caze.setSurvey(surveyType);
 
     RequestValidator.validateGetNewQidByCaseIdRequest(caze, individual, individualCaseId);
   }
 
   private void testInvalidGetNewQidByCaseIdCombination(
       String caseType, String addressLevel, boolean individual, UUID individualCaseId) {
+    testInvalidGetNewQidByCaseIdCombination(
+        caseType, addressLevel, "CENSUS", individual, individualCaseId);
+  }
+
+  private void testInvalidGetNewQidByCaseIdCombination(
+      String caseType,
+      String addressLevel,
+      String surveyType,
+      boolean individual,
+      UUID individualCaseId) {
     UUID caseId = UUID.randomUUID();
     Case caze = new Case();
     caze.setCaseId(caseId);
     caze.setCaseType(caseType);
     caze.setAddressLevel(addressLevel);
+    caze.setSurvey(surveyType);
 
     try {
       RequestValidator.validateGetNewQidByCaseIdRequest(caze, individual, individualCaseId);
+
     } catch (ResponseStatusException responseStatusException) {
       // It worked
       return;
