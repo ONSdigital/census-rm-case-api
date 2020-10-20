@@ -1059,9 +1059,11 @@ public class CaseEndpointIT {
     assertThat(response.getStatus()).isEqualTo(OK.value());
 
     CaseDetailsDTO actualCaseDetails = extractCaseDetailsDTOsFromResponse(response);
+    actualCaseDetails.setCeActualResponses(0);
 
     assertThat(actualCaseDetails.getCaseId()).isEqualTo(caze.getCaseId());
     assertThat(actualCaseDetails.getEvents().size()).isEqualTo(1);
+    assertThat(actualCaseDetails.getCeActualResponses()).isEqualTo(0);
     assertThat(actualCaseDetails.getEvents().get(0).getEventType())
         .isEqualTo(EventType.CASE_CREATED.toString());
   }

@@ -99,7 +99,7 @@ public class Case {
 
   @Column private Integer ceExpectedCapacity;
 
-  @Column private Integer ceActualResponses;
+  @Column private int ceActualResponses;
 
   @Column private UUID collectionExerciseId;
 
