@@ -69,7 +69,7 @@ public class CaseDetailsDTO {
 
   private Integer ceExpectedCapacity;
 
-  private Integer ceActualResponses;
+  private int ceActualResponses;
 
   private UUID collectionExerciseId;
 
