@@ -50,6 +50,7 @@ management:
   metrics:
     tags:
       application: Case API
+      pod: ${HOSTNAME}
     export:
       stackdriver:
         project-id: dummy-project-id
