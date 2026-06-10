@@ -1,0 +1,66 @@
+server:
+  port: 8161
+
+info:
+  app:
+    name: Case API
+    version: 1.0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:6432/rm?readOnly=true
+    username: appuser
+    password: postgres
+    driverClassName: org.postgresql.Driver
+    hikari:
+      maximumPoolSize: 50
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: casev3
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  cloud:
+    gcp:
+      pubsub:
+        subscriber:
+          flow-control:
+            max-outstanding-element-count: 100
+
+logging:
+  profile: DEV
+  level:
+    root: INFO
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+  metrics:
+    tags:
+      application: Case API
+      pod: ${HOSTNAME}
+  stackdriver:
+    metrics:
+      export:
+        project-id: dummy-project-id
+        enabled: false
+        step: PT1M
+
+uacservice:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8164
+
+
+queueconfig:
+  sevents-exchange: events
+  fulfilment-event-routing-key: event.fulfilment.request
+  questionnaire-linked-event-routing-key: event.questionnaire.update
