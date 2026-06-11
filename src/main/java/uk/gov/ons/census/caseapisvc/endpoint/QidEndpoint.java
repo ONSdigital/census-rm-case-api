@@ -18,8 +18,8 @@ import uk.gov.ons.census.common.model.entity.UacQidLink;
 @RequestMapping(value = "/qids")
 @Timed
 public class QidEndpoint {
-  private UacQidService uacQidService;
-  private CaseService caseService;
+  private final UacQidService uacQidService;
+  private final CaseService caseService;
 
   @Autowired
   public QidEndpoint(UacQidService uacQidService, CaseService caseService) {

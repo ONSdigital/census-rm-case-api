@@ -15,7 +15,6 @@ import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.ons.census.caseapisvc.utility.ObjectMapperFactory;
 
 @Configuration
 public class AppConfig {
@@ -38,9 +37,9 @@ public class AppConfig {
 
   @Bean
   public PubSubTemplate pubSubTemplate(
-          PublisherFactory publisherFactory,
-          SubscriberFactory subscriberFactory,
-          SimplePubSubMessageConverter simplePubSubMessageConverter) {
+      PublisherFactory publisherFactory,
+      SubscriberFactory subscriberFactory,
+      SimplePubSubMessageConverter simplePubSubMessageConverter) {
     PubSubTemplate pubSubTemplate = new PubSubTemplate(publisherFactory, subscriberFactory);
     pubSubTemplate.setMessageConverter(simplePubSubMessageConverter);
     return pubSubTemplate;
@@ -50,7 +49,6 @@ public class AppConfig {
   public SimplePubSubMessageConverter messageConverter() {
     return new SimplePubSubMessageConverter();
   }
-
 
   @Bean
   StackdriverConfig stackdriverConfig() {
@@ -95,6 +93,3 @@ public class AppConfig {
     return StackdriverMeterRegistry.builder(stackdriverConfig).build();
   }
 }
-
-
-

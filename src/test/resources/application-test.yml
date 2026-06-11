@@ -1,12 +1,11 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:15433/rm
-
+    url: jdbc:postgresql://localhost:15432/rm?currentSchema=cases
   cloud:
     gcp:
       pubsub:
         emulator-host: localhost:18539
-        project-id: project
+        project-id: our-project
 
 
 uacservice:

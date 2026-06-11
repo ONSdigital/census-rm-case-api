@@ -1,13 +1,13 @@
 FROM eclipse-temurin:21-jre-alpine
 
-CMD ["/opt/java/openjdk/bin/java", "-jar", "/opt/census-rm-caseapi.jar"]
+ARG JAR_FILE=census-rm-case-api*.jar
+CMD ["/opt/java/openjdk/bin/java", "-jar", "/opt/census-rm-case-api.jar"]
 
 # Create a system group and user without forcing UID/GID
-RUN addgroup --system caseapi && \
-    adduser --system --ingroup caseapi caseapi
+RUN addgroup --system case-api && \
+    adduser --system --ingroup case-api case-api
 
-USER caseapi
+USER case-api
 
-COPY target/census-rm-case-api*.jar /opt/census-rm-case-api.jar
-
+COPY target/$JAR_FILE /opt/census-rm-case-api.jar
 

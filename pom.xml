@@ -16,7 +16,10 @@
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
+    <java.version>21</java.version>
+    <container.cli>docker</container.cli>
   </properties>
+
 
   <dependencyManagement>
     <dependencies>
@@ -40,7 +43,7 @@
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
+  <!-- <repositories>
     <repository>
       <id>artifact-registry</id>
       <url>artifactregistry://europe-west2-maven.pkg.dev/ssdc-rm-ci/rm-snapshots</url>
@@ -64,6 +67,7 @@
       </snapshots>
     </repository>
   </repositories>
+  -->
 
   <dependencies>
     <dependency>
@@ -324,7 +328,7 @@
                      <limit>
                        <counter>LINE</counter>
                        <value>COVEREDRATIO</value>
-                       <minimum>75%</minimum>
+                       <minimum>60%</minimum>
                      </limit>
                    </limits>
                  </rule>

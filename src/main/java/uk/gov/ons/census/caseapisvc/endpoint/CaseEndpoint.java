@@ -4,7 +4,6 @@ import io.micrometer.core.annotation.Timed;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,7 +65,11 @@ public class CaseEndpoint {
   @GetMapping(value = "/postcode/{postcode}")
   public List<CaseContainerDTO> getCasesByPostcode(@PathVariable("postcode") String postcode) {
     List<Case> cases = caseService.findByPostcode(postcode);
-    return cases.stream().map(c -> buildCaseContainerDTO(c, false)).collect(Collectors.toList());
+    List<CaseContainerDTO> caseContainerDTOs = new LinkedList<>();
+    for (Case caze : cases) {
+      caseContainerDTOs.add(buildCaseContainerDTO(caze, false));
+    }
+    return caseContainerDTOs;
   }
 
   @GetMapping(value = "/qid/{qid}")
@@ -120,6 +123,8 @@ public class CaseEndpoint {
     caseContainerDTO.setAddressInvalid(caze.isInvalid());
     caseContainerDTO.setCreatedDateTime(caze.getCreatedAt());
     caseContainerDTO.setLastUpdated(caze.getLastUpdatedAt());
+    caseContainerDTO.setUprn(caze.getUprn());
+    caseContainerDTO.setPostcode(caze.getPostcode());
     // caseContainerDTO.setRefusalReceived(caze.getRefusalReceived());
     // caseContainerDTO.setSample(caze.getSample());
     return caseContainerDTO;

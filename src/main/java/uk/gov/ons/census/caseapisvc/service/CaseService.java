@@ -46,7 +46,7 @@ public class CaseService {
 
     if (validAddressOnly) {
       return caseRepository
-          .findByUprnAndAddressInvalidFalse(uprn)
+          .findByUprnAndInvalidFalse(uprn)
           .orElseThrow(
               () ->
                   new ResponseStatusException(
@@ -79,6 +79,7 @@ public class CaseService {
   }
 
   public List<Case> findByPostcode(String postcode) {
-    return caseRepository.findByPostcode(postcode);
+    List<Case> cazeList = caseRepository.findByPostcode(postcode);
+    return cazeList;
   }
 }

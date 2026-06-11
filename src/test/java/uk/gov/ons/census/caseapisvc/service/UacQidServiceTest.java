@@ -34,8 +34,6 @@ public class UacQidServiceTest {
 
     service = new UacQidService(uacQidServiceClient, uacQidLinkRepository, messageSender);
 
-    // Inject @Value fields manually
-    service.eventsExchange = "events-exchange";
     service.questionnaireLinkedEventRoutingKey = "questionnaire-linked";
     service.pubsubProject = "test-project";
   }

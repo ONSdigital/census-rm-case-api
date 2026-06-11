@@ -9,12 +9,17 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -32,6 +37,8 @@ import uk.gov.ons.census.common.model.entity.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class CaseEndpointIT {
+
+  private static final Logger log = LoggerFactory.getLogger(CaseEndpointIT.class);
 
   private static final String TEST_UPRN = "123456789012345";
   private static final String TEST_UPRN_EXISTS = "123456789012345";
@@ -72,58 +79,44 @@ public class CaseEndpointIT {
       // event row on and the case table clear down fails.  2nd run should clear it down
       clearDown();
     }
+
+    easyRandom = new EasyRandom(new EasyRandomParameters().randomizationDepth(1));
   }
 
   public void clearDown() {
     eventRepository.deleteAllInBatch();
+    uacQidLinkRepository.deleteAllInBatch();
     caseRepository.deleteAllInBatch();
     collectionExerciseRepository.deleteAllInBatch();
     surveyRepository.deleteAllInBatch();
   }
 
   @Test
-  public void shouldRetrieveMultipleCasesWithEventsWhenSearchingByUPRN() {
-    createTwoTestCasesWithEvents();
+  public void shouldRetrieveMultipleCasesWithEventsWhenSearchingByUPRN() throws Exception {
+    // createTwoTestCasesWithEvents();
+    setupTestCaseWithEvent(String.valueOf(UUID.randomUUID()));
+    setupTestCaseWithEvent(String.valueOf(UUID.randomUUID()));
 
-    RestTemplate restTemplate = new RestTemplate();
-    String url =
-        "http://localhost:"
-            + port
-            + "/cases/searchByField?caseEvents=true&fieldName=uprn&filterValue="
-            + TEST_UPRN;
-    ResponseEntity<CaseContainerDTO[]> foundCasesResponse =
-        restTemplate.getForEntity(url, CaseContainerDTO[].class);
+    HttpResponse<JsonNode> response =
+        Unirest.get(createUrl("http://localhost:%d/cases/uprn/%s", port, TEST_UPRN_EXISTS))
+            .header("accept", "application/json")
+            .queryString("caseEvents", "true")
+            .asJson();
 
-    CaseContainerDTO[] actualCases = foundCasesResponse.getBody();
-    assertThat(actualCases).isNotNull();
-    assertThat(actualCases).hasSize(2);
+    assertThat(response.getStatus()).isEqualTo(OK.value());
 
-    assertThat(actualCases[0].getUprn().equals(TEST_UPRN));
-    assertThat(actualCases[0].getCaseEvents().size()).isEqualTo(1);
+    List<CaseContainerDTO> actualData = extractCaseContainerDTOsFromResponse(response);
 
-    assertThat(actualCases[1].getUprn().equals(TEST_UPRN));
-    assertThat(actualCases[1].getCaseEvents().size()).isEqualTo(1);
-  }
+    assertThat(actualData.size()).isEqualTo(2);
 
-  @Test
-  public void searchCasesByPostCode() {
-    createTwoTestCasesWithEvents();
+    CaseContainerDTO case1 = actualData.get(0);
+    CaseContainerDTO case2 = actualData.get(1);
 
-    RestTemplate restTemplate = new RestTemplate();
-    String url =
-        "http://localhost:"
-            + port
-            + "/cases/searchByField?ignoreCaseAndSpaces=true&fieldName=PostCode&filterValue="
-            + TEST_POSTCODE_WITH_SPACE;
-    ResponseEntity<CaseContainerDTO[]> foundCasesResponse =
-        restTemplate.getForEntity(url, CaseContainerDTO[].class);
+    assertThat(case1.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
+    assertThat(case1.getCaseEvents().size()).isEqualTo(1);
 
-    CaseContainerDTO[] actualCases = foundCasesResponse.getBody();
-    assertThat(actualCases).isNotNull();
-    assertThat(actualCases).hasSize(2);
-
-    assertThat(actualCases[0].getPostcode()).isEqualTo(TEST_POSTCODE_NO_SPACE);
-    assertThat(actualCases[1].getPostcode()).isEqualTo(TEST_POSTCODE_NO_SPACE);
+    assertThat(case2.getUprn()).isEqualTo(TEST_UPRN_EXISTS);
+    assertThat(case2.getCaseEvents().size()).isEqualTo(1);
   }
 
   @Test
@@ -252,7 +245,7 @@ public class CaseEndpointIT {
   @Test
   public void shouldRetrieveACaseWithoutEventsByDefaultWhenSearchingByCaseReference()
       throws Exception {
-    Case expectedCase = createOneTestCaseWithoutEvents();
+    Case expectedCase = setupTestCaseWithoutEvents(String.valueOf(UUID.randomUUID()));
     String expectedCaseRef = Long.toString(expectedCase.getCaseRef());
 
     HttpResponse<JsonNode> response =
@@ -281,7 +274,22 @@ public class CaseEndpointIT {
 
   @Test
   public void getCasesByPostcode() throws IOException, UnirestException {
-    createTwoTestCasesWithEvents();
+    // createTwoTestCasesWithEvents();
+    String case_1 = String.valueOf(UUID.randomUUID());
+    setupTestCaseWithEvent(case_1);
+    String case_2 = String.valueOf(UUID.randomUUID());
+    setupTestCaseWithEvent(case_2);
+    Optional<Case> caseObj1 =
+        Optional.of(
+            caseRepository
+                .findById(UUID.fromString(case_1))
+                .orElseThrow(() -> new RuntimeException("Case not found!")));
+
+    Optional<Case> caseObj2 =
+        Optional.of(
+            caseRepository
+                .findById(UUID.fromString(case_2))
+                .orElseThrow(() -> new RuntimeException("Case not found!")));
 
     HttpResponse<JsonNode> response =
         Unirest.get(createUrl("http://localhost:%d/cases/postcode/%s", port, TEST_POSTCODE))
@@ -342,26 +350,63 @@ public class CaseEndpointIT {
   }
 
   private Case setupTestCaseWithEvent(String caseId) {
+
+    Survey junkSurvey = new Survey();
+    junkSurvey.setId(UUID.randomUUID());
+    junkSurvey.setName("Junk survey");
+    junkSurvey.setSampleSeparator('j');
+    surveyRepository.saveAndFlush(junkSurvey);
+
+    CollectionExercise junkCollectionExercise = new CollectionExercise();
+    junkCollectionExercise.setId(UUID.randomUUID());
+    junkCollectionExercise.setName("Junk collex");
+    junkCollectionExercise.setSurvey(junkSurvey);
+    junkCollectionExercise.setReference("MVP012021");
+    junkCollectionExercise.setStartDate(OffsetDateTime.now());
+    junkCollectionExercise.setEndDate(OffsetDateTime.now().plusDays(2));
+    junkCollectionExercise.setMetadata(null);
+    collectionExerciseRepository.saveAndFlush(junkCollectionExercise);
+
     Case caze = easyRandom.nextObject(Case.class);
     caze.setId(UUID.fromString(caseId));
     caze.setEvents(null);
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);
     caze.setPostcode(TEST_POSTCODE);
+    caze.setCollectionExercise(junkCollectionExercise);
     caseRepository.saveAndFlush(caze);
 
     UacQidLink uacQidLink = new UacQidLink();
     uacQidLink.setId(UUID.randomUUID());
     uacQidLink.setActive(true);
+    uacQidLink.setQid(easyRandom.nextObject(String.class));
+    uacQidLink.setUac("test_uac_1");
+    uacQidLink.setUacHash("fakeHash_1");
     uacQidLink.setCaze(caze);
     uacQidLinkRepository.save(uacQidLink);
+
+    caze =
+        caseRepository
+            .findById(UUID.fromString(caseId))
+            .orElseThrow(() -> new RuntimeException("Case not found!"));
+    caze.setUacQidLinks(List.of(uacQidLink));
+    caseRepository.saveAndFlush(caze);
 
     Event event = new Event();
     event.setId(UUID.randomUUID());
     event.setCaze(null);
     event.setType(EventType.NEW_CASE);
     event.setUacQidLink(uacQidLink);
+    event.setChannel("RM");
+    event.setCorrelationId(UUID.randomUUID());
     event.setPayload("{}");
+    event.setDescription("description");
+    event.setMessageId(UUID.randomUUID());
+    event.setCreatedBy("");
+    event.setMessageTimestamp(OffsetDateTime.now());
+    event.setProcessedAt(OffsetDateTime.now());
+    event.setSource("");
+    event.setDateTime(OffsetDateTime.now());
 
     eventRepository.save(event);
 
@@ -381,11 +426,45 @@ public class CaseEndpointIT {
 
   private Case setupTestCaseWithoutEvents(String id) {
     Case caze = getACase(id);
+    Survey junkSurvey = new Survey();
+    junkSurvey.setId(UUID.randomUUID());
+    junkSurvey.setName("Junk survey");
+    junkSurvey.setSampleSeparator('j');
+    surveyRepository.saveAndFlush(junkSurvey);
+
+    CollectionExercise junkCollectionExercise = new CollectionExercise();
+    junkCollectionExercise.setId(UUID.randomUUID());
+    junkCollectionExercise.setName("Junk collex");
+    junkCollectionExercise.setSurvey(junkSurvey);
+    junkCollectionExercise.setReference("MVP012021");
+    junkCollectionExercise.setStartDate(OffsetDateTime.now());
+    junkCollectionExercise.setEndDate(OffsetDateTime.now().plusDays(2));
+    junkCollectionExercise.setMetadata(null);
+    collectionExerciseRepository.saveAndFlush(junkCollectionExercise);
+
+    caze.setCollectionExercise(junkCollectionExercise);
 
     return saveAndRetrieveCase(caze);
   }
 
   private Case saveAndRetrieveCase(Case caze) {
+
+    caseRepository.save(caze);
+
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setId(UUID.randomUUID());
+    uacQidLink.setActive(true);
+    uacQidLink.setQid("Q123");
+    uacQidLink.setUac("test_uac");
+    uacQidLink.setUacHash("fakeHash");
+    uacQidLink.setCaze(caze);
+    uacQidLinkRepository.save(uacQidLink);
+
+    caze =
+        caseRepository
+            .findById(caze.getId())
+            .orElseThrow(() -> new RuntimeException("Case not found!"));
+    caze.setUacQidLinks(List.of(uacQidLink));
     caseRepository.saveAndFlush(caze);
 
     return caseRepository
@@ -398,8 +477,9 @@ public class CaseEndpointIT {
   }
 
   private Case getACase(String caseId) {
-    Case caze = easyRandom.nextObject(Case.class);
+    Case caze = new Case(); // easyRandom.nextObject(Case.class);
     caze.setId(UUID.fromString(caseId));
+    caze.setCaseRef(1L);
     caze.setEvents(null);
     caze.setUprn(TEST_UPRN_EXISTS);
     caze.setReceiptReceived(false);

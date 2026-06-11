@@ -8,7 +8,7 @@ info:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:6432/rm?readOnly=true
+    url: jdbc:postgresql://localhost:5432/rm?readOnly=true
     username: appuser
     password: postgres
     driverClassName: org.postgresql.Driver
@@ -20,21 +20,31 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
-        default_schema: casev3
+        default_schema: cases
         jdbc:
           lob:
             non_contextual_creation: true
   cloud:
     gcp:
       pubsub:
+        emulator-host: localhost:8538
+        project-id: our-project
         subscriber:
           flow-control:
             max-outstanding-element-count: 100
+
 
 logging:
   profile: DEV
   level:
     root: INFO
+    com.google.cloud.spring.pubsub.integration.inbound.PubSubInboundChannelAdapter: ERROR
+
+exceptionmanager:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8666
 
 management:
   endpoints:
@@ -61,6 +71,4 @@ uacservice:
 
 
 queueconfig:
-  sevents-exchange: events
-  fulfilment-event-routing-key: event.fulfilment.request
   questionnaire-linked-event-routing-key: event.questionnaire.update

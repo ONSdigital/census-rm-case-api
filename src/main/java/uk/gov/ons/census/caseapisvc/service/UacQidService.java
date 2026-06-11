@@ -34,12 +34,9 @@ public class UacQidService {
   private static final String CASE_TYPE_CE = "CE";
   private static final String QUESTIONNAIRE_LINKED_EVENT_TYPE = "QUESTIONNAIRE_LINKED";
 
-  private UacQidServiceClient uacQidServiceClient;
-  private UacQidLinkRepository uacQidLinkRepository;
+  private final UacQidServiceClient uacQidServiceClient;
+  private final UacQidLinkRepository uacQidLinkRepository;
   private final MessageSender messageSender;
-
-  @Value("${queueconfig.events-exchange}")
-  String eventsExchange;
 
   @Value("${queueconfig.questionnaire-linked-event-routing-key}")
   String questionnaireLinkedEventRoutingKey;

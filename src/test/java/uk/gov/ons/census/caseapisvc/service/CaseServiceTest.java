@@ -103,7 +103,7 @@ class CaseServiceTest {
   void findByUPRN_validAddressOnly_returnsList() {
     String uprn = "UPRN123";
     List<Case> cases = List.of(new Case());
-    when(caseRepository.findByUprnAndAddressInvalidFalse(uprn)).thenReturn(Optional.of(cases));
+    when(caseRepository.findByUprnAndInvalidFalse(uprn)).thenReturn(Optional.of(cases));
 
     List<Case> result = caseService.findByUPRN(uprn, true);
 
@@ -113,7 +113,7 @@ class CaseServiceTest {
   @Test
   void findByUPRN_validAddressOnly_throwsWhenNotFound() {
     String uprn = "UPRN123";
-    when(caseRepository.findByUprnAndAddressInvalidFalse(uprn)).thenReturn(Optional.empty());
+    when(caseRepository.findByUprnAndInvalidFalse(uprn)).thenReturn(Optional.empty());
 
     assertThrows(ResponseStatusException.class, () -> caseService.findByUPRN(uprn, true));
   }
