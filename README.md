@@ -60,11 +60,11 @@ If this query parameter is omitted these case events **will not** be returned wi
 ## QID Get and Update:
 * `GET /qids/<qid>`
 * `PUT /qids/link`
-### Example Case JSON Request
+### Example QIDs JSON Request
 ```json
 {
   "transactionId": "040f4608-d054-4ae9-b12f-1eee7e0fa395",
-  "channel": "",
+  "channel": "RM",
   "qidLink": {
     "questionnaireId" : "Q123",
     "caseId": "040f4608-d054-4ae9-b12f-1eee7e0fa173"
