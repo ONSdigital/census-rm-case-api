@@ -266,7 +266,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <executable>true</executable>
-          <mainClass>uk.gov.ons.ssdc.caseapisvc.Application</mainClass>
+          <mainClass>uk.gov.ons.census.caseapisvc.Application</mainClass>
         </configuration>
         <executions>
           <execution>

@@ -125,8 +125,30 @@ public class CaseEndpoint {
     caseContainerDTO.setLastUpdated(caze.getLastUpdatedAt());
     caseContainerDTO.setUprn(caze.getUprn());
     caseContainerDTO.setPostcode(caze.getPostcode());
-    // caseContainerDTO.setRefusalReceived(caze.getRefusalReceived());
-    // caseContainerDTO.setSample(caze.getSample());
+    caseContainerDTO.setEstabType(caze.getEstabType());
+    caseContainerDTO.setEstabUprn(caze.getEstabUprn());
+    caseContainerDTO.setCollectionExerciseId(
+        caze.getCollectionExercise() != null ? caze.getCollectionExercise().getId() : null);
+    caseContainerDTO.setCaseType(caze.getCaseType());
+    caseContainerDTO.setCreatedDateTime(caze.getCreatedAt());
+    caseContainerDTO.setAddressLine1(caze.getAddressLine1());
+    caseContainerDTO.setAddressLine2(caze.getAddressLine2());
+    caseContainerDTO.setAddressLine3(caze.getAddressLine3());
+    caseContainerDTO.setTownName(caze.getTownName());
+    caseContainerDTO.setPostcode(caze.getPostcode());
+    caseContainerDTO.setOrganisationName(caze.getOrganisationName());
+    caseContainerDTO.setAddressLevel(caze.getAddressLevel());
+    caseContainerDTO.setAbpCode(caze.getAbpCode());
+    caseContainerDTO.setRegion(caze.getRegion());
+    caseContainerDTO.setLatitude(caze.getLatitude());
+    caseContainerDTO.setLongitude(caze.getLongitude());
+    caseContainerDTO.setOa(caze.getOa());
+    caseContainerDTO.setLsoa(caze.getLsoa());
+    caseContainerDTO.setLastUpdated(caze.getLastUpdatedAt());
+    caseContainerDTO.setMsoa(caze.getMsoa());
+    caseContainerDTO.setHandDelivery(caze.isReceiptReceived());
+    caseContainerDTO.setSecureEstablishment(caze.isSecureEstablishment());
+    caseContainerDTO.setAddressInvalid(caze.isInvalid());
     return caseContainerDTO;
   }
 
@@ -161,16 +183,12 @@ public class CaseEndpoint {
     caseDetailsDTO.setTreatmentCode(caze.getTreatmentCode());
     caseDetailsDTO.setCeExpectedCapacity(caze.getCeExpectedCapacity());
     caseDetailsDTO.setCollectionExerciseId(caze.getCollectionExercise().getId());
-    // caseDetailsDTO.setActionPlanId(caze.getActionPlanId());
-    // caseDetailsDTO.setSurvey(caze.getSurvey());
-    caseDetailsDTO.setCreatedDateTime(caze.getCreatedAt());
-    // caseDetailsDTO.setEvents(caze.getEvents());
+    caseDetailsDTO.setCreatedDateTime(caze.getCreatedAt());;
     caseDetailsDTO.setReceiptReceived(caze.isReceiptReceived());
     caseDetailsDTO.setRefusalReceived(caze.getRefusalReceived());
     caseDetailsDTO.setAddressInvalid(caze.isInvalid());
     caseDetailsDTO.setLastUpdated(caze.getLastUpdatedAt());
-    // caseDetailsDTO.setHandDelivery();
-    // caseDetailsDTO.setSkeleton();
+    caseDetailsDTO.setHandDelivery(caze.isReceiptReceived());
     caseDetailsDTO.setPrintBatch(caze.getPrintBatch());
     caseDetailsDTO.setSurveyLaunched(caze.isSurveyLaunched());
 

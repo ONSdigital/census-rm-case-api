@@ -27,6 +27,7 @@ public class QidEndpoint {
     this.caseService = caseService;
   }
 
+  // As we don't have a subscription for the questionnaire links, it is not possible to test this.
   @GetMapping(value = "/{qid}")
   public QidLink getUacQidLinkByQid(@PathVariable("qid") String qid) {
     UacQidLink uacQidLink = uacQidService.findUacQidLinkByQid(qid);
