@@ -1,8 +1,10 @@
 package uk.gov.ons.census.caseapisvc.client;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.Field;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.springframework.http.HttpMethod;
@@ -23,8 +25,6 @@ class UacQidServiceClientTest {
     setField(client, "port", "8080");
 
     UacQidCreatedPayloadDTO payload = new UacQidCreatedPayloadDTO();
-    payload.setCaseId(null); // any value is fine
-
     ResponseEntity<UacQidCreatedPayloadDTO> responseEntity = ResponseEntity.ok(payload);
 
     try (MockedConstruction<RestTemplate> mocked =
@@ -36,7 +36,7 @@ class UacQidServiceClientTest {
                     .thenReturn(responseEntity))) {
 
       // Act
-      UacQidCreatedPayloadDTO result = client.generateUacQid(1);
+      UacQidCreatedPayloadDTO result = client.generateUacQid(99);
 
       // Assert
       assertSame(payload, result);
@@ -47,8 +47,8 @@ class UacQidServiceClientTest {
           .exchange(
               argThat(
                   uri -> {
-                    String uriString = uri.toString();
-                    return uriString.equals("http://localhost:8080");
+                    String s = uri.toString();
+                    return s.equals("http://localhost:8080?questionnaireType=99");
                   }),
               eq(HttpMethod.GET),
               eq(null),
@@ -59,7 +59,7 @@ class UacQidServiceClientTest {
   // Helper to set private fields
   private static void setField(Object target, String fieldName, Object value) {
     try {
-      var field = UacQidServiceClient.class.getDeclaredField(fieldName);
+      Field field = UacQidServiceClient.class.getDeclaredField(fieldName);
       field.setAccessible(true);
       field.set(target, value);
     } catch (Exception e) {

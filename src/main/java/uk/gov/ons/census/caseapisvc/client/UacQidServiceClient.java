@@ -24,14 +24,20 @@ public class UacQidServiceClient {
   public UacQidCreatedPayloadDTO generateUacQid(int questionnaireType) {
 
     RestTemplate restTemplate = new RestTemplate();
-    UriComponents uriComponents = createUriComponents();
+    UriComponents uriComponents = createUriComponents(questionnaireType);
     ResponseEntity<UacQidCreatedPayloadDTO> responseEntity =
         restTemplate.exchange(
             uriComponents.toUri(), HttpMethod.GET, null, UacQidCreatedPayloadDTO.class);
     return responseEntity.getBody();
   }
 
-  private UriComponents createUriComponents() {
-    return UriComponentsBuilder.newInstance().scheme(scheme).host(host).port(port).build().encode();
+  private UriComponents createUriComponents(int questionnaireType) {
+    return UriComponentsBuilder.newInstance()
+        .scheme(scheme)
+        .host(host)
+        .port(port)
+        .queryParam("questionnaireType", questionnaireType)
+        .build()
+        .encode();
   }
 }

@@ -120,7 +120,7 @@ public class CaseEndpoint {
     CaseContainerDTO caseContainerDTO = new CaseContainerDTO();
     caseContainerDTO.setCaseRef(caze.getCaseRef().toString());
     caseContainerDTO.setCaseId(caze.getId());
-    caseContainerDTO.setAddressInvalid(caze.isInvalid());
+    caseContainerDTO.setInvalid(caze.isInvalid());
     caseContainerDTO.setCreatedDateTime(caze.getCreatedAt());
     caseContainerDTO.setLastUpdated(caze.getLastUpdatedAt());
     caseContainerDTO.setUprn(caze.getUprn());
@@ -148,7 +148,9 @@ public class CaseEndpoint {
     caseContainerDTO.setMsoa(caze.getMsoa());
     caseContainerDTO.setHandDelivery(caze.isReceiptReceived());
     caseContainerDTO.setSecureEstablishment(caze.isSecureEstablishment());
-    caseContainerDTO.setAddressInvalid(caze.isInvalid());
+    caseContainerDTO.setInvalid(caze.isInvalid());
+    caseContainerDTO.setAddressType(caze.getAddressType());
+    caseContainerDTO.setLad(caze.getLad());
     return caseContainerDTO;
   }
 
@@ -183,21 +185,19 @@ public class CaseEndpoint {
     caseDetailsDTO.setTreatmentCode(caze.getTreatmentCode());
     caseDetailsDTO.setCeExpectedCapacity(caze.getCeExpectedCapacity());
     caseDetailsDTO.setCollectionExerciseId(caze.getCollectionExercise().getId());
-    caseDetailsDTO.setCreatedDateTime(caze.getCreatedAt());;
+    caseDetailsDTO.setCreatedDateTime(caze.getCreatedAt());
+    ;
     caseDetailsDTO.setReceiptReceived(caze.isReceiptReceived());
     caseDetailsDTO.setRefusalReceived(caze.getRefusalReceived());
-    caseDetailsDTO.setAddressInvalid(caze.isInvalid());
+    caseDetailsDTO.setInvalid(caze.isInvalid());
     caseDetailsDTO.setLastUpdated(caze.getLastUpdatedAt());
-    caseDetailsDTO.setHandDelivery(caze.isReceiptReceived());
     caseDetailsDTO.setPrintBatch(caze.getPrintBatch());
     caseDetailsDTO.setSurveyLaunched(caze.isSurveyLaunched());
 
     caseDetailsDTO.setCaseId(caze.getId());
-    caseDetailsDTO.setAddressInvalid(caze.isInvalid());
+    caseDetailsDTO.setInvalid(caze.isInvalid());
     caseDetailsDTO.setCreatedDateTime(caze.getCreatedAt());
     caseDetailsDTO.setLastUpdated(caze.getLastUpdatedAt());
-    // caseContainerDTO.setRefusalReceived(caze.getRefusalReceived());
-    // caseContainerDTO.setSample(caze.getSample());
     return caseDetailsDTO;
   }
 

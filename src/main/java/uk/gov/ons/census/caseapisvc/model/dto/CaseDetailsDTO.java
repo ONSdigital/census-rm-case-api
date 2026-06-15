@@ -71,10 +71,6 @@ public class CaseDetailsDTO {
 
   private UUID collectionExerciseId;
 
-  private UUID actionPlanId;
-
-  private String survey;
-
   private OffsetDateTime createdDateTime;
 
   List<CaseDetailsEventDTO> events;
@@ -83,15 +79,9 @@ public class CaseDetailsDTO {
 
   private RefusalType refusalReceived;
 
-  private boolean addressInvalid;
+  private boolean invalid;
 
   private OffsetDateTime lastUpdated;
-
-  private boolean handDelivery;
-
-  private boolean skeleton;
-
-  // private CaseMetadata metadata;
 
   private String printBatch;
 

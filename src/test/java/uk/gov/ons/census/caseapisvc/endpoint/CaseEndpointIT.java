@@ -488,7 +488,7 @@ public class CaseEndpointIT {
     return caze;
   }
 
-  private Case setupTestCaseWithAddressInvalid(String caseId) {
+  private Case setupTestCaseWithInvalid(String caseId) {
     Case caze = getACase(caseId);
     caze.setInvalid(true);
 

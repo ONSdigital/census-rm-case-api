@@ -141,7 +141,7 @@ public class UacQidServiceTest {
     EventDTO event = eventCaptor.getValue();
     assertEquals("WEB", event.getHeader().getChannel());
     assertEquals(tranxId, event.getHeader().getMessageId());
-    assertEquals("QUESTIONNAIRE_LINKED", event.getHeader().getTopic());
+    assertEquals("questionnaire-linked", event.getHeader().getTopic());
     assertNotNull(event.getHeader().getDateTime());
 
     assertEquals(caseId, event.getPayload().getUac().getCaseId());

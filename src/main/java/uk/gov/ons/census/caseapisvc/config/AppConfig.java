@@ -4,9 +4,6 @@ import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.cloud.spring.pubsub.support.PublisherFactory;
 import com.google.cloud.spring.pubsub.support.SubscriberFactory;
 import com.google.cloud.spring.pubsub.support.converter.SimplePubSubMessageConverter;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.config.MeterFilter;
-import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.stackdriver.StackdriverConfig;
 import io.micrometer.stackdriver.StackdriverMeterRegistry;
 import jakarta.annotation.PostConstruct;
@@ -71,19 +68,6 @@ public class AppConfig {
       @Override
       public String get(String key) {
         return null;
-      }
-    };
-  }
-
-  @Bean
-  public MeterFilter meterFilter() {
-    return new MeterFilter() {
-      @Override
-      public MeterFilterReply accept(Meter.Id id) {
-        if (id.getName().startsWith("rabbitmq")) {
-          return MeterFilterReply.DENY;
-        }
-        return MeterFilterReply.NEUTRAL;
       }
     };
   }

@@ -78,14 +78,14 @@ public class UacQidService {
   public static int calculateQuestionnaireType(
       String caseType, String region, String addressLevel, String surveyType, boolean individual) {
 
-    if (surveyType.equals("CCS")) {
+    if ("CCS".equals(surveyType)) {
       return 71;
     }
 
     String country = region.substring(0, 1);
-    if (!country.equals(COUNTRY_CODE_ENGLAND)
-        && !country.equals(COUNTRY_CODE_WALES)
-        && !country.equals(COUNTRY_CODE_NORTHERN_IRELAND)) {
+    if (!COUNTRY_CODE_ENGLAND.equals(country)
+        && !COUNTRY_CODE_WALES.equals(country)
+        && !COUNTRY_CODE_NORTHERN_IRELAND.equals(country)) {
       throw new IllegalArgumentException(
           String.format("Unknown Country for treatment code %s", caseType));
     }
@@ -98,6 +98,7 @@ public class UacQidService {
           return 22;
         case COUNTRY_CODE_NORTHERN_IRELAND:
           return 24;
+        default:
       }
     } else if (isHouseholdCaseType(caseType) || isSpgCaseType(caseType)) {
       switch (country) {
@@ -107,6 +108,7 @@ public class UacQidService {
           return 2;
         case COUNTRY_CODE_NORTHERN_IRELAND:
           return 4;
+        default:
       }
     } else if (isCE1RequestForEstabCeCase(caseType, addressLevel, individual)) {
       switch (country) {
@@ -116,6 +118,7 @@ public class UacQidService {
           return 32;
         case COUNTRY_CODE_NORTHERN_IRELAND:
           return 34;
+        default:
       }
     } else {
       throw new IllegalArgumentException(
@@ -132,19 +135,19 @@ public class UacQidService {
 
   private static boolean isCE1RequestForEstabCeCase(
       String treatmentCode, String addressLevel, boolean individual) {
-    return isCeCaseType(treatmentCode) && addressLevel.equals(ADDRESS_LEVEL_ESTAB) && !individual;
+    return isCeCaseType(treatmentCode) && ADDRESS_LEVEL_ESTAB.equals(addressLevel) && !individual;
   }
 
   private static boolean isSpgCaseType(String caseType) {
-    return caseType.equals(CASE_TYPE_SPG);
+    return CASE_TYPE_SPG.equals(caseType);
   }
 
   private static boolean isHouseholdCaseType(String caseType) {
-    return caseType.equals(CASE_TYPE_HOUSEHOLD);
+    return CASE_TYPE_HOUSEHOLD.equals(caseType);
   }
 
   private static boolean isCeCaseType(String caseType) {
-    return caseType.equals(CASE_TYPE_CE);
+    return CASE_TYPE_CE.equals(caseType);
   }
 
   public void buildAndSendQuestionnaireLinkedEvent(
@@ -157,7 +160,7 @@ public class UacQidService {
     EventHeaderDTO eventHeader = new EventHeaderDTO();
     eventHeader.setChannel(newQidLink.getChannel());
     eventHeader.setDateTime(OffsetDateTime.now());
-    eventHeader.setTopic(QUESTIONNAIRE_LINKED_EVENT_TYPE);
+    eventHeader.setTopic(questionnaireLinkedEventRoutingKey);
     eventHeader.setMessageId(newQidLink.getTransactionId());
 
     PayloadDTO payloadDTO = new PayloadDTO();
