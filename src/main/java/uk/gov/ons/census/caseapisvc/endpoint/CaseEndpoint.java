@@ -146,7 +146,6 @@ public class CaseEndpoint {
     caseContainerDTO.setLsoa(caze.getLsoa());
     caseContainerDTO.setLastUpdated(caze.getLastUpdatedAt());
     caseContainerDTO.setMsoa(caze.getMsoa());
-    caseContainerDTO.setHandDelivery(caze.isReceiptReceived());
     caseContainerDTO.setSecureEstablishment(caze.isSecureEstablishment());
     caseContainerDTO.setAddressType(caze.getAddressType());
     caseContainerDTO.setLad(caze.getLad());

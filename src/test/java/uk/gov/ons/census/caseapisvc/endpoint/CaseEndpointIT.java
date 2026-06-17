@@ -93,7 +93,6 @@ public class CaseEndpointIT {
 
   @Test
   public void shouldRetrieveMultipleCasesWithEventsWhenSearchingByUPRN() throws Exception {
-    // createTwoTestCasesWithEvents();
     setupTestCaseWithEvent(String.valueOf(UUID.randomUUID()));
     setupTestCaseWithEvent(String.valueOf(UUID.randomUUID()));
 
@@ -274,7 +273,6 @@ public class CaseEndpointIT {
 
   @Test
   public void getCasesByPostcode() throws IOException, UnirestException {
-    // createTwoTestCasesWithEvents();
     String case_1 = String.valueOf(UUID.randomUUID());
     setupTestCaseWithEvent(case_1);
     String case_2 = String.valueOf(UUID.randomUUID());

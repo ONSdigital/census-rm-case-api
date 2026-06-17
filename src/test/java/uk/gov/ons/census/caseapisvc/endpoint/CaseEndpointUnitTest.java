@@ -35,9 +35,6 @@ class CaseEndpointUnitTest {
     caze = mock(Case.class);
 
     when(caze.getId()).thenReturn(caseId);
-    // when(caze.isInvalid()).thenReturn(false);
-    // when(caze.getCreatedAt()).thenReturn(OffsetDateTime.now());
-    // when(caze.getLastUpdatedAt()).thenReturn(OffsetDateTime.now());
   }
 
   // -------------------------------------------------------------------------
