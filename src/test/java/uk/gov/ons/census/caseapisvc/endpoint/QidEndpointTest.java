@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.QidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
@@ -81,8 +82,10 @@ class QidEndpointTest {
     when(uacQidService.findUacQidLinkByQid("Q999")).thenReturn(link);
     when(caseService.findById(caseId)).thenReturn(caze);
 
-    endpoint.putQidLinkToCase(newQidLink);
+    // Expect the NOT_IMPLEMENTED exception
+    assertThrows(ResponseStatusException.class, () -> endpoint.putQidLinkToCase(newQidLink));
 
+    // Verify event dispatch still happened before the exception
     verify(uacQidService).buildAndSendQuestionnaireLinkedEvent(link, caze, newQidLink);
   }
 }

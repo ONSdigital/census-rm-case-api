@@ -71,4 +71,5 @@ uacservice:
 
 
 queueconfig:
-  questionnaire-linked-event-routing-key: event.questionnaire.update
+  questionnaire-link-topic: rm-internal-questionnaire-uac-linked
+  questionnaire-link-subcription: rm-internal-questionnaire-uac-linked-service

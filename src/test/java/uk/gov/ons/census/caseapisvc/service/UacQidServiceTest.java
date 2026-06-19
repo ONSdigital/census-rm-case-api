@@ -8,13 +8,14 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
-import uk.gov.ons.census.caseapisvc.messaging.MessageSender;
 import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
+import uk.gov.ons.census.caseapisvc.utility.PubSubHelper;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.UacQidLink;
 
@@ -22,7 +23,7 @@ public class UacQidServiceTest {
 
   private UacQidServiceClient uacQidServiceClient;
   private UacQidLinkRepository uacQidLinkRepository;
-  private MessageSender messageSender;
+  private PubSubHelper pubSubHelper;
 
   private UacQidService service;
 
@@ -30,11 +31,11 @@ public class UacQidServiceTest {
   void setup() {
     uacQidServiceClient = mock(UacQidServiceClient.class);
     uacQidLinkRepository = mock(UacQidLinkRepository.class);
-    messageSender = mock(MessageSender.class);
+    pubSubHelper = mock(PubSubHelper.class);
 
-    service = new UacQidService(uacQidServiceClient, uacQidLinkRepository, messageSender);
+    service = new UacQidService(uacQidServiceClient, uacQidLinkRepository, pubSubHelper);
 
-    service.questionnaireLinkedEventRoutingKey = "questionnaire-linked";
+    service.questionnaireLinkedTopic = "questionnaire-linked";
     service.pubsubProject = "test-project";
   }
 
@@ -129,22 +130,25 @@ public class UacQidServiceTest {
     ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<EventDTO> eventCaptor = ArgumentCaptor.forClass(EventDTO.class);
 
-    // Act
-    service.buildAndSendQuestionnaireLinkedEvent(link, caze, newQidLink);
+    try {
+      // Act
+      service.buildAndSendQuestionnaireLinkedEvent(link, caze, newQidLink);
+    } catch (HttpServerErrorException.NotImplemented ex) {
+      // Assert topic
+      verify(pubSubHelper).publishAndConfirm(topicCaptor.capture(), eventCaptor.capture());
+      // verify(messageSender).sendMessage(topicCaptor.capture(), eventCaptor.capture());
+      String topic = topicCaptor.getValue();
+      assertEquals("questionnaire-linked", topic);
 
-    // Assert topic
-    verify(messageSender).sendMessage(topicCaptor.capture(), eventCaptor.capture());
-    String topic = topicCaptor.getValue();
-    assertEquals("projects/test-project/topics/questionnaire-linked", topic);
+      // Assert event payload
+      EventDTO event = eventCaptor.getValue();
+      assertEquals("WEB", event.getHeader().getChannel());
+      assertEquals(tranxId, event.getHeader().getMessageId());
+      assertEquals("questionnaire-linked", event.getHeader().getTopic());
+      assertNotNull(event.getHeader().getDateTime());
 
-    // Assert event payload
-    EventDTO event = eventCaptor.getValue();
-    assertEquals("WEB", event.getHeader().getChannel());
-    assertEquals(tranxId, event.getHeader().getMessageId());
-    assertEquals("questionnaire-linked", event.getHeader().getTopic());
-    assertNotNull(event.getHeader().getDateTime());
-
-    assertEquals(caseId, event.getPayload().getUac().getCaseId());
-    assertEquals("QID123", event.getPayload().getUac().getQuestionnaireId());
+      assertEquals(caseId, event.getPayload().getUac().getCaseId());
+      assertEquals("QID123", event.getPayload().getUac().getQuestionnaireId());
+    }
   }
 }

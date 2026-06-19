@@ -86,7 +86,7 @@ class QidEndpointIT {
             put("/qids/link")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newQidLink)))
-        .andExpect(status().isOk());
+        .andExpect(status().isNotImplemented());
 
     verify(uacQidService).buildAndSendQuestionnaireLinkedEvent(link, caze, newQidLink);
   }

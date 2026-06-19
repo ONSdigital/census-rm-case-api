@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.census.caseapisvc.client.UacQidServiceClient;
-import uk.gov.ons.census.caseapisvc.messaging.MessageSender;
 import uk.gov.ons.census.caseapisvc.model.dto.EventDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.EventHeaderDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
@@ -18,6 +17,7 @@ import uk.gov.ons.census.caseapisvc.model.dto.PayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
+import uk.gov.ons.census.caseapisvc.utility.PubSubHelper;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.UacQidLink;
 
@@ -32,14 +32,14 @@ public class UacQidService {
   private static final String CASE_TYPE_HOUSEHOLD = "HH";
   private static final String CASE_TYPE_SPG = "SPG";
   private static final String CASE_TYPE_CE = "CE";
-  private static final String QUESTIONNAIRE_LINKED_EVENT_TYPE = "QUESTIONNAIRE_LINKED";
 
   private final UacQidServiceClient uacQidServiceClient;
   private final UacQidLinkRepository uacQidLinkRepository;
-  private final MessageSender messageSender;
 
-  @Value("${queueconfig.questionnaire-linked-event-routing-key}")
-  String questionnaireLinkedEventRoutingKey;
+  private final PubSubHelper pubSubHelper;
+
+  @Value("${queueconfig.questionnaire-link-topic}")
+  String questionnaireLinkedTopic;
 
   @Value("${spring.cloud.gcp.pubsub.project-id}")
   String pubsubProject;
@@ -48,10 +48,10 @@ public class UacQidService {
   public UacQidService(
       UacQidServiceClient uacQidServiceClient,
       UacQidLinkRepository uacQidLinkRepository,
-      MessageSender messageSender) {
+      PubSubHelper pubSubHelper) {
     this.uacQidServiceClient = uacQidServiceClient;
     this.uacQidLinkRepository = uacQidLinkRepository;
-    this.messageSender = messageSender;
+    this.pubSubHelper = pubSubHelper;
   }
 
   public UacQidCreatedPayloadDTO createAndLinkUacQid(UUID caseId, int questionnaireType) {
@@ -160,7 +160,7 @@ public class UacQidService {
     EventHeaderDTO eventHeader = new EventHeaderDTO();
     eventHeader.setChannel(newQidLink.getChannel());
     eventHeader.setDateTime(OffsetDateTime.now());
-    eventHeader.setTopic(questionnaireLinkedEventRoutingKey);
+    eventHeader.setTopic(questionnaireLinkedTopic);
     eventHeader.setMessageId(newQidLink.getTransactionId());
 
     PayloadDTO payloadDTO = new PayloadDTO();
@@ -169,7 +169,7 @@ public class UacQidService {
     event.setHeader(eventHeader);
     event.setPayload(payloadDTO);
 
-    String topic = toProjectTopicName(questionnaireLinkedEventRoutingKey, pubsubProject).toString();
-    messageSender.sendMessage(topic, event);
+    String topic = toProjectTopicName(questionnaireLinkedTopic, pubsubProject).toString();
+    pubSubHelper.publishAndConfirm(topic, event);
   }
 }
