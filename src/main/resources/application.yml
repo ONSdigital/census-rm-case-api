@@ -1,0 +1,75 @@
+server:
+  port: 8161
+
+info:
+  app:
+    name: Case API
+    version: 1.0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/rm?readOnly=true
+    username: appuser
+    password: postgres
+    driverClassName: org.postgresql.Driver
+    hikari:
+      maximumPoolSize: 50
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: cases
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  cloud:
+    gcp:
+      pubsub:
+        emulator-host: localhost:8538
+        project-id: our-project
+        subscriber:
+          flow-control:
+            max-outstanding-element-count: 100
+
+
+logging:
+  profile: DEV
+  level:
+    root: INFO
+    com.google.cloud.spring.pubsub.integration.inbound.PubSubInboundChannelAdapter: ERROR
+
+exceptionmanager:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8666
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+  metrics:
+    tags:
+      application: Case API
+      pod: ${HOSTNAME}
+  stackdriver:
+    metrics:
+      export:
+        project-id: dummy-project-id
+        enabled: false
+        step: PT1M
+
+uacservice:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8164
+
+
+queueconfig:
+  questionnaire-link-topic: rm-internal-questionnaire-uac-linked
+  questionnaire-link-subcription: rm-internal-questionnaire-uac-linked-service

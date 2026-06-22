@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:15432/rm?currentSchema=cases
+  cloud:
+    gcp:
+      pubsub:
+        emulator-host: localhost:18539
+        project-id: our-project
+
+
+uacservice:
+  connection:
+      port: 18165
