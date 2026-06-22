@@ -13,7 +13,6 @@ import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.QidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 import uk.gov.ons.census.caseapisvc.service.UacQidService;
-import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.UacQidLink;
 
 @RestController
@@ -43,11 +42,14 @@ public class QidEndpoint {
   // As we don't have a subscription for the questionnaire links, it is not possible to test this.
   @PutMapping(value = "/link")
   public void putQidLinkToCase(@RequestBody NewQidLink newQidLink) {
-    UacQidLink uacQidLink =
-        uacQidService.findUacQidLinkByQid(newQidLink.getQidLink().getQuestionnaireId());
-    Case caseToLink = caseService.findById(newQidLink.getQidLink().getCaseId());
 
-    uacQidService.buildAndSendQuestionnaireLinkedEvent(uacQidLink, caseToLink, newQidLink);
+    // Below commented shall be uncommented when the subscription for the questionnaire link is
+    // available
+    //    UacQidLink uacQidLink =
+    //        uacQidService.findUacQidLinkByQid(newQidLink.getQidLink().getQuestionnaireId());
+    //    Case caseToLink = caseService.findById(newQidLink.getQidLink().getCaseId());
+    //
+    //    uacQidService.buildAndSendQuestionnaireLinkedEvent(uacQidLink, caseToLink, newQidLink);
     throw new ResponseStatusException(
         HttpStatus.NOT_IMPLEMENTED,
         "Questionnaire Id Link is not available, request cannot be fulfilled");

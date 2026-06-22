@@ -1,5 +1,6 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.QidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
@@ -81,13 +84,21 @@ class QidEndpointIT {
 
     when(caseService.findById(caseId)).thenReturn(caze);
 
-    mockMvc
-        .perform(
-            put("/qids/link")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(newQidLink)))
-        .andExpect(status().isNotImplemented());
+    var result =
+        mockMvc
+            .perform(
+                put("/qids/link")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(newQidLink)))
+            .andExpect(status().isNotImplemented());
 
-    verify(uacQidService).buildAndSendQuestionnaireLinkedEvent(link, caze, newQidLink);
+    // Extract the exception thrown by the controller
+    Exception resolved = result.andReturn().getResolvedException();
+
+    ResponseStatusException ex = (ResponseStatusException) resolved;
+    Assertions.assertNotNull(ex);
+    assertThat(ex.getStatusCode().value()).isEqualTo(501);
+    assertThat(ex.getReason())
+        .isEqualTo("Questionnaire Id Link is not available, request cannot be fulfilled");
   }
 }

@@ -85,7 +85,9 @@ class QidEndpointTest {
     // Expect the NOT_IMPLEMENTED exception
     assertThrows(ResponseStatusException.class, () -> endpoint.putQidLinkToCase(newQidLink));
 
+    // Below commented shall be uncommented when the subscription for the questionnaire link is
+    // available
     // Verify event dispatch still happened before the exception
-    verify(uacQidService).buildAndSendQuestionnaireLinkedEvent(link, caze, newQidLink);
+    // verify(uacQidService).buildAndSendQuestionnaireLinkedEvent(link, caze, newQidLink);
   }
 }

@@ -1,7 +1,5 @@
 package uk.gov.ons.census.caseapisvc.service;
 
-import static com.google.cloud.spring.pubsub.support.PubSubTopicUtils.toProjectTopicName;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,7 +167,7 @@ public class UacQidService {
     event.setHeader(eventHeader);
     event.setPayload(payloadDTO);
 
-    String topic = toProjectTopicName(questionnaireLinkedTopic, pubsubProject).toString();
-    pubSubHelper.publishAndConfirm(topic, event);
+    // String topic = toProjectTopicName(questionnaireLinkedTopic, pubsubProject).toString();
+    // pubSubHelper.publishAndConfirm(topic, event);
   }
 }
