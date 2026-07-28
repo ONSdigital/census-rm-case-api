@@ -73,3 +73,17 @@ uacservice:
 queueconfig:
   questionnaire-link-topic: rm-internal-questionnaire-uac-linked
   questionnaire-link-subcription: rm-internal-questionnaire-uac-linked-service
+
+# OpenAPI / Swagger defaults for local and test runs.
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+# Production override reminder:
+# springdoc:
+#   swagger-ui:
+#     enabled: false

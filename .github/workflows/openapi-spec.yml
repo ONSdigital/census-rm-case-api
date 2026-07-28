@@ -1,0 +1,35 @@
+name: Case API OpenAPI Document Generation CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  generate-openapi-spec:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 Runtime
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Verify Spotless Formatting and PMD Rules
+        run: mvn spotless:check pmd:check
+
+      - name: Build Package and Extract OpenAPI Spec
+        run: mvn clean verify -Dcontainer.cli=docker
+
+      - name: Publish Generated Specification Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rm-case-api-openapi-spec
+          path: target/openapi.json
+          retention-days: 30
