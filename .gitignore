@@ -3,3 +3,5 @@ target/*
 *.iml
 .java-version
 .DS_Store
+/census-rm-case-api.ipr
+/census-rm-case-api.iws
