@@ -176,8 +176,7 @@ public class CaseEndpoint {
     caseDetailsDTO.setMsoa(caze.getMsoa());
     caseDetailsDTO.setLad(caze.getLad());
     caseDetailsDTO.setRegion(caze.getRegion());
-    caseDetailsDTO.setHtcWillingness(caze.getHtcWillingness());
-    caseDetailsDTO.setHtcDigital(caze.getHtcDigital());
+    caseDetailsDTO.setHtc(caze.getHtc());
     caseDetailsDTO.setFieldCoordinatorId(caze.getFieldCoordinatorId());
     caseDetailsDTO.setFieldOfficerId(caze.getFieldOfficerId());
     caseDetailsDTO.setTreatmentCode(caze.getTreatmentCode());
