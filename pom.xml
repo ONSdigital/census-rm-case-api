@@ -326,7 +326,7 @@
                     </execution>
 
                     <!-- Execution 2: Start Application for OpenAPI extraction during Integration Testing -->
-                    <execution>
+                    <!--<execution>
                         <id>start-app-for-openapi</id>
                         <phase>pre-integration-test</phase>
                         <goals>
@@ -338,14 +338,14 @@
                         </configuration>
                     </execution>
 
-                    <!-- Execution 3: Stop Application after OpenAPI extraction finishes -->
+                    &lt;!&ndash; Execution 3: Stop Application after OpenAPI extraction finishes &ndash;&gt;
                     <execution>
                         <id>stop-app-after-openapi</id>
                         <phase>post-integration-test</phase>
                         <goals>
                             <goal>stop</goal>
                         </goals>
-                    </execution>
+                    </execution>-->
                 </executions>
             </plugin>
 
