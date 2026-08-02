@@ -27,9 +27,31 @@ jobs:
       - name: Build Package and Extract OpenAPI Spec
         run: mvn clean verify -Dcontainer.cli=docker
 
-      - name: Publish Generated Specification Artifact
+      - name: Validate OpenAPI Specification
+        run: |
+          if [ ! -f api-docs/openapi.json ]; then
+            echo "ERROR: openapi.json was not generated"
+            exit 1
+          fi
+          # Basic JSON validation
+          python3 -m json.tool api-docs/openapi.json > /dev/null || exit 1
+          echo "✓ OpenAPI spec is valid JSON"
+
+      - name: Publish Generated OpenAPI Specification Artifacts
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: rm-case-api-openapi-spec
-          path: target/openapi.json
-          retention-days: 30
+          name: rm-case-api-openapi-specs
+          path: api-docs/
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Print Artifact Download Info
+        if: always()
+        run: |
+          echo "Generated artifacts:"
+          echo "  - openapi.json (JSON specification - machine readable)"
+          echo "  - openapi.md (Markdown documentation)"
+          echo "  - openapi.html (Interactive ReDoc HTML)"
+          echo ""
+          echo "Download from GitHub Artifacts tab for integration teams."

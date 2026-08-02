@@ -3,3 +3,7 @@ target/*
 *.iml
 .java-version
 .DS_Store
+
+# Generated OpenAPI documentation (download from GitHub Artifacts)
+# These are generated during CI/CD and available in GitHub Actions artifacts
+api-docs/
