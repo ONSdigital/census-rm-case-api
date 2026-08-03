@@ -62,7 +62,6 @@ jobs:
           name: rm-case-api-openapi-specs
           path: api-docs/
           if-no-files-found: warn
-          retention-days: 90
 
       - name: Print Artifact Download Info
         if: always()

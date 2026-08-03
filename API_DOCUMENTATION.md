@@ -71,20 +71,6 @@ Code Changes → Commit to main → GitHub Actions CI
 - Error codes and validation rules
 - Authentication/authorization requirements
 
-## 🔍 Guaranteed Quality
-
-The OpenAPI spec is:
-
-- ✅ Valid JSON (validated on every build)
-- ✅ OpenAPI 3.0 compliant
-- ✅ Consistent between runs (alphabetically sorted properties)
-- ✅ Always synchronized with deployed code
-
-## 📞 Questions or Issues?
-
-- **Spec accuracy:** File an issue with the Case API team
-- **Integration support:** Contact Census Integrations Team
-
 ---
 
 ## Developer Notes
@@ -153,7 +139,3 @@ open api-docs/openapi.html
 - Only actual API changes will show in diffs
 
 ---
-
-**Last Updated:** 2026-08-02
-**Spec Location:** Generated in CI/CD pipeline
-**Contact:** Census RM Case API Team
