@@ -2,9 +2,9 @@ name: Case API OpenAPI Document Generation CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   generate-openapi-spec:
@@ -12,17 +12,17 @@ jobs:
 
     steps:
       - name: Checkout Repository Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21 Runtime
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
 
       - name: Checkout common entity model
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ONSdigital/census-rm-common-entity-model
           path: deps/census-rm-common-entity-model
@@ -31,7 +31,7 @@ jobs:
         run: mvn -B -f deps/census-rm-common-entity-model/pom.xml clean install -DskipTests
 
       - name: Checkout shared sample validation
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ONSdigital/census-rm-shared-sample-validation
           path: deps/census-rm-shared-sample-validation

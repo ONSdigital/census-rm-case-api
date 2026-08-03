@@ -86,6 +86,12 @@
           }
         } ],
         "responses" : {
+          "500" : {
+            "description" : "Internal server error occurred"
+          },
+          "404" : {
+            "description" : "Case record not found"
+          },
           "200" : {
             "description" : "Case record found successfully",
             "content" : {
@@ -95,12 +101,6 @@
                 }
               }
             }
-          },
-          "500" : {
-            "description" : "Internal server error occurred"
-          },
-          "404" : {
-            "description" : "Case record not found"
           }
         }
       }
@@ -181,6 +181,9 @@
           }
         } ],
         "responses" : {
+          "404" : {
+            "description" : "Case reference not found"
+          },
           "200" : {
             "description" : "Case record found successfully",
             "content" : {
@@ -190,9 +193,6 @@
                 }
               }
             }
-          },
-          "404" : {
-            "description" : "Case reference not found"
           }
         }
       }
@@ -213,6 +213,9 @@
           }
         } ],
         "responses" : {
+          "404" : {
+            "description" : "QID not found"
+          },
           "200" : {
             "description" : "Case retrieved successfully",
             "content" : {
@@ -222,9 +225,6 @@
                 }
               }
             }
-          },
-          "404" : {
-            "description" : "QID not found"
           }
         }
       }
