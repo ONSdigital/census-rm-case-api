@@ -1,14 +1,22 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "Service for managing case data",
+    "description" : "RESTful API for managing census case data. Provides endpoints for querying and retrieving case information by various identifiers (UUID, reference, UPRN, postcode, QID). Returns comprehensive case details including address information, case status, and associated events.",
+    "license" : {
+      "name" : "Office for National Statistics",
+      "url" : "https://www.ons.gov.uk"
+    },
     "title" : "Case API Service",
     "version" : "v1"
   },
   "servers" : [ {
-    "url" : "http://localhost:8161"
+    "url" : "http://localhost:8161",
+    "description" : "Case API Service"
   } ],
   "tags" : [ {
+    "description" : "Services for retrieving and managing questionnaire ID (QID) and UAC link information",
+    "name" : "QID Endpoint"
+  }, {
     "description" : "Services for querying and retrieving census cases",
     "name" : "Case Endpoint"
   } ],
@@ -249,6 +257,7 @@
     },
     "/qids/link" : {
       "put" : {
+        "description" : "Links a questionnaire ID to a case. This endpoint is currently not implemented as the subscription for questionnaire links is not available.",
         "operationId" : "putQidLinkToCase",
         "requestBody" : {
           "content" : {
@@ -258,20 +267,24 @@
               }
             }
           },
+          "description" : "QID link information to be created",
           "required" : true
         },
         "responses" : {
-          "200" : {
-            "description" : "OK"
+          "501" : {
+            "description" : "Not Implemented - Questionnaire link subscription not available"
           }
         },
-        "tags" : [ "qid-endpoint" ]
+        "summary" : "Link QID to case",
+        "tags" : [ "QID Endpoint" ]
       }
     },
     "/qids/{qid}" : {
       "get" : {
+        "description" : "Retrieves the UAC-QID link information for a specified questionnaire ID, including associated case ID if available.",
         "operationId" : "getUacQidLinkByQid",
         "parameters" : [ {
+          "description" : "Questionnaire Identifier (QID) to retrieve",
           "in" : "path",
           "name" : "qid",
           "required" : true,
@@ -282,16 +295,23 @@
         "responses" : {
           "200" : {
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/QidLink"
                 }
               }
             },
-            "description" : "OK"
+            "description" : "QID link details retrieved successfully"
+          },
+          "404" : {
+            "description" : "Questionnaire ID not found"
+          },
+          "500" : {
+            "description" : "Internal server error occurred"
           }
         },
-        "tags" : [ "qid-endpoint" ]
+        "summary" : "Retrieve QID link details",
+        "tags" : [ "QID Endpoint" ]
       }
     }
   },
@@ -302,25 +322,33 @@
         "type" : "object",
         "properties" : {
           "abpCode" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Address Based Priority code"
           },
           "addressLevel" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Address level classification"
           },
           "addressLine1" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "First line of street address"
           },
           "addressLine2" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Second line of street address"
           },
           "addressLine3" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Third line of street address"
           },
           "addressType" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Type of address (e.g., HOUSEHOLD, COMMUNAL, OTHER)",
+            "example" : "HOUSEHOLD"
           },
           "caseEvents" : {
             "type" : "array",
+            "description" : "List of events associated with the case",
             "items" : {
               "$ref" : "#/components/schemas/CaseEventDTO"
             }
@@ -331,21 +359,27 @@
             "example" : "100000000000001"
           },
           "caseType" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Case type classification (e.g., NEW, REPLACEMENT)"
           },
           "collectionExerciseId" : {
             "type" : "string",
+            "description" : "Collection Exercise UUID identifier",
             "format" : "uuid"
           },
           "createdDateTime" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Date and time when the case was created",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
           },
           "estabType" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Establishment type code"
           },
           "estabUprn" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Establishment UPRN for non-household establishments"
           },
           "id" : {
             "type" : "string",
@@ -354,269 +388,420 @@
             "example" : "a11e3456-e89b-12d3-a456-426614174000"
           },
           "invalid" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Flag indicating if the case record is marked as invalid",
+            "example" : false
           },
           "lad" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Local Authority District code"
           },
           "lastUpdated" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Date and time when the case was last updated",
+            "format" : "date-time",
+            "example" : "2024-01-20T14:45:00Z"
           },
           "latitude" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Geographic latitude coordinate",
+            "example" : "51.5074"
           },
           "longitude" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Geographic longitude coordinate",
+            "example" : "-0.1278"
           },
           "lsoa" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Lower Layer Super Output Area code"
           },
           "msoa" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Middle Layer Super Output Area code"
           },
           "oa" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Output Area code"
           },
           "organisationName" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Name of organization for establishment addresses"
           },
           "postcode" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "UK postal code",
+            "example" : "AB12CD"
           },
           "region" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Administrative region code"
           },
           "secureEstablishment" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Indicator whether address is a secure establishment",
+            "example" : false
           },
           "surveyType" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Type of survey (e.g., CENSUS, OTHER_SURVEY)"
           },
           "townName" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Town or city name"
           },
           "uprn" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Unique Property Reference Number",
+            "example" : "123456789"
           }
         },
-        "description" : "Data Transfer Object representing a census case container"
+        "description" : "Data Transfer Object representing a census case container",
+        "example" : {
+          "caseRef" : "100000000000001",
+          "id" : "a11e3456-e89b-12d3-a456-426614174000",
+          "uprn" : "123456789",
+          "postcode" : "AB12CD",
+          "addressType" : "HOUSEHOLD"
+        }
       },
       "CaseDetailsDTO" : {
+        "required" : [ "caseRef", "id" ],
         "type" : "object",
         "properties" : {
           "abpCode" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Address Based Priority code"
           },
           "addressLevel" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Address level classification"
           },
           "addressLine1" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "First line of street address"
           },
           "addressLine2" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Second line of street address"
           },
           "addressLine3" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Third line of street address"
           },
           "addressType" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Type of address (e.g., HOUSEHOLD, COMMUNAL)"
           },
           "caseRef" : {
             "type" : "integer",
-            "format" : "int64"
+            "description" : "Unique numeric reference for the case",
+            "format" : "int64",
+            "example" : 100000000000001
           },
           "caseType" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Case type classification"
           },
           "ceActualResponses" : {
             "type" : "integer",
+            "description" : "Actual number of responses received for Communal Establishment",
             "format" : "int32"
           },
           "ceExpectedCapacity" : {
             "type" : "integer",
+            "description" : "Expected capacity for Communal Establishment",
             "format" : "int32"
           },
           "collectionExerciseId" : {
             "type" : "string",
+            "description" : "Collection Exercise UUID identifier",
             "format" : "uuid"
           },
           "createdDateTime" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Date and time when the case was created",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
           },
           "estabType" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Establishment type code"
           },
           "estabUprn" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Establishment UPRN for non-household establishments"
           },
           "events" : {
             "type" : "array",
+            "description" : "List of events associated with this case",
             "items" : {
               "$ref" : "#/components/schemas/CaseDetailsEventDTO"
             }
           },
           "fieldCoordinatorId" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Field Coordinator identifier for the assigned case"
           },
           "fieldOfficerId" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Field Officer identifier for the assigned case"
           },
           "htcDigital" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Household Telephone Contact digital indicator"
           },
           "htcWillingness" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Household Telephone Contact willingness indicator"
           },
           "id" : {
             "type" : "string",
-            "format" : "uuid"
+            "description" : "Unique case UUID identifier",
+            "format" : "uuid",
+            "example" : "a11e3456-e89b-12d3-a456-426614174000"
           },
           "invalid" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Flag indicating if the case record is marked as invalid"
           },
           "lad" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Local Authority District code"
           },
           "lastUpdated" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Date and time when the case was last updated",
+            "format" : "date-time",
+            "example" : "2024-01-20T14:45:00Z"
           },
           "latitude" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Geographic latitude coordinate"
           },
           "longitude" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Geographic longitude coordinate"
           },
           "lsoa" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Lower Layer Super Output Area code"
           },
           "msoa" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Middle Layer Super Output Area code"
           },
           "oa" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Output Area code"
           },
           "organisationName" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Name of organization for establishment addresses"
           },
           "postcode" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "UK postal code",
+            "example" : "AB12CD"
           },
           "printBatch" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Print batch identifier for printed case materials"
           },
           "receiptReceived" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Flag indicating if receipt has been received from respondent"
           },
           "refusalReceived" : {
             "type" : "string",
+            "description" : "Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)",
+            "example" : "SOFT_REFUSAL",
             "enum" : [ "HARD_REFUSAL", "EXTRAORDINARY_REFUSAL", "SOFT_REFUSAL", "WITHDRAWAL_REFUSAL" ]
           },
           "region" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Administrative region code"
           },
           "surveyLaunched" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Flag indicating if survey has been launched to respondent"
           },
           "townName" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Town or city name"
           },
           "treatmentCode" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Treatment code indicating special handling"
           },
           "uprn" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Unique Property Reference Number",
+            "example" : "123456789"
           }
+        },
+        "description" : "Comprehensive Data Transfer Object containing detailed case attributes",
+        "example" : {
+          "id" : "a11e3456-e89b-12d3-a456-426614174000",
+          "caseRef" : 100000000000001,
+          "uprn" : "123456789",
+          "postcode" : "AB12CD",
+          "caseType" : "NEW"
         }
       },
       "CaseDetailsEventDTO" : {
+        "required" : [ "eventChannel", "eventDate", "eventType", "id" ],
         "type" : "object",
         "properties" : {
           "eventChannel" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Channel through which the event was triggered (RM, CC, etc.)",
+            "example" : "RM"
           },
           "eventDate" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Date and time when the event occurred",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
           },
           "eventDescription" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Human-readable description of the event",
+            "example" : "Case created for collection exercise"
           },
           "eventPayload" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "JSON payload containing event-specific data"
           },
           "eventSource" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Source system that generated the event (e.g., UAC_SERVICE, PRINT_SERVICE)"
           },
           "eventTransactionId" : {
             "type" : "string",
+            "description" : "Unique transaction identifier for this event",
             "format" : "uuid"
           },
           "eventType" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Type of event (e.g., NEW_CASE, RECEIPT, REFUSAL, EQ_LAUNCH, UAC_AUTHENTICATION)",
+            "example" : "NEW_CASE"
           },
           "id" : {
             "type" : "string",
-            "format" : "uuid"
+            "description" : "Unique event identifier (UUID)",
+            "format" : "uuid",
+            "example" : "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "messageTimestamp" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Message timestamp from the originating system",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
           },
           "rmEventProcessed" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Date and time when the event was processed by RM",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:35:00Z"
           }
+        },
+        "description" : "Detailed Data Transfer Object containing event attributes for case details response",
+        "example" : {
+          "id" : "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "eventType" : "NEW_CASE",
+          "eventDescription" : "Case created",
+          "eventDate" : "2024-01-15T10:30:00Z",
+          "eventChannel" : "RM"
         }
       },
       "CaseEventDTO" : {
+        "required" : [ "createdDateTime", "eventType", "id" ],
         "type" : "object",
         "properties" : {
           "createdDateTime" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Date and time when the event was created",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
           },
           "description" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Human-readable description of the event",
+            "example" : "Case created for collection exercise"
           },
           "eventType" : {
-            "type" : "string",
-            "enum" : [ "NEW_CASE", "RECEIPT", "REFUSAL", "INVALID_CASE", "EQ_LAUNCH", "UAC_AUTHENTICATION", "PRINT_FULFILMENT", "EXPORT_FILE", "DEACTIVATE_UAC", "UPDATE_SAMPLE", "UPDATE_SAMPLE_SENSITIVE", "SMS_FULFILMENT", "ACTION_RULE_SMS_REQUEST", "EMAIL_FULFILMENT", "ACTION_RULE_EMAIL_REQUEST", "ACTION_RULE_SMS_CONFIRMATION", "ACTION_RULE_EMAIL_CONFIRMATION", "ERASE_DATA" ]
+            "$ref" : "#/components/schemas/EventTypeDTO"
           },
           "id" : {
             "type" : "string",
-            "format" : "uuid"
+            "description" : "Unique event identifier (UUID)",
+            "format" : "uuid",
+            "example" : "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           }
+        },
+        "description" : "Data Transfer Object representing an event associated with a case",
+        "example" : {
+          "id" : "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "eventType" : "NEW_CASE",
+          "description" : "Case created",
+          "createdDateTime" : "2024-01-15T10:30:00Z"
         }
+      },
+      "EventTypeDTO" : {
+        "type" : "string",
+        "description" : "Enumeration of all possible event types that can occur in the census RM system",
+        "example" : "NEW_CASE",
+        "enum" : [ "NEW_CASE", "RECEIPT", "REFUSAL", "INVALID_CASE", "EQ_LAUNCH", "UAC_AUTHENTICATION", "PRINT_FULFILMENT", "EXPORT_FILE", "DEACTIVATE_UAC", "UPDATE_SAMPLE", "UPDATE_SAMPLE_SENSITIVE", "SMS_FULFILMENT", "ACTION_RULE_SMS_REQUEST", "EMAIL_FULFILMENT", "ACTION_RULE_EMAIL_REQUEST", "ACTION_RULE_SMS_CONFIRMATION", "ACTION_RULE_EMAIL_CONFIRMATION", "ERASE_DATA" ]
       },
       "NewQidLink" : {
         "type" : "object",
         "properties" : {
           "channel" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Channel through which this link was created (e.g., CONTACT_CENTRE, PHONE, ONLINE)",
+            "example" : "CONTACT_CENTRE"
           },
           "qidLink" : {
             "$ref" : "#/components/schemas/QidLink"
           },
           "transactionId" : {
             "type" : "string",
-            "format" : "uuid"
+            "description" : "Transaction ID for tracing this QID link request",
+            "format" : "uuid",
+            "example" : "a11e3456-e89b-12d3-a456-426614174000"
+          }
+        },
+        "description" : "Data Transfer Object for creating a new QID link to a case",
+        "example" : {
+          "transactionId" : "a11e3456-e89b-12d3-a456-426614174000",
+          "channel" : "CONTACT_CENTRE",
+          "qidLink" : {
+            "questionnaireId" : "Q123456",
+            "caseId" : "a11e3456-e89b-12d3-a456-426614174000"
           }
         }
       },
       "QidLink" : {
+        "required" : [ "questionnaireId" ],
         "type" : "object",
         "properties" : {
           "caseId" : {
             "type" : "string",
-            "format" : "uuid"
+            "description" : "UUID of the census case associated with this QID",
+            "format" : "uuid",
+            "example" : "a11e3456-e89b-12d3-a456-426614174000"
           },
           "questionnaireId" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Unique Questionnaire Identifier (QID) assigned to the respondent",
+            "example" : "Q123456"
           }
+        },
+        "description" : "Data Transfer Object representing the link between a Questionnaire ID (QID) and a Case",
+        "example" : {
+          "questionnaireId" : "Q123456",
+          "caseId" : "a11e3456-e89b-12d3-a456-426614174000"
         }
       }
     }

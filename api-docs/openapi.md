@@ -23,11 +23,376 @@ headingLevel: 2
 
 > Scroll down for code samples, example requests and responses. Select a language for code samples from the tabs above or the mobile navigation menu.
 
-Service for managing case data
+RESTful API for managing census case data. Provides endpoints for querying and retrieving case information by various identifiers (UUID, reference, UPRN, postcode, QID). Returns comprehensive case details including address information, case status, and associated events.
 
 Base URLs:
 
 * <a href="http://localhost:8161">http://localhost:8161</a>
+
+License: <a href="https://www.ons.gov.uk">Office for National Statistics</a>
+
+<h1 id="case-api-service-qid-endpoint">QID Endpoint</h1>
+
+Services for retrieving and managing questionnaire ID (QID) and UAC link information
+
+## putQidLinkToCase
+
+<a id="opIdputQidLinkToCase"></a>
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X PUT http://localhost:8161/qids/link \
+  -H 'Content-Type: application/json'
+
+```
+
+```http
+PUT http://localhost:8161/qids/link HTTP/1.1
+Host: localhost:8161
+Content-Type: application/json
+
+```
+
+```javascript
+const inputBody = '{
+  "transactionId": "a11e3456-e89b-12d3-a456-426614174000",
+  "channel": "CONTACT_CENTRE",
+  "qidLink": {
+    "questionnaireId": "Q123456",
+    "caseId": "a11e3456-e89b-12d3-a456-426614174000"
+  }
+}';
+const headers = {
+  'Content-Type':'application/json'
+};
+
+fetch('http://localhost:8161/qids/link',
+{
+  method: 'PUT',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Content-Type' => 'application/json'
+}
+
+result = RestClient.put 'http://localhost:8161/qids/link',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json'
+}
+
+r = requests.put('http://localhost:8161/qids/link', headers = headers)
+
+print(r.json())
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Content-Type' => 'application/json',
+);
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('PUT','http://localhost:8161/qids/link', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("http://localhost:8161/qids/link");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("PUT");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("PUT", "http://localhost:8161/qids/link", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`PUT /qids/link`
+
+*Link QID to case*
+
+Links a questionnaire ID to a case. This endpoint is currently not implemented as the subscription for questionnaire links is not available.
+
+> Body parameter
+
+```json
+{
+  "transactionId": "a11e3456-e89b-12d3-a456-426614174000",
+  "channel": "CONTACT_CENTRE",
+  "qidLink": {
+    "questionnaireId": "Q123456",
+    "caseId": "a11e3456-e89b-12d3-a456-426614174000"
+  }
+}
+```
+
+<h3 id="putqidlinktocase-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[NewQidLink](#schemanewqidlink)|true|QID link information to be created|
+
+<h3 id="putqidlinktocase-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|501|[Not Implemented](https://tools.ietf.org/html/rfc7231#section-6.6.2)|Not Implemented - Questionnaire link subscription not available|None|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## getUacQidLinkByQid
+
+<a id="opIdgetUacQidLinkByQid"></a>
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X GET http://localhost:8161/qids/{qid} \
+  -H 'Accept: application/json'
+
+```
+
+```http
+GET http://localhost:8161/qids/{qid} HTTP/1.1
+Host: localhost:8161
+Accept: application/json
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('http://localhost:8161/qids/{qid}',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Accept' => 'application/json'
+}
+
+result = RestClient.get 'http://localhost:8161/qids/{qid}',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': 'application/json'
+}
+
+r = requests.get('http://localhost:8161/qids/{qid}', headers = headers)
+
+print(r.json())
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Accept' => 'application/json',
+);
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('GET','http://localhost:8161/qids/{qid}', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("http://localhost:8161/qids/{qid}");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"application/json"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("GET", "http://localhost:8161/qids/{qid}", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`GET /qids/{qid}`
+
+*Retrieve QID link details*
+
+Retrieves the UAC-QID link information for a specified questionnaire ID, including associated case ID if available.
+
+<h3 id="getuacqidlinkbyqid-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|qid|path|string|true|Questionnaire Identifier (QID) to retrieve|
+
+> Example responses
+
+> 200 Response
+
+```json
+{
+  "questionnaireId": "Q123456",
+  "caseId": "a11e3456-e89b-12d3-a456-426614174000"
+}
+```
+
+<h3 id="getuacqidlinkbyqid-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|QID link details retrieved successfully|[QidLink](#schemaqidlink)|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|Questionnaire ID not found|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error occurred|None|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
 
 <h1 id="case-api-service-case-endpoint">Case Endpoint</h1>
 
@@ -192,57 +557,11 @@ Retrieves complete detailed case attributes for a given case UUID.
 
 ```json
 {
-  "abpCode": "string",
-  "addressLevel": "string",
-  "addressLine1": "string",
-  "addressLine2": "string",
-  "addressLine3": "string",
-  "addressType": "string",
-  "caseRef": 0,
-  "caseType": "string",
-  "ceActualResponses": 0,
-  "ceExpectedCapacity": 0,
-  "collectionExerciseId": "1156afc3-b136-4e6d-860e-e98a7c9c78f5",
-  "createdDateTime": "2019-08-24T14:15:22Z",
-  "estabType": "string",
-  "estabUprn": "string",
-  "events": [
-    {
-      "eventChannel": "string",
-      "eventDate": "2019-08-24T14:15:22Z",
-      "eventDescription": "string",
-      "eventPayload": "string",
-      "eventSource": "string",
-      "eventTransactionId": "2e360fa7-9633-4a7e-93c7-4bccb9c79e22",
-      "eventType": "string",
-      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
-      "messageTimestamp": "2019-08-24T14:15:22Z",
-      "rmEventProcessed": "2019-08-24T14:15:22Z"
-    }
-  ],
-  "fieldCoordinatorId": "string",
-  "fieldOfficerId": "string",
-  "htcDigital": "string",
-  "htcWillingness": "string",
-  "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
-  "invalid": true,
-  "lad": "string",
-  "lastUpdated": "2019-08-24T14:15:22Z",
-  "latitude": "string",
-  "longitude": "string",
-  "lsoa": "string",
-  "msoa": "string",
-  "oa": "string",
-  "organisationName": "string",
-  "postcode": "string",
-  "printBatch": "string",
-  "receiptReceived": true,
-  "refusalReceived": "HARD_REFUSAL",
-  "region": "string",
-  "surveyLaunched": true,
-  "townName": "string",
-  "treatmentCode": "string",
-  "uprn": "string"
+  "id": "a11e3456-e89b-12d3-a456-426614174000",
+  "caseRef": 100000000000001,
+  "uprn": "123456789",
+  "postcode": "AB12CD",
+  "caseType": "NEW"
 }
 ```
 
@@ -417,42 +736,11 @@ Retrieves all cases located within the specified postcode area.
 ```json
 [
   {
-    "abpCode": "string",
-    "addressLevel": "string",
-    "addressLine1": "string",
-    "addressLine2": "string",
-    "addressLine3": "string",
-    "addressType": "string",
-    "caseEvents": [
-      {
-        "createdDateTime": "2019-08-24T14:15:22Z",
-        "description": "string",
-        "eventType": "NEW_CASE",
-        "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
-      }
-    ],
     "caseRef": "100000000000001",
-    "caseType": "string",
-    "collectionExerciseId": "1156afc3-b136-4e6d-860e-e98a7c9c78f5",
-    "createdDateTime": "2019-08-24T14:15:22Z",
-    "estabType": "string",
-    "estabUprn": "string",
     "id": "a11e3456-e89b-12d3-a456-426614174000",
-    "invalid": true,
-    "lad": "string",
-    "lastUpdated": "2019-08-24T14:15:22Z",
-    "latitude": "string",
-    "longitude": "string",
-    "lsoa": "string",
-    "msoa": "string",
-    "oa": "string",
-    "organisationName": "string",
-    "postcode": "string",
-    "region": "string",
-    "secureEstablishment": true,
-    "surveyType": "string",
-    "townName": "string",
-    "uprn": "string"
+    "uprn": "123456789",
+    "postcode": "AB12CD",
+    "addressType": "HOUSEHOLD"
   }
 ]
 ```
@@ -470,39 +758,39 @@ Status Code **200**
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |*anonymous*|[[CaseContainerDTO](#schemacasecontainerdto)]|false|none|[Data Transfer Object representing a census case container]|
-|» abpCode|string|false|none|none|
-|» addressLevel|string|false|none|none|
-|» addressLine1|string|false|none|none|
-|» addressLine2|string|false|none|none|
-|» addressLine3|string|false|none|none|
-|» addressType|string|false|none|none|
-|» caseEvents|[[CaseEventDTO](#schemacaseeventdto)]|false|none|none|
-|»» createdDateTime|string(date-time)|false|none|none|
-|»» description|string|false|none|none|
-|»» eventType|string|false|none|none|
-|»» id|string(uuid)|false|none|none|
+|» abpCode|string|false|none|Address Based Priority code|
+|» addressLevel|string|false|none|Address level classification|
+|» addressLine1|string|false|none|First line of street address|
+|» addressLine2|string|false|none|Second line of street address|
+|» addressLine3|string|false|none|Third line of street address|
+|» addressType|string|false|none|Type of address (e.g., HOUSEHOLD, COMMUNAL, OTHER)|
+|» caseEvents|[[CaseEventDTO](#schemacaseeventdto)]|false|none|List of events associated with the case|
+|»» createdDateTime|string(date-time)|true|none|Date and time when the event was created|
+|»» description|string|false|none|Human-readable description of the event|
+|»» eventType|[EventTypeDTO](#schemaeventtypedto)|true|none|Enumeration of all possible event types that can occur in the census RM system|
+|»» id|string(uuid)|true|none|Unique event identifier (UUID)|
 |» caseRef|string|true|none|Unique numeric reference for the case|
-|» caseType|string|false|none|none|
-|» collectionExerciseId|string(uuid)|false|none|none|
-|» createdDateTime|string(date-time)|false|none|none|
-|» estabType|string|false|none|none|
-|» estabUprn|string|false|none|none|
+|» caseType|string|false|none|Case type classification (e.g., NEW, REPLACEMENT)|
+|» collectionExerciseId|string(uuid)|false|none|Collection Exercise UUID identifier|
+|» createdDateTime|string(date-time)|false|none|Date and time when the case was created|
+|» estabType|string|false|none|Establishment type code|
+|» estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |» id|string(uuid)|true|none|Unique case UUID identifier|
-|» invalid|boolean|false|none|none|
-|» lad|string|false|none|none|
-|» lastUpdated|string(date-time)|false|none|none|
-|» latitude|string|false|none|none|
-|» longitude|string|false|none|none|
-|» lsoa|string|false|none|none|
-|» msoa|string|false|none|none|
-|» oa|string|false|none|none|
-|» organisationName|string|false|none|none|
-|» postcode|string|false|none|none|
-|» region|string|false|none|none|
-|» secureEstablishment|boolean|false|none|none|
-|» surveyType|string|false|none|none|
-|» townName|string|false|none|none|
-|» uprn|string|false|none|none|
+|» invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
+|» lad|string|false|none|Local Authority District code|
+|» lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
+|» latitude|string|false|none|Geographic latitude coordinate|
+|» longitude|string|false|none|Geographic longitude coordinate|
+|» lsoa|string|false|none|Lower Layer Super Output Area code|
+|» msoa|string|false|none|Middle Layer Super Output Area code|
+|» oa|string|false|none|Output Area code|
+|» organisationName|string|false|none|Name of organization for establishment addresses|
+|» postcode|string|false|none|UK postal code|
+|» region|string|false|none|Administrative region code|
+|» secureEstablishment|boolean|false|none|Indicator whether address is a secure establishment|
+|» surveyType|string|false|none|Type of survey (e.g., CENSUS, OTHER_SURVEY)|
+|» townName|string|false|none|Town or city name|
+|» uprn|string|false|none|Unique Property Reference Number|
 
 #### Enumerated Values
 
@@ -690,42 +978,11 @@ Retrieves minimal case details linked to a specific questionnaire ID.
 
 ```json
 {
-  "abpCode": "string",
-  "addressLevel": "string",
-  "addressLine1": "string",
-  "addressLine2": "string",
-  "addressLine3": "string",
-  "addressType": "string",
-  "caseEvents": [
-    {
-      "createdDateTime": "2019-08-24T14:15:22Z",
-      "description": "string",
-      "eventType": "NEW_CASE",
-      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
-    }
-  ],
   "caseRef": "100000000000001",
-  "caseType": "string",
-  "collectionExerciseId": "1156afc3-b136-4e6d-860e-e98a7c9c78f5",
-  "createdDateTime": "2019-08-24T14:15:22Z",
-  "estabType": "string",
-  "estabUprn": "string",
   "id": "a11e3456-e89b-12d3-a456-426614174000",
-  "invalid": true,
-  "lad": "string",
-  "lastUpdated": "2019-08-24T14:15:22Z",
-  "latitude": "string",
-  "longitude": "string",
-  "lsoa": "string",
-  "msoa": "string",
-  "oa": "string",
-  "organisationName": "string",
-  "postcode": "string",
-  "region": "string",
-  "secureEstablishment": true,
-  "surveyType": "string",
-  "townName": "string",
-  "uprn": "string"
+  "uprn": "123456789",
+  "postcode": "AB12CD",
+  "addressType": "HOUSEHOLD"
 }
 ```
 
@@ -900,42 +1157,11 @@ Retrieves a single case container record using the numeric case reference.
 
 ```json
 {
-  "abpCode": "string",
-  "addressLevel": "string",
-  "addressLine1": "string",
-  "addressLine2": "string",
-  "addressLine3": "string",
-  "addressType": "string",
-  "caseEvents": [
-    {
-      "createdDateTime": "2019-08-24T14:15:22Z",
-      "description": "string",
-      "eventType": "NEW_CASE",
-      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
-    }
-  ],
   "caseRef": "100000000000001",
-  "caseType": "string",
-  "collectionExerciseId": "1156afc3-b136-4e6d-860e-e98a7c9c78f5",
-  "createdDateTime": "2019-08-24T14:15:22Z",
-  "estabType": "string",
-  "estabUprn": "string",
   "id": "a11e3456-e89b-12d3-a456-426614174000",
-  "invalid": true,
-  "lad": "string",
-  "lastUpdated": "2019-08-24T14:15:22Z",
-  "latitude": "string",
-  "longitude": "string",
-  "lsoa": "string",
-  "msoa": "string",
-  "oa": "string",
-  "organisationName": "string",
-  "postcode": "string",
-  "region": "string",
-  "secureEstablishment": true,
-  "surveyType": "string",
-  "townName": "string",
-  "uprn": "string"
+  "uprn": "123456789",
+  "postcode": "AB12CD",
+  "addressType": "HOUSEHOLD"
 }
 ```
 
@@ -1112,42 +1338,11 @@ Retrieves all cases associated with a Unique Property Reference Number.
 ```json
 [
   {
-    "abpCode": "string",
-    "addressLevel": "string",
-    "addressLine1": "string",
-    "addressLine2": "string",
-    "addressLine3": "string",
-    "addressType": "string",
-    "caseEvents": [
-      {
-        "createdDateTime": "2019-08-24T14:15:22Z",
-        "description": "string",
-        "eventType": "NEW_CASE",
-        "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
-      }
-    ],
     "caseRef": "100000000000001",
-    "caseType": "string",
-    "collectionExerciseId": "1156afc3-b136-4e6d-860e-e98a7c9c78f5",
-    "createdDateTime": "2019-08-24T14:15:22Z",
-    "estabType": "string",
-    "estabUprn": "string",
     "id": "a11e3456-e89b-12d3-a456-426614174000",
-    "invalid": true,
-    "lad": "string",
-    "lastUpdated": "2019-08-24T14:15:22Z",
-    "latitude": "string",
-    "longitude": "string",
-    "lsoa": "string",
-    "msoa": "string",
-    "oa": "string",
-    "organisationName": "string",
-    "postcode": "string",
-    "region": "string",
-    "secureEstablishment": true,
-    "surveyType": "string",
-    "townName": "string",
-    "uprn": "string"
+    "uprn": "123456789",
+    "postcode": "AB12CD",
+    "addressType": "HOUSEHOLD"
   }
 ]
 ```
@@ -1165,39 +1360,39 @@ Status Code **200**
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |*anonymous*|[[CaseContainerDTO](#schemacasecontainerdto)]|false|none|[Data Transfer Object representing a census case container]|
-|» abpCode|string|false|none|none|
-|» addressLevel|string|false|none|none|
-|» addressLine1|string|false|none|none|
-|» addressLine2|string|false|none|none|
-|» addressLine3|string|false|none|none|
-|» addressType|string|false|none|none|
-|» caseEvents|[[CaseEventDTO](#schemacaseeventdto)]|false|none|none|
-|»» createdDateTime|string(date-time)|false|none|none|
-|»» description|string|false|none|none|
-|»» eventType|string|false|none|none|
-|»» id|string(uuid)|false|none|none|
+|» abpCode|string|false|none|Address Based Priority code|
+|» addressLevel|string|false|none|Address level classification|
+|» addressLine1|string|false|none|First line of street address|
+|» addressLine2|string|false|none|Second line of street address|
+|» addressLine3|string|false|none|Third line of street address|
+|» addressType|string|false|none|Type of address (e.g., HOUSEHOLD, COMMUNAL, OTHER)|
+|» caseEvents|[[CaseEventDTO](#schemacaseeventdto)]|false|none|List of events associated with the case|
+|»» createdDateTime|string(date-time)|true|none|Date and time when the event was created|
+|»» description|string|false|none|Human-readable description of the event|
+|»» eventType|[EventTypeDTO](#schemaeventtypedto)|true|none|Enumeration of all possible event types that can occur in the census RM system|
+|»» id|string(uuid)|true|none|Unique event identifier (UUID)|
 |» caseRef|string|true|none|Unique numeric reference for the case|
-|» caseType|string|false|none|none|
-|» collectionExerciseId|string(uuid)|false|none|none|
-|» createdDateTime|string(date-time)|false|none|none|
-|» estabType|string|false|none|none|
-|» estabUprn|string|false|none|none|
+|» caseType|string|false|none|Case type classification (e.g., NEW, REPLACEMENT)|
+|» collectionExerciseId|string(uuid)|false|none|Collection Exercise UUID identifier|
+|» createdDateTime|string(date-time)|false|none|Date and time when the case was created|
+|» estabType|string|false|none|Establishment type code|
+|» estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |» id|string(uuid)|true|none|Unique case UUID identifier|
-|» invalid|boolean|false|none|none|
-|» lad|string|false|none|none|
-|» lastUpdated|string(date-time)|false|none|none|
-|» latitude|string|false|none|none|
-|» longitude|string|false|none|none|
-|» lsoa|string|false|none|none|
-|» msoa|string|false|none|none|
-|» oa|string|false|none|none|
-|» organisationName|string|false|none|none|
-|» postcode|string|false|none|none|
-|» region|string|false|none|none|
-|» secureEstablishment|boolean|false|none|none|
-|» surveyType|string|false|none|none|
-|» townName|string|false|none|none|
-|» uprn|string|false|none|none|
+|» invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
+|» lad|string|false|none|Local Authority District code|
+|» lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
+|» latitude|string|false|none|Geographic latitude coordinate|
+|» longitude|string|false|none|Geographic longitude coordinate|
+|» lsoa|string|false|none|Lower Layer Super Output Area code|
+|» msoa|string|false|none|Middle Layer Super Output Area code|
+|» oa|string|false|none|Output Area code|
+|» organisationName|string|false|none|Name of organization for establishment addresses|
+|» postcode|string|false|none|UK postal code|
+|» region|string|false|none|Administrative region code|
+|» secureEstablishment|boolean|false|none|Indicator whether address is a secure establishment|
+|» surveyType|string|false|none|Type of survey (e.g., CENSUS, OTHER_SURVEY)|
+|» townName|string|false|none|Town or city name|
+|» uprn|string|false|none|Unique Property Reference Number|
 
 #### Enumerated Values
 
@@ -1386,42 +1581,11 @@ Retrieves a single case container record matching the specified UUID.
 
 ```json
 {
-  "abpCode": "string",
-  "addressLevel": "string",
-  "addressLine1": "string",
-  "addressLine2": "string",
-  "addressLine3": "string",
-  "addressType": "string",
-  "caseEvents": [
-    {
-      "createdDateTime": "2019-08-24T14:15:22Z",
-      "description": "string",
-      "eventType": "NEW_CASE",
-      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
-    }
-  ],
   "caseRef": "100000000000001",
-  "caseType": "string",
-  "collectionExerciseId": "1156afc3-b136-4e6d-860e-e98a7c9c78f5",
-  "createdDateTime": "2019-08-24T14:15:22Z",
-  "estabType": "string",
-  "estabUprn": "string",
   "id": "a11e3456-e89b-12d3-a456-426614174000",
-  "invalid": true,
-  "lad": "string",
-  "lastUpdated": "2019-08-24T14:15:22Z",
-  "latitude": "string",
-  "longitude": "string",
-  "lsoa": "string",
-  "msoa": "string",
-  "oa": "string",
-  "organisationName": "string",
-  "postcode": "string",
-  "region": "string",
-  "secureEstablishment": true,
-  "surveyType": "string",
-  "townName": "string",
-  "uprn": "string"
+  "uprn": "123456789",
+  "postcode": "AB12CD",
+  "addressType": "HOUSEHOLD"
 }
 ```
 
@@ -1432,350 +1596,6 @@ Retrieves a single case container record matching the specified UUID.
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|Case record found successfully|[CaseContainerDTO](#schemacasecontainerdto)|
 |404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|Case record not found|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error occurred|None|
-
-<aside class="success">
-This operation does not require authentication
-</aside>
-
-<h1 id="case-api-service-qid-endpoint">qid-endpoint</h1>
-
-## putQidLinkToCase
-
-<a id="opIdputQidLinkToCase"></a>
-
-> Code samples
-
-```shell
-# You can also use wget
-curl -X PUT http://localhost:8161/qids/link \
-  -H 'Content-Type: application/json'
-
-```
-
-```http
-PUT http://localhost:8161/qids/link HTTP/1.1
-Host: localhost:8161
-Content-Type: application/json
-
-```
-
-```javascript
-const inputBody = '{
-  "channel": "string",
-  "qidLink": {
-    "caseId": "af51d69f-996a-4891-a745-aadfcdec225a",
-    "questionnaireId": "string"
-  },
-  "transactionId": "75906707-8c31-479c-b354-aa805c4cefbc"
-}';
-const headers = {
-  'Content-Type':'application/json'
-};
-
-fetch('http://localhost:8161/qids/link',
-{
-  method: 'PUT',
-  body: inputBody,
-  headers: headers
-})
-.then(function(res) {
-    return res.json();
-}).then(function(body) {
-    console.log(body);
-});
-
-```
-
-```ruby
-require 'rest-client'
-require 'json'
-
-headers = {
-  'Content-Type' => 'application/json'
-}
-
-result = RestClient.put 'http://localhost:8161/qids/link',
-  params: {
-  }, headers: headers
-
-p JSON.parse(result)
-
-```
-
-```python
-import requests
-headers = {
-  'Content-Type': 'application/json'
-}
-
-r = requests.put('http://localhost:8161/qids/link', headers = headers)
-
-print(r.json())
-
-```
-
-```php
-<?php
-
-require 'vendor/autoload.php';
-
-$headers = array(
-    'Content-Type' => 'application/json',
-);
-
-$client = new \GuzzleHttp\Client();
-
-// Define array of request body.
-$request_body = array();
-
-try {
-    $response = $client->request('PUT','http://localhost:8161/qids/link', array(
-        'headers' => $headers,
-        'json' => $request_body,
-       )
-    );
-    print_r($response->getBody()->getContents());
- }
- catch (\GuzzleHttp\Exception\BadResponseException $e) {
-    // handle exception or api errors.
-    print_r($e->getMessage());
- }
-
- // ...
-
-```
-
-```java
-URL obj = new URL("http://localhost:8161/qids/link");
-HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-con.setRequestMethod("PUT");
-int responseCode = con.getResponseCode();
-BufferedReader in = new BufferedReader(
-    new InputStreamReader(con.getInputStream()));
-String inputLine;
-StringBuffer response = new StringBuffer();
-while ((inputLine = in.readLine()) != null) {
-    response.append(inputLine);
-}
-in.close();
-System.out.println(response.toString());
-
-```
-
-```go
-package main
-
-import (
-       "bytes"
-       "net/http"
-)
-
-func main() {
-
-    headers := map[string][]string{
-        "Content-Type": []string{"application/json"},
-    }
-
-    data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("PUT", "http://localhost:8161/qids/link", data)
-    req.Header = headers
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    // ...
-}
-
-```
-
-`PUT /qids/link`
-
-> Body parameter
-
-```json
-{
-  "channel": "string",
-  "qidLink": {
-    "caseId": "af51d69f-996a-4891-a745-aadfcdec225a",
-    "questionnaireId": "string"
-  },
-  "transactionId": "75906707-8c31-479c-b354-aa805c4cefbc"
-}
-```
-
-<h3 id="putqidlinktocase-parameters">Parameters</h3>
-
-|Name|In|Type|Required|Description|
-|---|---|---|---|---|
-|body|body|[NewQidLink](#schemanewqidlink)|true|none|
-
-<h3 id="putqidlinktocase-responses">Responses</h3>
-
-|Status|Meaning|Description|Schema|
-|---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
-
-<aside class="success">
-This operation does not require authentication
-</aside>
-
-## getUacQidLinkByQid
-
-<a id="opIdgetUacQidLinkByQid"></a>
-
-> Code samples
-
-```shell
-# You can also use wget
-curl -X GET http://localhost:8161/qids/{qid} \
-  -H 'Accept: */*'
-
-```
-
-```http
-GET http://localhost:8161/qids/{qid} HTTP/1.1
-Host: localhost:8161
-Accept: */*
-
-```
-
-```javascript
-
-const headers = {
-  'Accept':'*/*'
-};
-
-fetch('http://localhost:8161/qids/{qid}',
-{
-  method: 'GET',
-
-  headers: headers
-})
-.then(function(res) {
-    return res.json();
-}).then(function(body) {
-    console.log(body);
-});
-
-```
-
-```ruby
-require 'rest-client'
-require 'json'
-
-headers = {
-  'Accept' => '*/*'
-}
-
-result = RestClient.get 'http://localhost:8161/qids/{qid}',
-  params: {
-  }, headers: headers
-
-p JSON.parse(result)
-
-```
-
-```python
-import requests
-headers = {
-  'Accept': '*/*'
-}
-
-r = requests.get('http://localhost:8161/qids/{qid}', headers = headers)
-
-print(r.json())
-
-```
-
-```php
-<?php
-
-require 'vendor/autoload.php';
-
-$headers = array(
-    'Accept' => '*/*',
-);
-
-$client = new \GuzzleHttp\Client();
-
-// Define array of request body.
-$request_body = array();
-
-try {
-    $response = $client->request('GET','http://localhost:8161/qids/{qid}', array(
-        'headers' => $headers,
-        'json' => $request_body,
-       )
-    );
-    print_r($response->getBody()->getContents());
- }
- catch (\GuzzleHttp\Exception\BadResponseException $e) {
-    // handle exception or api errors.
-    print_r($e->getMessage());
- }
-
- // ...
-
-```
-
-```java
-URL obj = new URL("http://localhost:8161/qids/{qid}");
-HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-con.setRequestMethod("GET");
-int responseCode = con.getResponseCode();
-BufferedReader in = new BufferedReader(
-    new InputStreamReader(con.getInputStream()));
-String inputLine;
-StringBuffer response = new StringBuffer();
-while ((inputLine = in.readLine()) != null) {
-    response.append(inputLine);
-}
-in.close();
-System.out.println(response.toString());
-
-```
-
-```go
-package main
-
-import (
-       "bytes"
-       "net/http"
-)
-
-func main() {
-
-    headers := map[string][]string{
-        "Accept": []string{"*/*"},
-    }
-
-    data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("GET", "http://localhost:8161/qids/{qid}", data)
-    req.Header = headers
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    // ...
-}
-
-```
-
-`GET /qids/{qid}`
-
-<h3 id="getuacqidlinkbyqid-parameters">Parameters</h3>
-
-|Name|In|Type|Required|Description|
-|---|---|---|---|---|
-|qid|path|string|true|none|
-
-> Example responses
-
-> 200 Response
-
-<h3 id="getuacqidlinkbyqid-responses">Responses</h3>
-
-|Status|Meaning|Description|Schema|
-|---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[QidLink](#schemaqidlink)|
 
 <aside class="success">
 This operation does not require authentication
@@ -1792,42 +1612,11 @@ This operation does not require authentication
 
 ```json
 {
-  "abpCode": "string",
-  "addressLevel": "string",
-  "addressLine1": "string",
-  "addressLine2": "string",
-  "addressLine3": "string",
-  "addressType": "string",
-  "caseEvents": [
-    {
-      "createdDateTime": "2019-08-24T14:15:22Z",
-      "description": "string",
-      "eventType": "NEW_CASE",
-      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
-    }
-  ],
   "caseRef": "100000000000001",
-  "caseType": "string",
-  "collectionExerciseId": "1156afc3-b136-4e6d-860e-e98a7c9c78f5",
-  "createdDateTime": "2019-08-24T14:15:22Z",
-  "estabType": "string",
-  "estabUprn": "string",
   "id": "a11e3456-e89b-12d3-a456-426614174000",
-  "invalid": true,
-  "lad": "string",
-  "lastUpdated": "2019-08-24T14:15:22Z",
-  "latitude": "string",
-  "longitude": "string",
-  "lsoa": "string",
-  "msoa": "string",
-  "oa": "string",
-  "organisationName": "string",
-  "postcode": "string",
-  "region": "string",
-  "secureEstablishment": true,
-  "surveyType": "string",
-  "townName": "string",
-  "uprn": "string"
+  "uprn": "123456789",
+  "postcode": "AB12CD",
+  "addressType": "HOUSEHOLD"
 }
 
 ```
@@ -1838,35 +1627,35 @@ Data Transfer Object representing a census case container
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|abpCode|string|false|none|none|
-|addressLevel|string|false|none|none|
-|addressLine1|string|false|none|none|
-|addressLine2|string|false|none|none|
-|addressLine3|string|false|none|none|
-|addressType|string|false|none|none|
-|caseEvents|[[CaseEventDTO](#schemacaseeventdto)]|false|none|none|
+|abpCode|string|false|none|Address Based Priority code|
+|addressLevel|string|false|none|Address level classification|
+|addressLine1|string|false|none|First line of street address|
+|addressLine2|string|false|none|Second line of street address|
+|addressLine3|string|false|none|Third line of street address|
+|addressType|string|false|none|Type of address (e.g., HOUSEHOLD, COMMUNAL, OTHER)|
+|caseEvents|[[CaseEventDTO](#schemacaseeventdto)]|false|none|List of events associated with the case|
 |caseRef|string|true|none|Unique numeric reference for the case|
-|caseType|string|false|none|none|
-|collectionExerciseId|string(uuid)|false|none|none|
-|createdDateTime|string(date-time)|false|none|none|
-|estabType|string|false|none|none|
-|estabUprn|string|false|none|none|
+|caseType|string|false|none|Case type classification (e.g., NEW, REPLACEMENT)|
+|collectionExerciseId|string(uuid)|false|none|Collection Exercise UUID identifier|
+|createdDateTime|string(date-time)|false|none|Date and time when the case was created|
+|estabType|string|false|none|Establishment type code|
+|estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |id|string(uuid)|true|none|Unique case UUID identifier|
-|invalid|boolean|false|none|none|
-|lad|string|false|none|none|
-|lastUpdated|string(date-time)|false|none|none|
-|latitude|string|false|none|none|
-|longitude|string|false|none|none|
-|lsoa|string|false|none|none|
-|msoa|string|false|none|none|
-|oa|string|false|none|none|
-|organisationName|string|false|none|none|
-|postcode|string|false|none|none|
-|region|string|false|none|none|
-|secureEstablishment|boolean|false|none|none|
-|surveyType|string|false|none|none|
-|townName|string|false|none|none|
-|uprn|string|false|none|none|
+|invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
+|lad|string|false|none|Local Authority District code|
+|lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
+|latitude|string|false|none|Geographic latitude coordinate|
+|longitude|string|false|none|Geographic longitude coordinate|
+|lsoa|string|false|none|Lower Layer Super Output Area code|
+|msoa|string|false|none|Middle Layer Super Output Area code|
+|oa|string|false|none|Output Area code|
+|organisationName|string|false|none|Name of organization for establishment addresses|
+|postcode|string|false|none|UK postal code|
+|region|string|false|none|Administrative region code|
+|secureEstablishment|boolean|false|none|Indicator whether address is a secure establishment|
+|surveyType|string|false|none|Type of survey (e.g., CENSUS, OTHER_SURVEY)|
+|townName|string|false|none|Town or city name|
+|uprn|string|false|none|Unique Property Reference Number|
 
 <h2 id="tocS_CaseDetailsDTO">CaseDetailsDTO</h2>
 <!-- backwards compatibility -->
@@ -1877,103 +1666,59 @@ Data Transfer Object representing a census case container
 
 ```json
 {
-  "abpCode": "string",
-  "addressLevel": "string",
-  "addressLine1": "string",
-  "addressLine2": "string",
-  "addressLine3": "string",
-  "addressType": "string",
-  "caseRef": 0,
-  "caseType": "string",
-  "ceActualResponses": 0,
-  "ceExpectedCapacity": 0,
-  "collectionExerciseId": "1156afc3-b136-4e6d-860e-e98a7c9c78f5",
-  "createdDateTime": "2019-08-24T14:15:22Z",
-  "estabType": "string",
-  "estabUprn": "string",
-  "events": [
-    {
-      "eventChannel": "string",
-      "eventDate": "2019-08-24T14:15:22Z",
-      "eventDescription": "string",
-      "eventPayload": "string",
-      "eventSource": "string",
-      "eventTransactionId": "2e360fa7-9633-4a7e-93c7-4bccb9c79e22",
-      "eventType": "string",
-      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
-      "messageTimestamp": "2019-08-24T14:15:22Z",
-      "rmEventProcessed": "2019-08-24T14:15:22Z"
-    }
-  ],
-  "fieldCoordinatorId": "string",
-  "fieldOfficerId": "string",
-  "htcDigital": "string",
-  "htcWillingness": "string",
-  "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
-  "invalid": true,
-  "lad": "string",
-  "lastUpdated": "2019-08-24T14:15:22Z",
-  "latitude": "string",
-  "longitude": "string",
-  "lsoa": "string",
-  "msoa": "string",
-  "oa": "string",
-  "organisationName": "string",
-  "postcode": "string",
-  "printBatch": "string",
-  "receiptReceived": true,
-  "refusalReceived": "HARD_REFUSAL",
-  "region": "string",
-  "surveyLaunched": true,
-  "townName": "string",
-  "treatmentCode": "string",
-  "uprn": "string"
+  "id": "a11e3456-e89b-12d3-a456-426614174000",
+  "caseRef": 100000000000001,
+  "uprn": "123456789",
+  "postcode": "AB12CD",
+  "caseType": "NEW"
 }
 
 ```
+
+Comprehensive Data Transfer Object containing detailed case attributes
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|abpCode|string|false|none|none|
-|addressLevel|string|false|none|none|
-|addressLine1|string|false|none|none|
-|addressLine2|string|false|none|none|
-|addressLine3|string|false|none|none|
-|addressType|string|false|none|none|
-|caseRef|integer(int64)|false|none|none|
-|caseType|string|false|none|none|
-|ceActualResponses|integer(int32)|false|none|none|
-|ceExpectedCapacity|integer(int32)|false|none|none|
-|collectionExerciseId|string(uuid)|false|none|none|
-|createdDateTime|string(date-time)|false|none|none|
-|estabType|string|false|none|none|
-|estabUprn|string|false|none|none|
-|events|[[CaseDetailsEventDTO](#schemacasedetailseventdto)]|false|none|none|
-|fieldCoordinatorId|string|false|none|none|
-|fieldOfficerId|string|false|none|none|
-|htcDigital|string|false|none|none|
-|htcWillingness|string|false|none|none|
-|id|string(uuid)|false|none|none|
-|invalid|boolean|false|none|none|
-|lad|string|false|none|none|
-|lastUpdated|string(date-time)|false|none|none|
-|latitude|string|false|none|none|
-|longitude|string|false|none|none|
-|lsoa|string|false|none|none|
-|msoa|string|false|none|none|
-|oa|string|false|none|none|
-|organisationName|string|false|none|none|
-|postcode|string|false|none|none|
-|printBatch|string|false|none|none|
-|receiptReceived|boolean|false|none|none|
-|refusalReceived|string|false|none|none|
-|region|string|false|none|none|
-|surveyLaunched|boolean|false|none|none|
-|townName|string|false|none|none|
-|treatmentCode|string|false|none|none|
-|uprn|string|false|none|none|
+|abpCode|string|false|none|Address Based Priority code|
+|addressLevel|string|false|none|Address level classification|
+|addressLine1|string|false|none|First line of street address|
+|addressLine2|string|false|none|Second line of street address|
+|addressLine3|string|false|none|Third line of street address|
+|addressType|string|false|none|Type of address (e.g., HOUSEHOLD, COMMUNAL)|
+|caseRef|integer(int64)|true|none|Unique numeric reference for the case|
+|caseType|string|false|none|Case type classification|
+|ceActualResponses|integer(int32)|false|none|Actual number of responses received for Communal Establishment|
+|ceExpectedCapacity|integer(int32)|false|none|Expected capacity for Communal Establishment|
+|collectionExerciseId|string(uuid)|false|none|Collection Exercise UUID identifier|
+|createdDateTime|string(date-time)|false|none|Date and time when the case was created|
+|estabType|string|false|none|Establishment type code|
+|estabUprn|string|false|none|Establishment UPRN for non-household establishments|
+|events|[[CaseDetailsEventDTO](#schemacasedetailseventdto)]|false|none|List of events associated with this case|
+|fieldCoordinatorId|string|false|none|Field Coordinator identifier for the assigned case|
+|fieldOfficerId|string|false|none|Field Officer identifier for the assigned case|
+|htcDigital|string|false|none|Household Telephone Contact digital indicator|
+|htcWillingness|string|false|none|Household Telephone Contact willingness indicator|
+|id|string(uuid)|true|none|Unique case UUID identifier|
+|invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
+|lad|string|false|none|Local Authority District code|
+|lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
+|latitude|string|false|none|Geographic latitude coordinate|
+|longitude|string|false|none|Geographic longitude coordinate|
+|lsoa|string|false|none|Lower Layer Super Output Area code|
+|msoa|string|false|none|Middle Layer Super Output Area code|
+|oa|string|false|none|Output Area code|
+|organisationName|string|false|none|Name of organization for establishment addresses|
+|postcode|string|false|none|UK postal code|
+|printBatch|string|false|none|Print batch identifier for printed case materials|
+|receiptReceived|boolean|false|none|Flag indicating if receipt has been received from respondent|
+|refusalReceived|string|false|none|Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)|
+|region|string|false|none|Administrative region code|
+|surveyLaunched|boolean|false|none|Flag indicating if survey has been launched to respondent|
+|townName|string|false|none|Town or city name|
+|treatmentCode|string|false|none|Treatment code indicating special handling|
+|uprn|string|false|none|Unique Property Reference Number|
 
 #### Enumerated Values
 
@@ -1993,34 +1738,31 @@ Data Transfer Object representing a census case container
 
 ```json
 {
-  "eventChannel": "string",
-  "eventDate": "2019-08-24T14:15:22Z",
-  "eventDescription": "string",
-  "eventPayload": "string",
-  "eventSource": "string",
-  "eventTransactionId": "2e360fa7-9633-4a7e-93c7-4bccb9c79e22",
-  "eventType": "string",
-  "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
-  "messageTimestamp": "2019-08-24T14:15:22Z",
-  "rmEventProcessed": "2019-08-24T14:15:22Z"
+  "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "eventType": "NEW_CASE",
+  "eventDescription": "Case created",
+  "eventDate": "2024-01-15T10:30:00Z",
+  "eventChannel": "RM"
 }
 
 ```
+
+Detailed Data Transfer Object containing event attributes for case details response
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|eventChannel|string|false|none|none|
-|eventDate|string(date-time)|false|none|none|
-|eventDescription|string|false|none|none|
-|eventPayload|string|false|none|none|
-|eventSource|string|false|none|none|
-|eventTransactionId|string(uuid)|false|none|none|
-|eventType|string|false|none|none|
-|id|string(uuid)|false|none|none|
-|messageTimestamp|string(date-time)|false|none|none|
-|rmEventProcessed|string(date-time)|false|none|none|
+|eventChannel|string|true|none|Channel through which the event was triggered (RM, CC, etc.)|
+|eventDate|string(date-time)|true|none|Date and time when the event occurred|
+|eventDescription|string|false|none|Human-readable description of the event|
+|eventPayload|string|false|none|JSON payload containing event-specific data|
+|eventSource|string|false|none|Source system that generated the event (e.g., UAC_SERVICE, PRINT_SERVICE)|
+|eventTransactionId|string(uuid)|false|none|Unique transaction identifier for this event|
+|eventType|string|true|none|Type of event (e.g., NEW_CASE, RECEIPT, REFUSAL, EQ_LAUNCH, UAC_AUTHENTICATION)|
+|id|string(uuid)|true|none|Unique event identifier (UUID)|
+|messageTimestamp|string(date-time)|false|none|Message timestamp from the originating system|
+|rmEventProcessed|string(date-time)|false|none|Date and time when the event was processed by RM|
 
 <h2 id="tocS_CaseEventDTO">CaseEventDTO</h2>
 <!-- backwards compatibility -->
@@ -2031,45 +1773,67 @@ Data Transfer Object representing a census case container
 
 ```json
 {
-  "createdDateTime": "2019-08-24T14:15:22Z",
-  "description": "string",
+  "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "eventType": "NEW_CASE",
-  "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+  "description": "Case created",
+  "createdDateTime": "2024-01-15T10:30:00Z"
 }
 
 ```
+
+Data Transfer Object representing an event associated with a case
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|createdDateTime|string(date-time)|false|none|none|
-|description|string|false|none|none|
-|eventType|string|false|none|none|
-|id|string(uuid)|false|none|none|
+|createdDateTime|string(date-time)|true|none|Date and time when the event was created|
+|description|string|false|none|Human-readable description of the event|
+|eventType|[EventTypeDTO](#schemaeventtypedto)|true|none|Enumeration of all possible event types that can occur in the census RM system|
+|id|string(uuid)|true|none|Unique event identifier (UUID)|
+
+<h2 id="tocS_EventTypeDTO">EventTypeDTO</h2>
+<!-- backwards compatibility -->
+<a id="schemaeventtypedto"></a>
+<a id="schema_EventTypeDTO"></a>
+<a id="tocSeventtypedto"></a>
+<a id="tocseventtypedto"></a>
+
+```json
+"NEW_CASE"
+
+```
+
+Enumeration of all possible event types that can occur in the census RM system
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|*anonymous*|string|false|none|Enumeration of all possible event types that can occur in the census RM system|
 
 #### Enumerated Values
 
 |Property|Value|
 |---|---|
-|eventType|NEW_CASE|
-|eventType|RECEIPT|
-|eventType|REFUSAL|
-|eventType|INVALID_CASE|
-|eventType|EQ_LAUNCH|
-|eventType|UAC_AUTHENTICATION|
-|eventType|PRINT_FULFILMENT|
-|eventType|EXPORT_FILE|
-|eventType|DEACTIVATE_UAC|
-|eventType|UPDATE_SAMPLE|
-|eventType|UPDATE_SAMPLE_SENSITIVE|
-|eventType|SMS_FULFILMENT|
-|eventType|ACTION_RULE_SMS_REQUEST|
-|eventType|EMAIL_FULFILMENT|
-|eventType|ACTION_RULE_EMAIL_REQUEST|
-|eventType|ACTION_RULE_SMS_CONFIRMATION|
-|eventType|ACTION_RULE_EMAIL_CONFIRMATION|
-|eventType|ERASE_DATA|
+|*anonymous*|NEW_CASE|
+|*anonymous*|RECEIPT|
+|*anonymous*|REFUSAL|
+|*anonymous*|INVALID_CASE|
+|*anonymous*|EQ_LAUNCH|
+|*anonymous*|UAC_AUTHENTICATION|
+|*anonymous*|PRINT_FULFILMENT|
+|*anonymous*|EXPORT_FILE|
+|*anonymous*|DEACTIVATE_UAC|
+|*anonymous*|UPDATE_SAMPLE|
+|*anonymous*|UPDATE_SAMPLE_SENSITIVE|
+|*anonymous*|SMS_FULFILMENT|
+|*anonymous*|ACTION_RULE_SMS_REQUEST|
+|*anonymous*|EMAIL_FULFILMENT|
+|*anonymous*|ACTION_RULE_EMAIL_REQUEST|
+|*anonymous*|ACTION_RULE_SMS_CONFIRMATION|
+|*anonymous*|ACTION_RULE_EMAIL_CONFIRMATION|
+|*anonymous*|ERASE_DATA|
 
 <h2 id="tocS_NewQidLink">NewQidLink</h2>
 <!-- backwards compatibility -->
@@ -2080,23 +1844,25 @@ Data Transfer Object representing a census case container
 
 ```json
 {
-  "channel": "string",
+  "transactionId": "a11e3456-e89b-12d3-a456-426614174000",
+  "channel": "CONTACT_CENTRE",
   "qidLink": {
-    "caseId": "af51d69f-996a-4891-a745-aadfcdec225a",
-    "questionnaireId": "string"
-  },
-  "transactionId": "75906707-8c31-479c-b354-aa805c4cefbc"
+    "questionnaireId": "Q123456",
+    "caseId": "a11e3456-e89b-12d3-a456-426614174000"
+  }
 }
 
 ```
+
+Data Transfer Object for creating a new QID link to a case
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|channel|string|false|none|none|
-|qidLink|[QidLink](#schemaqidlink)|false|none|none|
-|transactionId|string(uuid)|false|none|none|
+|channel|string|false|none|Channel through which this link was created (e.g., CONTACT_CENTRE, PHONE, ONLINE)|
+|qidLink|[QidLink](#schemaqidlink)|false|none|Data Transfer Object representing the link between a Questionnaire ID (QID) and a Case|
+|transactionId|string(uuid)|false|none|Transaction ID for tracing this QID link request|
 
 <h2 id="tocS_QidLink">QidLink</h2>
 <!-- backwards compatibility -->
@@ -2107,16 +1873,18 @@ Data Transfer Object representing a census case container
 
 ```json
 {
-  "caseId": "af51d69f-996a-4891-a745-aadfcdec225a",
-  "questionnaireId": "string"
+  "questionnaireId": "Q123456",
+  "caseId": "a11e3456-e89b-12d3-a456-426614174000"
 }
 
 ```
+
+Data Transfer Object representing the link between a Questionnaire ID (QID) and a Case
 
 ### Properties
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|caseId|string(uuid)|false|none|none|
-|questionnaireId|string|false|none|none|
+|caseId|string(uuid)|false|none|UUID of the census case associated with this QID|
+|questionnaireId|string|true|none|Unique Questionnaire Identifier (QID) assigned to the respondent|
 
