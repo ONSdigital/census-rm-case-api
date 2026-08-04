@@ -74,7 +74,8 @@ Code Changes → Commit to main → GitHub Actions CI
 - Request/response schemas
 - Query parameters and path variables
 - HTTP status codes
-- Basic descriptions from `@OpenAPIDefinition` and `@Operation` annotations
+- Descriptions and schema metadata from `@OpenAPIDefinition`, `@Operation`,
+  `@Parameter`, `@ApiResponse`, and `@Schema` annotations
 
 ⏳ **Planned enhancements:**
 
