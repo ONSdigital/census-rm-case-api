@@ -1,21 +1,254 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "title" : "Case API Service",
     "description" : "Service for managing case data",
+    "title" : "Case API Service",
     "version" : "v1"
   },
   "servers" : [ {
     "url" : "http://localhost:8161"
   } ],
   "tags" : [ {
-    "name" : "Case Endpoint",
-    "description" : "Services for querying and retrieving census cases"
+    "description" : "Services for querying and retrieving census cases",
+    "name" : "Case Endpoint"
   } ],
   "paths" : {
+    "/cases/case-details/{caseId}" : {
+      "get" : {
+        "description" : "Retrieves complete detailed case attributes for a given case UUID.",
+        "operationId" : "getAllCaseDetailsByCaseId",
+        "parameters" : [ {
+          "description" : "Unique UUID of the case",
+          "in" : "path",
+          "name" : "caseId",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CaseDetailsDTO"
+                }
+              }
+            },
+            "description" : "Detailed case record retrieved successfully"
+          },
+          "404" : {
+            "description" : "Case ID not found"
+          }
+        },
+        "summary" : "Get full case details by Case ID",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/postcode/{postcode}" : {
+      "get" : {
+        "description" : "Retrieves all cases located within the specified postcode area.",
+        "operationId" : "getCasesByPostcode",
+        "parameters" : [ {
+          "description" : "Postal code identifier",
+          "in" : "path",
+          "name" : "postcode",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CaseContainerDTO"
+                  }
+                }
+              }
+            },
+            "description" : "Matching cases retrieved successfully"
+          }
+        },
+        "summary" : "Find cases by Postcode",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/qid/{qid}" : {
+      "get" : {
+        "description" : "Retrieves minimal case details linked to a specific questionnaire ID.",
+        "operationId" : "findCaseByQid",
+        "parameters" : [ {
+          "description" : "Questionnaire Identifier",
+          "in" : "path",
+          "name" : "qid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CaseContainerDTO"
+                }
+              }
+            },
+            "description" : "Case retrieved successfully"
+          },
+          "404" : {
+            "description" : "QID not found"
+          }
+        },
+        "summary" : "Find case by Questionnaire ID (QID)",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/ref/{reference}" : {
+      "get" : {
+        "description" : "Retrieves a single case container record using the numeric case reference.",
+        "operationId" : "findCaseByReference",
+        "parameters" : [ {
+          "description" : "Unique numeric case reference identifier",
+          "in" : "path",
+          "name" : "reference",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "description" : "Flag indicating whether to include case events",
+          "in" : "query",
+          "name" : "caseEvents",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CaseContainerDTO"
+                }
+              }
+            },
+            "description" : "Case record found successfully"
+          },
+          "404" : {
+            "description" : "Case reference not found"
+          }
+        },
+        "summary" : "Find case by Reference",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/uprn/{uprn}" : {
+      "get" : {
+        "description" : "Retrieves all cases associated with a Unique Property Reference Number.",
+        "operationId" : "findCasesByUPRN",
+        "parameters" : [ {
+          "description" : "Unique Property Reference Number",
+          "in" : "path",
+          "name" : "uprn",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Flag indicating whether to include case events",
+          "in" : "query",
+          "name" : "caseEvents",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "description" : "Filter results to valid addresses only",
+          "in" : "query",
+          "name" : "validAddressOnly",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CaseContainerDTO"
+                  }
+                }
+              }
+            },
+            "description" : "Matching cases retrieved successfully"
+          }
+        },
+        "summary" : "Find cases by UPRN",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/{id}" : {
+      "get" : {
+        "description" : "Retrieves a single case container record matching the specified UUID.",
+        "operationId" : "findCaseById",
+        "parameters" : [ {
+          "description" : "Unique UUID of the case",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "description" : "Flag indicating whether to include case events",
+          "in" : "query",
+          "name" : "caseEvents",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CaseContainerDTO"
+                }
+              }
+            },
+            "description" : "Case record found successfully"
+          },
+          "404" : {
+            "description" : "Case record not found"
+          },
+          "500" : {
+            "description" : "Internal server error occurred"
+          }
+        },
+        "summary" : "Find case by ID",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
     "/qids/link" : {
       "put" : {
-        "tags" : [ "qid-endpoint" ],
         "operationId" : "putQidLinkToCase",
         "requestBody" : {
           "content" : {
@@ -31,16 +264,16 @@
           "200" : {
             "description" : "OK"
           }
-        }
+        },
+        "tags" : [ "qid-endpoint" ]
       }
     },
     "/qids/{qid}" : {
       "get" : {
-        "tags" : [ "qid-endpoint" ],
         "operationId" : "getUacQidLinkByQid",
         "parameters" : [ {
-          "name" : "qid",
           "in" : "path",
+          "name" : "qid",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -48,316 +281,31 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK",
             "content" : {
               "*/*" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/QidLink"
                 }
               }
-            }
+            },
+            "description" : "OK"
           }
-        }
-      }
-    },
-    "/cases/{id}" : {
-      "get" : {
-        "tags" : [ "Case Endpoint" ],
-        "summary" : "Find case by ID",
-        "description" : "Retrieves a single case container record matching the specified UUID.",
-        "operationId" : "findCaseById",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Unique UUID of the case",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "format" : "uuid"
-          }
-        }, {
-          "name" : "caseEvents",
-          "in" : "query",
-          "description" : "Flag indicating whether to include case events",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean",
-            "default" : false
-          }
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Internal server error occurred"
-          },
-          "404" : {
-            "description" : "Case record not found"
-          },
-          "200" : {
-            "description" : "Case record found successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/CaseContainerDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/cases/uprn/{uprn}" : {
-      "get" : {
-        "tags" : [ "Case Endpoint" ],
-        "summary" : "Find cases by UPRN",
-        "description" : "Retrieves all cases associated with a Unique Property Reference Number.",
-        "operationId" : "findCasesByUPRN",
-        "parameters" : [ {
-          "name" : "uprn",
-          "in" : "path",
-          "description" : "Unique Property Reference Number",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "caseEvents",
-          "in" : "query",
-          "description" : "Flag indicating whether to include case events",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean",
-            "default" : false
-          }
-        }, {
-          "name" : "validAddressOnly",
-          "in" : "query",
-          "description" : "Filter results to valid addresses only",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean",
-            "default" : false
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Matching cases retrieved successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/CaseContainerDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/cases/ref/{reference}" : {
-      "get" : {
-        "tags" : [ "Case Endpoint" ],
-        "summary" : "Find case by Reference",
-        "description" : "Retrieves a single case container record using the numeric case reference.",
-        "operationId" : "findCaseByReference",
-        "parameters" : [ {
-          "name" : "reference",
-          "in" : "path",
-          "description" : "Unique numeric case reference identifier",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }, {
-          "name" : "caseEvents",
-          "in" : "query",
-          "description" : "Flag indicating whether to include case events",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean",
-            "default" : false
-          }
-        } ],
-        "responses" : {
-          "404" : {
-            "description" : "Case reference not found"
-          },
-          "200" : {
-            "description" : "Case record found successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/CaseContainerDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/cases/qid/{qid}" : {
-      "get" : {
-        "tags" : [ "Case Endpoint" ],
-        "summary" : "Find case by Questionnaire ID (QID)",
-        "description" : "Retrieves minimal case details linked to a specific questionnaire ID.",
-        "operationId" : "findCaseByQid",
-        "parameters" : [ {
-          "name" : "qid",
-          "in" : "path",
-          "description" : "Questionnaire Identifier",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "404" : {
-            "description" : "QID not found"
-          },
-          "200" : {
-            "description" : "Case retrieved successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/CaseContainerDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/cases/postcode/{postcode}" : {
-      "get" : {
-        "tags" : [ "Case Endpoint" ],
-        "summary" : "Find cases by Postcode",
-        "description" : "Retrieves all cases located within the specified postcode area.",
-        "operationId" : "getCasesByPostcode",
-        "parameters" : [ {
-          "name" : "postcode",
-          "in" : "path",
-          "description" : "Postal code identifier",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Matching cases retrieved successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/CaseContainerDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/cases/case-details/{caseId}" : {
-      "get" : {
-        "tags" : [ "Case Endpoint" ],
-        "summary" : "Get full case details by Case ID",
-        "description" : "Retrieves complete detailed case attributes for a given case UUID.",
-        "operationId" : "getAllCaseDetailsByCaseId",
-        "parameters" : [ {
-          "name" : "caseId",
-          "in" : "path",
-          "description" : "Unique UUID of the case",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "format" : "uuid"
-          }
-        } ],
-        "responses" : {
-          "404" : {
-            "description" : "Case ID not found"
-          },
-          "200" : {
-            "description" : "Detailed case record retrieved successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/CaseDetailsDTO"
-                }
-              }
-            }
-          }
-        }
+        },
+        "tags" : [ "qid-endpoint" ]
       }
     }
   },
   "components" : {
     "schemas" : {
-      "NewQidLink" : {
-        "type" : "object",
-        "properties" : {
-          "transactionId" : {
-            "type" : "string",
-            "format" : "uuid"
-          },
-          "channel" : {
-            "type" : "string"
-          },
-          "qidLink" : {
-            "$ref" : "#/components/schemas/QidLink"
-          }
-        }
-      },
-      "QidLink" : {
-        "type" : "object",
-        "properties" : {
-          "questionnaireId" : {
-            "type" : "string"
-          },
-          "caseId" : {
-            "type" : "string",
-            "format" : "uuid"
-          }
-        }
-      },
       "CaseContainerDTO" : {
         "required" : [ "caseRef", "id" ],
         "type" : "object",
         "properties" : {
-          "caseRef" : {
-            "type" : "string",
-            "description" : "Unique numeric reference for the case",
-            "example" : "100000000000001"
-          },
-          "estabType" : {
+          "abpCode" : {
             "type" : "string"
           },
-          "uprn" : {
+          "addressLevel" : {
             "type" : "string"
-          },
-          "estabUprn" : {
-            "type" : "string"
-          },
-          "collectionExerciseId" : {
-            "type" : "string",
-            "format" : "uuid"
-          },
-          "surveyType" : {
-            "type" : "string"
-          },
-          "addressType" : {
-            "type" : "string"
-          },
-          "caseType" : {
-            "type" : "string"
-          },
-          "createdDateTime" : {
-            "type" : "string",
-            "format" : "date-time"
           },
           "addressLine1" : {
             "type" : "string"
@@ -368,44 +316,7 @@
           "addressLine3" : {
             "type" : "string"
           },
-          "townName" : {
-            "type" : "string"
-          },
-          "postcode" : {
-            "type" : "string"
-          },
-          "organisationName" : {
-            "type" : "string"
-          },
-          "addressLevel" : {
-            "type" : "string"
-          },
-          "abpCode" : {
-            "type" : "string"
-          },
-          "region" : {
-            "type" : "string"
-          },
-          "latitude" : {
-            "type" : "string"
-          },
-          "longitude" : {
-            "type" : "string"
-          },
-          "oa" : {
-            "type" : "string"
-          },
-          "lsoa" : {
-            "type" : "string"
-          },
-          "lastUpdated" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "msoa" : {
-            "type" : "string"
-          },
-          "lad" : {
+          "addressType" : {
             "type" : "string"
           },
           "caseEvents" : {
@@ -414,70 +325,90 @@
               "$ref" : "#/components/schemas/CaseEventDTO"
             }
           },
-          "secureEstablishment" : {
-            "type" : "boolean"
+          "caseRef" : {
+            "type" : "string",
+            "description" : "Unique numeric reference for the case",
+            "example" : "100000000000001"
           },
-          "invalid" : {
-            "type" : "boolean"
+          "caseType" : {
+            "type" : "string"
+          },
+          "collectionExerciseId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "createdDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "estabType" : {
+            "type" : "string"
+          },
+          "estabUprn" : {
+            "type" : "string"
           },
           "id" : {
             "type" : "string",
             "description" : "Unique case UUID identifier",
             "format" : "uuid",
             "example" : "a11e3456-e89b-12d3-a456-426614174000"
+          },
+          "invalid" : {
+            "type" : "boolean"
+          },
+          "lad" : {
+            "type" : "string"
+          },
+          "lastUpdated" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "latitude" : {
+            "type" : "string"
+          },
+          "longitude" : {
+            "type" : "string"
+          },
+          "lsoa" : {
+            "type" : "string"
+          },
+          "msoa" : {
+            "type" : "string"
+          },
+          "oa" : {
+            "type" : "string"
+          },
+          "organisationName" : {
+            "type" : "string"
+          },
+          "postcode" : {
+            "type" : "string"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "secureEstablishment" : {
+            "type" : "boolean"
+          },
+          "surveyType" : {
+            "type" : "string"
+          },
+          "townName" : {
+            "type" : "string"
+          },
+          "uprn" : {
+            "type" : "string"
           }
         },
         "description" : "Data Transfer Object representing a census case container"
       },
-      "CaseEventDTO" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string",
-            "format" : "uuid"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "eventType" : {
-            "type" : "string",
-            "enum" : [ "NEW_CASE", "RECEIPT", "REFUSAL", "INVALID_CASE", "EQ_LAUNCH", "UAC_AUTHENTICATION", "PRINT_FULFILMENT", "EXPORT_FILE", "DEACTIVATE_UAC", "UPDATE_SAMPLE", "UPDATE_SAMPLE_SENSITIVE", "SMS_FULFILMENT", "ACTION_RULE_SMS_REQUEST", "EMAIL_FULFILMENT", "ACTION_RULE_EMAIL_REQUEST", "ACTION_RULE_SMS_CONFIRMATION", "ACTION_RULE_EMAIL_CONFIRMATION", "ERASE_DATA" ]
-          },
-          "createdDateTime" : {
-            "type" : "string",
-            "format" : "date-time"
-          }
-        }
-      },
       "CaseDetailsDTO" : {
         "type" : "object",
         "properties" : {
-          "caseRef" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "uprn" : {
-            "type" : "string"
-          },
-          "estabUprn" : {
-            "type" : "string"
-          },
-          "caseType" : {
-            "type" : "string"
-          },
-          "addressType" : {
-            "type" : "string"
-          },
-          "estabType" : {
-            "type" : "string"
-          },
-          "addressLevel" : {
-            "type" : "string"
-          },
           "abpCode" : {
             "type" : "string"
           },
-          "organisationName" : {
+          "addressLevel" : {
             "type" : "string"
           },
           "addressLine1" : {
@@ -489,53 +420,21 @@
           "addressLine3" : {
             "type" : "string"
           },
-          "townName" : {
+          "addressType" : {
             "type" : "string"
           },
-          "postcode" : {
+          "caseRef" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "caseType" : {
             "type" : "string"
           },
-          "latitude" : {
-            "type" : "string"
-          },
-          "longitude" : {
-            "type" : "string"
-          },
-          "oa" : {
-            "type" : "string"
-          },
-          "lsoa" : {
-            "type" : "string"
-          },
-          "msoa" : {
-            "type" : "string"
-          },
-          "lad" : {
-            "type" : "string"
-          },
-          "region" : {
-            "type" : "string"
-          },
-          "htcWillingness" : {
-            "type" : "string"
-          },
-          "htcDigital" : {
-            "type" : "string"
-          },
-          "fieldCoordinatorId" : {
-            "type" : "string"
-          },
-          "fieldOfficerId" : {
-            "type" : "string"
-          },
-          "treatmentCode" : {
-            "type" : "string"
-          },
-          "ceExpectedCapacity" : {
+          "ceActualResponses" : {
             "type" : "integer",
             "format" : "int32"
           },
-          "ceActualResponses" : {
+          "ceExpectedCapacity" : {
             "type" : "integer",
             "format" : "int32"
           },
@@ -547,11 +446,67 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "estabType" : {
+            "type" : "string"
+          },
+          "estabUprn" : {
+            "type" : "string"
+          },
           "events" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/CaseDetailsEventDTO"
             }
+          },
+          "fieldCoordinatorId" : {
+            "type" : "string"
+          },
+          "fieldOfficerId" : {
+            "type" : "string"
+          },
+          "htcDigital" : {
+            "type" : "string"
+          },
+          "htcWillingness" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "invalid" : {
+            "type" : "boolean"
+          },
+          "lad" : {
+            "type" : "string"
+          },
+          "lastUpdated" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "latitude" : {
+            "type" : "string"
+          },
+          "longitude" : {
+            "type" : "string"
+          },
+          "lsoa" : {
+            "type" : "string"
+          },
+          "msoa" : {
+            "type" : "string"
+          },
+          "oa" : {
+            "type" : "string"
+          },
+          "organisationName" : {
+            "type" : "string"
+          },
+          "postcode" : {
+            "type" : "string"
+          },
+          "printBatch" : {
+            "type" : "string"
           },
           "receiptReceived" : {
             "type" : "boolean"
@@ -560,18 +515,76 @@
             "type" : "string",
             "enum" : [ "HARD_REFUSAL", "EXTRAORDINARY_REFUSAL", "SOFT_REFUSAL", "WITHDRAWAL_REFUSAL" ]
           },
-          "invalid" : {
-            "type" : "boolean"
-          },
-          "lastUpdated" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "printBatch" : {
+          "region" : {
             "type" : "string"
           },
           "surveyLaunched" : {
             "type" : "boolean"
+          },
+          "townName" : {
+            "type" : "string"
+          },
+          "treatmentCode" : {
+            "type" : "string"
+          },
+          "uprn" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CaseDetailsEventDTO" : {
+        "type" : "object",
+        "properties" : {
+          "eventChannel" : {
+            "type" : "string"
+          },
+          "eventDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "eventDescription" : {
+            "type" : "string"
+          },
+          "eventPayload" : {
+            "type" : "string"
+          },
+          "eventSource" : {
+            "type" : "string"
+          },
+          "eventTransactionId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "eventType" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "messageTimestamp" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "rmEventProcessed" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "CaseEventDTO" : {
+        "type" : "object",
+        "properties" : {
+          "createdDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "eventType" : {
+            "type" : "string",
+            "enum" : [ "NEW_CASE", "RECEIPT", "REFUSAL", "INVALID_CASE", "EQ_LAUNCH", "UAC_AUTHENTICATION", "PRINT_FULFILMENT", "EXPORT_FILE", "DEACTIVATE_UAC", "UPDATE_SAMPLE", "UPDATE_SAMPLE_SENSITIVE", "SMS_FULFILMENT", "ACTION_RULE_SMS_REQUEST", "EMAIL_FULFILMENT", "ACTION_RULE_EMAIL_REQUEST", "ACTION_RULE_SMS_CONFIRMATION", "ACTION_RULE_EMAIL_CONFIRMATION", "ERASE_DATA" ]
           },
           "id" : {
             "type" : "string",
@@ -579,43 +592,30 @@
           }
         }
       },
-      "CaseDetailsEventDTO" : {
+      "NewQidLink" : {
         "type" : "object",
         "properties" : {
-          "id" : {
+          "channel" : {
+            "type" : "string"
+          },
+          "qidLink" : {
+            "$ref" : "#/components/schemas/QidLink"
+          },
+          "transactionId" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }
+      },
+      "QidLink" : {
+        "type" : "object",
+        "properties" : {
+          "caseId" : {
             "type" : "string",
             "format" : "uuid"
           },
-          "eventType" : {
+          "questionnaireId" : {
             "type" : "string"
-          },
-          "eventDescription" : {
-            "type" : "string"
-          },
-          "eventDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "eventChannel" : {
-            "type" : "string"
-          },
-          "eventTransactionId" : {
-            "type" : "string",
-            "format" : "uuid"
-          },
-          "rmEventProcessed" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "eventSource" : {
-            "type" : "string"
-          },
-          "eventPayload" : {
-            "type" : "string"
-          },
-          "messageTimestamp" : {
-            "type" : "string",
-            "format" : "date-time"
           }
         }
       }

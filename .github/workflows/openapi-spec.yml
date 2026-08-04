@@ -11,51 +11,83 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository Code
+      - name: Checkout Repository Code.
         uses: actions/checkout@v5
 
-      - name: Set up JDK 21 Runtime
+      - name: Set up JDK 21 Runtime.
         uses: actions/setup-java@v5
         with:
           java-version: "21"
           distribution: "temurin"
           cache: "maven"
 
-      - name: Checkout common entity model
+      # Node is required by the doc converters run from DocumentationGeneratorIT.
+      # Pinned explicitly because @redocly/cli 2.x requires Node >= 22.12 — we no
+      # longer rely on whatever happens to be preinstalled on the runner image.
+      - name: Set up Node.js Runtime.
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Checkout common entity model.
         uses: actions/checkout@v5
         with:
           repository: ONSdigital/census-rm-common-entity-model
           path: deps/census-rm-common-entity-model
 
-      - name: Install common entity model to local Maven repo
+      - name: Install common entity model to local Maven repo.
         run: mvn -B -f deps/census-rm-common-entity-model/pom.xml clean install -DskipTests
 
-      - name: Checkout shared sample validation
+      - name: Checkout shared sample validation.
         uses: actions/checkout@v5
         with:
           repository: ONSdigital/census-rm-shared-sample-validation
           path: deps/census-rm-shared-sample-validation
 
-      - name: Install shared sample validation to local Maven repo
+      - name: Install shared sample validation to local Maven repo.
         run: mvn -B -f deps/census-rm-shared-sample-validation/pom.xml clean install -DskipTests
 
-      - name: Verify Spotless Formatting and PMD Rules
+      - name: Verify Spotless Formatting and PMD Rules.
         run: mvn spotless:check pmd:check
 
-      - name: Build Package and Extract OpenAPI Spec
+      - name: Build Package and Extract OpenAPI Spec.
         run: mvn clean verify -Dcontainer.cli=docker
 
-      - name: Validate OpenAPI Specification
+      # Structural OpenAPI lint (broken refs, invalid schemas, missing responses),
+      # not just a JSON syntax check. Version MUST stay in sync with the
+      # REDOCLY_CLI constant in DocumentationGeneratorIT.java.
+      - name: Validate OpenAPI JSON and derived docs.
         run: |
-          if [ ! -f api-docs/openapi.json ]; then
-            echo "ERROR: openapi.json was not generated"
+          for f in openapi.json openapi.md openapi.html; do
+            if [ ! -f "api-docs/$f" ]; then
+              echo "::error::api-docs/$f was not generated"
+              exit 1
+            fi
+          done
+          npx --yes @redocly/cli@2.43.2 lint api-docs/openapi.json
+          echo "OpenAPI spec passed lint"
+
+      # The contract gate: api-docs/openapi.json is source of truth and MUST be
+      # committed in sync with endpoint/model changes.
+      - name: Fail if committed OpenAPI JSON is stale.
+        run: |
+          if ! git ls-files --error-unmatch api-docs/openapi.json >/dev/null 2>&1; then
+            echo "::error::api-docs/openapi.json must be committed to the repository"
             exit 1
           fi
-          # Basic JSON validation
-          python3 -m json.tool api-docs/openapi.json > /dev/null || exit 1
-          echo "✓ OpenAPI spec is valid JSON"
 
-      - name: Publish Generated OpenAPI Specification Artifacts
+          if [ -n "$(git status --porcelain -- api-docs/openapi.json)" ]; then
+            echo "::error::Committed api-docs/openapi.json does not match freshly generated output."
+            echo "Out-of-sync files:"
+            git status --porcelain -- api-docs/openapi.json
+            git --no-pager diff -- api-docs/openapi.json
+            echo ""
+            echo "Fix: run 'mvn clean verify' locally and commit the regenerated api-docs/openapi.json"
+            exit 1
+          fi
+          echo "Committed OpenAPI JSON is in sync with the code"
+
+      - name: Publish Generated OpenAPI Specification Artifacts.
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -63,12 +95,8 @@ jobs:
           path: api-docs/
           if-no-files-found: warn
 
-      - name: Print Artifact Download Info
+      - name: Print Artifact Download Info.
         if: always()
         run: |
-          echo "Generated artifacts:"
-          echo "  - openapi.json (JSON specification - machine readable)"
-          echo "  - openapi.md (Markdown documentation)"
-          echo "  - openapi.html (Interactive ReDoc HTML)"
-          echo ""
-          echo "Download from GitHub Artifacts tab for integration teams."
+          echo "Source of truth: endpoint/model code + committed api-docs/openapi.json"
+          echo "Derived artifacts: api-docs/openapi.md and api-docs/openapi.html"

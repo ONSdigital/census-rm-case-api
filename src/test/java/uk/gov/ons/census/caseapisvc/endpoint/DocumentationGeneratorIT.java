@@ -2,25 +2,26 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class DocumentationGeneratorIT {
+
+  /*Both converters are version-pinned so output is reproducible across machines and time.
+  Keep REDOCLY_CLI in sync with the lint step in .github/workflows/openapi-spec.yml.
+  Note: @redocly/cli 2.x requires Node.js >= 22.12.*/
+  private static final String WIDDERSHINS = "widdershins@4.0.1";
+  private static final String REDOCLY_CLI = "@redocly/cli@2.43.2";
+
   @LocalServerPort private int port;
 
   /*
@@ -40,27 +41,20 @@ public class DocumentationGeneratorIT {
     String apiSpec = restTemplate.getForObject(url, String.class);
     assertThat(apiSpec).isNotBlank();
 
-    // Normalize JSON to ensure consistent formatting and property ordering
-    String normalizedSpec = normalizeJson(apiSpec);
-
-    try (FileOutputStream fos = new FileOutputStream("api-docs/openapi.json")) {
-      fos.write(normalizedSpec.getBytes(StandardCharsets.UTF_8));
-    }
+    Path outputDir = Path.of("api-docs");
+    Files.createDirectories(outputDir);
+    // Append "\n" (not System.lineSeparator()) so the trailing byte is identical on every OS
+    Files.writeString(outputDir.resolve("openapi.json"), apiSpec + "\n", StandardCharsets.UTF_8);
 
     int mdExitStatus =
         runCommand(
-            "npx",
-            "--yes",
-            "widdershins@4.0.1",
-            "api-docs/openapi.json",
-            "-o",
-            "api-docs/openapi.md");
+            "npx", "--yes", WIDDERSHINS, "api-docs/openapi.json", "-o", "api-docs/openapi.md");
 
     int htmlExitStatus =
         runCommand(
             "npx",
             "--yes",
-            "@redocly/cli",
+            REDOCLY_CLI,
             "build-docs",
             "api-docs/openapi.json",
             "-o",
@@ -68,22 +62,6 @@ public class DocumentationGeneratorIT {
 
     assertThat(mdExitStatus).isZero();
     assertThat(htmlExitStatus).isZero();
-  }
-
-  /**
-   * Normalize JSON for consistent output across builds. - Orders keys alphabetically - Removes null
-   * values - Pretty-prints with 2-space indentation
-   *
-   * <p>This ensures git diffs only show actual API changes, not formatting differences.
-   */
-  private String normalizeJson(String jsonString) throws IOException {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-    mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
-    JsonNode jsonNode = mapper.readTree(jsonString);
-    return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
   }
 
   private int runCommand(String... command) throws IOException, InterruptedException {

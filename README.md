@@ -15,10 +15,10 @@ on accessing and using the OpenAPI specifications.
 The Case API automatically generates OpenAPI documentation from the codebase.
 Three formats are published on every commit:
 
-- **openapi.json** - Machine-readable API contract (for API gateways and
-  client code generation)
-- **openapi.md** - Markdown documentation (for wikis and readmes)
-- **openapi.html** - Interactive ReDoc explorer (open in any browser)
+- **openapi.json** - Machine-readable API contract (source of truth, committed
+  in `api-docs/`) for API gateways and client code generation
+- **openapi.md** - Markdown documentation (derived from `openapi.json`)
+- **openapi.html** - Interactive ReDoc explorer (derived from `openapi.json`)
 
 All artifacts are available in the GitHub Actions CI/CD pipeline under
 `rm-case-api-openapi-specs` artifact.
@@ -28,7 +28,7 @@ All artifacts are available in the GitHub Actions CI/CD pipeline under
 - OpenAPI specs are **auto-generated** from annotated endpoints (no manual
   maintenance)
 - Specs are generated during integration tests via `DocumentationGeneratorIT`
-- JSON is normalized for consistent git diffs (only actual API changes show)
+- CI fails if committed `api-docs/openapi.json` is out-of-sync with generated output
 - To enhance documentation, add Swagger annotations (see
   [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for examples)
 - To generate locally: run `make build` and open `api-docs/openapi.html`
@@ -49,9 +49,12 @@ need it locally if running `make build` manually.
 
 ### OpenAPI Specifications
 
-The OpenAPI v3 spec is generated automatically and published to GitHub
-Artifacts. The latest successful main-branch artifact is the source of truth
-for integration teams.
+The OpenAPI v3 spec is generated automatically by integration tests.
+
+**Source of truth:** committed `api-docs/openapi.json` in this repository.
+
+`openapi.md` and `openapi.html` are generated from that JSON and published as
+GitHub Actions artifacts for easier consumption.
 
 **Local (after running `make build`):**
 
@@ -63,6 +66,8 @@ for integration teams.
 
 - Download from GitHub Actions: `rm-case-api-openapi-specs` artifact
 - Retained for 90 days
+- Contract gate: CI fails if generated `api-docs/openapi.json` differs from
+  the committed file
 
 ---
 
