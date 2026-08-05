@@ -55,7 +55,9 @@ public class CaseDetailsDTO {
 
   private String region;
 
-  private String htc;
+  private String htcWillingness;
+
+  private String htcDigital;
 
   private String fieldCoordinatorId;
 
