@@ -8,6 +8,11 @@ on:
 
 jobs:
   generate-openapi-spec:
+    # TODO: This job is temporarily disabled because it depends on the ONSdigital/census-rm-common-entity-model
+    # repository being accessible (currently returns 404 - Not Found). This will be re-enabled once the
+    # dependent work to publish artifacts to GCR Artifactory is completed (see related <WIP> ticket).
+    # To re-enable: remove the `if: false` line below.
+    if: false
     runs-on: ubuntu-latest
 
     steps:
