@@ -323,28 +323,32 @@
         "properties" : {
           "abpCode" : {
             "type" : "string",
-            "description" : "Address Based Priority code"
+            "description" : "AddressBase classification code",
+            "example" : "RD06"
           },
           "addressLevel" : {
             "type" : "string",
-            "description" : "Address level classification"
+            "description" : "Address level classification (e.g., E, U (signifying Establishment and Unit))",
+            "example" : "U"
           },
           "addressLine1" : {
             "type" : "string",
-            "description" : "First line of street address"
+            "description" : "First address line",
+            "example" : "Flat 51 Francombe House"
           },
           "addressLine2" : {
             "type" : "string",
-            "description" : "Second line of street address"
+            "description" : "Second address line",
+            "example" : "Commercial Road"
           },
           "addressLine3" : {
             "type" : "string",
-            "description" : "Third line of street address"
+            "description" : "Third address line"
           },
           "addressType" : {
             "type" : "string",
-            "description" : "Type of address (e.g., HOUSEHOLD, COMMUNAL, OTHER)",
-            "example" : "HOUSEHOLD"
+            "description" : "Residential address frame type (e.g., HH, CE)",
+            "example" : "HH"
           },
           "caseEvents" : {
             "type" : "array",
@@ -360,12 +364,14 @@
           },
           "caseType" : {
             "type" : "string",
-            "description" : "Case type classification (e.g., NEW, REPLACEMENT)"
+            "description" : "Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.",
+            "example" : "HH"
           },
           "collectionExerciseId" : {
             "type" : "string",
             "description" : "Collection Exercise UUID identifier",
-            "format" : "uuid"
+            "format" : "uuid",
+            "example" : "b22e3456-e89b-12d3-a456-426614174000"
           },
           "createdDateTime" : {
             "type" : "string",
@@ -375,11 +381,13 @@
           },
           "estabType" : {
             "type" : "string",
-            "description" : "Establishment type code"
+            "description" : "Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)",
+            "example" : "HOUSEHOLD"
           },
           "estabUprn" : {
             "type" : "string",
-            "description" : "Establishment UPRN for non-household establishments"
+            "description" : "Establishment UPRN for non-household establishments",
+            "example" : "10008677190"
           },
           "id" : {
             "type" : "string",
@@ -394,7 +402,8 @@
           },
           "lad" : {
             "type" : "string",
-            "description" : "Local Authority District code"
+            "description" : "Local Authority District code",
+            "example" : "E06000023"
           },
           "lastUpdated" : {
             "type" : "string",
@@ -414,24 +423,28 @@
           },
           "lsoa" : {
             "type" : "string",
-            "description" : "Lower Layer Super Output Area code"
+            "description" : "Lower Layer Super Output Area grid reference",
+            "example" : "E01014540"
           },
           "msoa" : {
             "type" : "string",
-            "description" : "Middle Layer Super Output Area code"
+            "description" : "Middle Layer Super Output Area grid reference",
+            "example" : "E02003043"
           },
           "oa" : {
             "type" : "string",
-            "description" : "Output Area code"
+            "description" : "Output Area grid reference",
+            "example" : "E00073438"
           },
           "organisationName" : {
             "type" : "string",
-            "description" : "Name of organization for establishment addresses"
+            "description" : "Name of the organisation at the address",
+            "example" : "Acme Corporation"
           },
           "postcode" : {
             "type" : "string",
             "description" : "UK postal code",
-            "example" : "AB12CD"
+            "example" : "XX1 0XX"
           },
           "region" : {
             "type" : "string",
@@ -444,16 +457,18 @@
           },
           "surveyType" : {
             "type" : "string",
-            "description" : "Type of survey (e.g., CENSUS, OTHER_SURVEY)"
+            "description" : "Type of survey (e.g., CENSUS, CCS)",
+            "example" : "CENSUS"
           },
           "townName" : {
             "type" : "string",
-            "description" : "Town or city name"
+            "description" : "Town or city name",
+            "example" : "Windleybury"
           },
           "uprn" : {
             "type" : "string",
             "description" : "Unique Property Reference Number",
-            "example" : "123456789"
+            "example" : "10008677190"
           }
         },
         "description" : "Data Transfer Object representing a census case container",
@@ -462,7 +477,7 @@
           "id" : "a11e3456-e89b-12d3-a456-426614174000",
           "uprn" : "123456789",
           "postcode" : "AB12CD",
-          "addressType" : "HOUSEHOLD"
+          "addressType" : "HH"
         }
       },
       "CaseDetailsDTO" : {
@@ -471,27 +486,32 @@
         "properties" : {
           "abpCode" : {
             "type" : "string",
-            "description" : "Address Based Priority code"
+            "description" : "AddressBase classification code",
+            "example" : "RD06"
           },
           "addressLevel" : {
             "type" : "string",
-            "description" : "Address level classification"
+            "description" : "Address level classification (e.g., E, U (signifying Establishment and Unit))",
+            "example" : "U"
           },
           "addressLine1" : {
             "type" : "string",
-            "description" : "First line of street address"
+            "description" : "First address line",
+            "example" : "Flat 51 Francombe House"
           },
           "addressLine2" : {
             "type" : "string",
-            "description" : "Second line of street address"
+            "description" : "Second address line",
+            "example" : "Commercial Road"
           },
           "addressLine3" : {
             "type" : "string",
-            "description" : "Third line of street address"
+            "description" : "Third address line"
           },
           "addressType" : {
             "type" : "string",
-            "description" : "Type of address (e.g., HOUSEHOLD, COMMUNAL)"
+            "description" : "Residential address frame type (e.g., HH, CE)",
+            "example" : "HH"
           },
           "caseRef" : {
             "type" : "integer",
@@ -501,22 +521,26 @@
           },
           "caseType" : {
             "type" : "string",
-            "description" : "Case type classification"
+            "description" : "Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.",
+            "example" : "HH"
           },
           "ceActualResponses" : {
             "type" : "integer",
             "description" : "Actual number of responses received for Communal Establishment",
-            "format" : "int32"
+            "format" : "int32",
+            "example" : 1504
           },
           "ceExpectedCapacity" : {
             "type" : "integer",
-            "description" : "Expected capacity for Communal Establishment",
-            "format" : "int32"
+            "description" : "Expected resident capacity (bedspaces) of communal establishments (CE) without unit level addresses.",
+            "format" : "int32",
+            "example" : 1505
           },
           "collectionExerciseId" : {
             "type" : "string",
             "description" : "Collection Exercise UUID identifier",
-            "format" : "uuid"
+            "format" : "uuid",
+            "example" : "b22e3456-e89b-12d3-a456-426614174000"
           },
           "createdDateTime" : {
             "type" : "string",
@@ -526,11 +550,13 @@
           },
           "estabType" : {
             "type" : "string",
-            "description" : "Establishment type code"
+            "description" : "Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)",
+            "example" : "HOUSEHOLD"
           },
           "estabUprn" : {
             "type" : "string",
-            "description" : "Establishment UPRN for non-household establishments"
+            "description" : "Establishment UPRN for non-household establishments",
+            "example" : "10008677190"
           },
           "events" : {
             "type" : "array",
@@ -541,19 +567,23 @@
           },
           "fieldCoordinatorId" : {
             "type" : "string",
-            "description" : "Field Coordinator identifier for the assigned case"
+            "description" : "Field Coordinator identifier for the assigned case",
+            "example" : "FC12344"
           },
           "fieldOfficerId" : {
             "type" : "string",
-            "description" : "Field Officer identifier for the assigned case"
+            "description" : "Field Officer identifier for the assigned case",
+            "example" : "FO12345"
           },
           "htcDigital" : {
             "type" : "string",
-            "description" : "Household Telephone Contact digital indicator"
+            "description" : "Hard to Count Index - Digital (1-5) indicator, where 1 is least digital and 5 is most digital",
+            "example" : "4"
           },
           "htcWillingness" : {
             "type" : "string",
-            "description" : "Household Telephone Contact willingness indicator"
+            "description" : "Hard to Count Index - Willingness (1-5) indicator, where 1 is least willing and 5 is most willing",
+            "example" : "3"
           },
           "id" : {
             "type" : "string",
@@ -563,11 +593,13 @@
           },
           "invalid" : {
             "type" : "boolean",
-            "description" : "Flag indicating if the case record is marked as invalid"
+            "description" : "Flag indicating if the case record is marked as invalid",
+            "example" : false
           },
           "lad" : {
             "type" : "string",
-            "description" : "Local Authority District code"
+            "description" : "Local Authority District code",
+            "example" : "E06000023"
           },
           "lastUpdated" : {
             "type" : "string",
@@ -577,40 +609,48 @@
           },
           "latitude" : {
             "type" : "string",
-            "description" : "Geographic latitude coordinate"
+            "description" : "Geographic latitude coordinate",
+            "example" : "51.5074"
           },
           "longitude" : {
             "type" : "string",
-            "description" : "Geographic longitude coordinate"
+            "description" : "Geographic longitude coordinate",
+            "example" : "-0.1278"
           },
           "lsoa" : {
             "type" : "string",
-            "description" : "Lower Layer Super Output Area code"
+            "description" : "Lower Layer Super Output Area grid reference",
+            "example" : "E01014540"
           },
           "msoa" : {
             "type" : "string",
-            "description" : "Middle Layer Super Output Area code"
+            "description" : "Middle Layer Super Output Area grid reference",
+            "example" : "E02003043"
           },
           "oa" : {
             "type" : "string",
-            "description" : "Output Area code"
+            "description" : "Output Area grid reference",
+            "example" : "E00073438"
           },
           "organisationName" : {
             "type" : "string",
-            "description" : "Name of organization for establishment addresses"
+            "description" : "Name of the organisation at the address",
+            "example" : "Acme Corporation"
           },
           "postcode" : {
             "type" : "string",
             "description" : "UK postal code",
-            "example" : "AB12CD"
+            "example" : "XX1 0XX"
           },
           "printBatch" : {
             "type" : "string",
-            "description" : "Print batch identifier for printed case materials"
+            "description" : "Print batch identifier for household initial contact material",
+            "example" : "15"
           },
           "receiptReceived" : {
             "type" : "boolean",
-            "description" : "Flag indicating if receipt has been received from respondent"
+            "description" : "Flag indicating if receipt has been received from respondent",
+            "example" : true
           },
           "refusalReceived" : {
             "type" : "string",
@@ -620,24 +660,28 @@
           },
           "region" : {
             "type" : "string",
-            "description" : "Administrative region code"
+            "description" : "Administrative region code",
+            "example" : "E12000009"
           },
           "surveyLaunched" : {
             "type" : "boolean",
-            "description" : "Flag indicating if survey has been launched to respondent"
+            "description" : "Flag indicating if survey has been launched to respondent",
+            "example" : true
           },
           "townName" : {
             "type" : "string",
-            "description" : "Town or city name"
+            "description" : "Town or city name",
+            "example" : "Windleybury"
           },
           "treatmentCode" : {
             "type" : "string",
-            "description" : "Treatment code indicating special handling"
+            "description" : "Treatment code (one of the appropriate ones for the region (e.g., HH_PSCE, HH_PSLE, HH_PNCE, HH_PNLE, HH_OSCE, HH_OSLE, HH_ONCE, HH_ONLE, HH_PSCW, HH_PSLW, HH_PNCW, HH_PN, HH_OSCW, HH_OSLW, HH_ONCW, HH_ONLW, HH_OGXS, HH_OSXS, HH_PBXN, HH_OAXN, HH_OBXN)) indicating special handling or processing instructions for the case",
+            "example" : "HH_PSCE"
           },
           "uprn" : {
             "type" : "string",
             "description" : "Unique Property Reference Number",
-            "example" : "123456789"
+            "example" : "10008677190"
           }
         },
         "description" : "Comprehensive Data Transfer Object containing detailed case attributes",
@@ -675,12 +719,14 @@
           },
           "eventSource" : {
             "type" : "string",
-            "description" : "Source system that generated the event (e.g., UAC_SERVICE, PRINT_SERVICE)"
+            "description" : "Source system that generated the event (e.g., UAC_SERVICE, PRINT_SERVICE)",
+            "example" : "UAC_SERVICE"
           },
           "eventTransactionId" : {
             "type" : "string",
             "description" : "Unique transaction identifier for this event",
-            "format" : "uuid"
+            "format" : "uuid",
+            "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
           },
           "eventType" : {
             "type" : "string",

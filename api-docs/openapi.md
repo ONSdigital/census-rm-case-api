@@ -740,7 +740,7 @@ Retrieves all cases located within the specified postcode area.
     "id": "a11e3456-e89b-12d3-a456-426614174000",
     "uprn": "123456789",
     "postcode": "AB12CD",
-    "addressType": "HOUSEHOLD"
+    "addressType": "HH"
   }
 ]
 ```
@@ -758,22 +758,22 @@ Status Code **200**
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |*anonymous*|[[CaseContainerDTO](#schemacasecontainerdto)]|false|none|[Data Transfer Object representing a census case container]|
-|» abpCode|string|false|none|Address Based Priority code|
-|» addressLevel|string|false|none|Address level classification|
-|» addressLine1|string|false|none|First line of street address|
-|» addressLine2|string|false|none|Second line of street address|
-|» addressLine3|string|false|none|Third line of street address|
-|» addressType|string|false|none|Type of address (e.g., HOUSEHOLD, COMMUNAL, OTHER)|
+|» abpCode|string|false|none|AddressBase classification code|
+|» addressLevel|string|false|none|Address level classification (e.g., E, U (signifying Establishment and Unit))|
+|» addressLine1|string|false|none|First address line|
+|» addressLine2|string|false|none|Second address line|
+|» addressLine3|string|false|none|Third address line|
+|» addressType|string|false|none|Residential address frame type (e.g., HH, CE)|
 |» caseEvents|[[CaseEventDTO](#schemacaseeventdto)]|false|none|List of events associated with the case|
 |»» createdDateTime|string(date-time)|true|none|Date and time when the event was created|
 |»» description|string|false|none|Human-readable description of the event|
 |»» eventType|[EventTypeDTO](#schemaeventtypedto)|true|none|Enumeration of all possible event types that can occur in the census RM system|
 |»» id|string(uuid)|true|none|Unique event identifier (UUID)|
 |» caseRef|string|true|none|Unique numeric reference for the case|
-|» caseType|string|false|none|Case type classification (e.g., NEW, REPLACEMENT)|
+|» caseType|string|false|none|Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.|
 |» collectionExerciseId|string(uuid)|false|none|Collection Exercise UUID identifier|
 |» createdDateTime|string(date-time)|false|none|Date and time when the case was created|
-|» estabType|string|false|none|Establishment type code|
+|» estabType|string|false|none|Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)|
 |» estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |» id|string(uuid)|true|none|Unique case UUID identifier|
 |» invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
@@ -781,14 +781,14 @@ Status Code **200**
 |» lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
 |» latitude|string|false|none|Geographic latitude coordinate|
 |» longitude|string|false|none|Geographic longitude coordinate|
-|» lsoa|string|false|none|Lower Layer Super Output Area code|
-|» msoa|string|false|none|Middle Layer Super Output Area code|
-|» oa|string|false|none|Output Area code|
-|» organisationName|string|false|none|Name of organization for establishment addresses|
+|» lsoa|string|false|none|Lower Layer Super Output Area grid reference|
+|» msoa|string|false|none|Middle Layer Super Output Area grid reference|
+|» oa|string|false|none|Output Area grid reference|
+|» organisationName|string|false|none|Name of the organisation at the address|
 |» postcode|string|false|none|UK postal code|
 |» region|string|false|none|Administrative region code|
 |» secureEstablishment|boolean|false|none|Indicator whether address is a secure establishment|
-|» surveyType|string|false|none|Type of survey (e.g., CENSUS, OTHER_SURVEY)|
+|» surveyType|string|false|none|Type of survey (e.g., CENSUS, CCS)|
 |» townName|string|false|none|Town or city name|
 |» uprn|string|false|none|Unique Property Reference Number|
 
@@ -982,7 +982,7 @@ Retrieves minimal case details linked to a specific questionnaire ID.
   "id": "a11e3456-e89b-12d3-a456-426614174000",
   "uprn": "123456789",
   "postcode": "AB12CD",
-  "addressType": "HOUSEHOLD"
+  "addressType": "HH"
 }
 ```
 
@@ -1161,7 +1161,7 @@ Retrieves a single case container record using the numeric case reference.
   "id": "a11e3456-e89b-12d3-a456-426614174000",
   "uprn": "123456789",
   "postcode": "AB12CD",
-  "addressType": "HOUSEHOLD"
+  "addressType": "HH"
 }
 ```
 
@@ -1342,7 +1342,7 @@ Retrieves all cases associated with a Unique Property Reference Number.
     "id": "a11e3456-e89b-12d3-a456-426614174000",
     "uprn": "123456789",
     "postcode": "AB12CD",
-    "addressType": "HOUSEHOLD"
+    "addressType": "HH"
   }
 ]
 ```
@@ -1360,22 +1360,22 @@ Status Code **200**
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |*anonymous*|[[CaseContainerDTO](#schemacasecontainerdto)]|false|none|[Data Transfer Object representing a census case container]|
-|» abpCode|string|false|none|Address Based Priority code|
-|» addressLevel|string|false|none|Address level classification|
-|» addressLine1|string|false|none|First line of street address|
-|» addressLine2|string|false|none|Second line of street address|
-|» addressLine3|string|false|none|Third line of street address|
-|» addressType|string|false|none|Type of address (e.g., HOUSEHOLD, COMMUNAL, OTHER)|
+|» abpCode|string|false|none|AddressBase classification code|
+|» addressLevel|string|false|none|Address level classification (e.g., E, U (signifying Establishment and Unit))|
+|» addressLine1|string|false|none|First address line|
+|» addressLine2|string|false|none|Second address line|
+|» addressLine3|string|false|none|Third address line|
+|» addressType|string|false|none|Residential address frame type (e.g., HH, CE)|
 |» caseEvents|[[CaseEventDTO](#schemacaseeventdto)]|false|none|List of events associated with the case|
 |»» createdDateTime|string(date-time)|true|none|Date and time when the event was created|
 |»» description|string|false|none|Human-readable description of the event|
 |»» eventType|[EventTypeDTO](#schemaeventtypedto)|true|none|Enumeration of all possible event types that can occur in the census RM system|
 |»» id|string(uuid)|true|none|Unique event identifier (UUID)|
 |» caseRef|string|true|none|Unique numeric reference for the case|
-|» caseType|string|false|none|Case type classification (e.g., NEW, REPLACEMENT)|
+|» caseType|string|false|none|Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.|
 |» collectionExerciseId|string(uuid)|false|none|Collection Exercise UUID identifier|
 |» createdDateTime|string(date-time)|false|none|Date and time when the case was created|
-|» estabType|string|false|none|Establishment type code|
+|» estabType|string|false|none|Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)|
 |» estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |» id|string(uuid)|true|none|Unique case UUID identifier|
 |» invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
@@ -1383,14 +1383,14 @@ Status Code **200**
 |» lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
 |» latitude|string|false|none|Geographic latitude coordinate|
 |» longitude|string|false|none|Geographic longitude coordinate|
-|» lsoa|string|false|none|Lower Layer Super Output Area code|
-|» msoa|string|false|none|Middle Layer Super Output Area code|
-|» oa|string|false|none|Output Area code|
-|» organisationName|string|false|none|Name of organization for establishment addresses|
+|» lsoa|string|false|none|Lower Layer Super Output Area grid reference|
+|» msoa|string|false|none|Middle Layer Super Output Area grid reference|
+|» oa|string|false|none|Output Area grid reference|
+|» organisationName|string|false|none|Name of the organisation at the address|
 |» postcode|string|false|none|UK postal code|
 |» region|string|false|none|Administrative region code|
 |» secureEstablishment|boolean|false|none|Indicator whether address is a secure establishment|
-|» surveyType|string|false|none|Type of survey (e.g., CENSUS, OTHER_SURVEY)|
+|» surveyType|string|false|none|Type of survey (e.g., CENSUS, CCS)|
 |» townName|string|false|none|Town or city name|
 |» uprn|string|false|none|Unique Property Reference Number|
 
@@ -1585,7 +1585,7 @@ Retrieves a single case container record matching the specified UUID.
   "id": "a11e3456-e89b-12d3-a456-426614174000",
   "uprn": "123456789",
   "postcode": "AB12CD",
-  "addressType": "HOUSEHOLD"
+  "addressType": "HH"
 }
 ```
 
@@ -1616,7 +1616,7 @@ This operation does not require authentication
   "id": "a11e3456-e89b-12d3-a456-426614174000",
   "uprn": "123456789",
   "postcode": "AB12CD",
-  "addressType": "HOUSEHOLD"
+  "addressType": "HH"
 }
 
 ```
@@ -1627,18 +1627,18 @@ Data Transfer Object representing a census case container
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|abpCode|string|false|none|Address Based Priority code|
-|addressLevel|string|false|none|Address level classification|
-|addressLine1|string|false|none|First line of street address|
-|addressLine2|string|false|none|Second line of street address|
-|addressLine3|string|false|none|Third line of street address|
-|addressType|string|false|none|Type of address (e.g., HOUSEHOLD, COMMUNAL, OTHER)|
+|abpCode|string|false|none|AddressBase classification code|
+|addressLevel|string|false|none|Address level classification (e.g., E, U (signifying Establishment and Unit))|
+|addressLine1|string|false|none|First address line|
+|addressLine2|string|false|none|Second address line|
+|addressLine3|string|false|none|Third address line|
+|addressType|string|false|none|Residential address frame type (e.g., HH, CE)|
 |caseEvents|[[CaseEventDTO](#schemacaseeventdto)]|false|none|List of events associated with the case|
 |caseRef|string|true|none|Unique numeric reference for the case|
-|caseType|string|false|none|Case type classification (e.g., NEW, REPLACEMENT)|
+|caseType|string|false|none|Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.|
 |collectionExerciseId|string(uuid)|false|none|Collection Exercise UUID identifier|
 |createdDateTime|string(date-time)|false|none|Date and time when the case was created|
-|estabType|string|false|none|Establishment type code|
+|estabType|string|false|none|Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)|
 |estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |id|string(uuid)|true|none|Unique case UUID identifier|
 |invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
@@ -1646,14 +1646,14 @@ Data Transfer Object representing a census case container
 |lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
 |latitude|string|false|none|Geographic latitude coordinate|
 |longitude|string|false|none|Geographic longitude coordinate|
-|lsoa|string|false|none|Lower Layer Super Output Area code|
-|msoa|string|false|none|Middle Layer Super Output Area code|
-|oa|string|false|none|Output Area code|
-|organisationName|string|false|none|Name of organization for establishment addresses|
+|lsoa|string|false|none|Lower Layer Super Output Area grid reference|
+|msoa|string|false|none|Middle Layer Super Output Area grid reference|
+|oa|string|false|none|Output Area grid reference|
+|organisationName|string|false|none|Name of the organisation at the address|
 |postcode|string|false|none|UK postal code|
 |region|string|false|none|Administrative region code|
 |secureEstablishment|boolean|false|none|Indicator whether address is a secure establishment|
-|surveyType|string|false|none|Type of survey (e.g., CENSUS, OTHER_SURVEY)|
+|surveyType|string|false|none|Type of survey (e.g., CENSUS, CCS)|
 |townName|string|false|none|Town or city name|
 |uprn|string|false|none|Unique Property Reference Number|
 
@@ -1681,43 +1681,43 @@ Comprehensive Data Transfer Object containing detailed case attributes
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|abpCode|string|false|none|Address Based Priority code|
-|addressLevel|string|false|none|Address level classification|
-|addressLine1|string|false|none|First line of street address|
-|addressLine2|string|false|none|Second line of street address|
-|addressLine3|string|false|none|Third line of street address|
-|addressType|string|false|none|Type of address (e.g., HOUSEHOLD, COMMUNAL)|
+|abpCode|string|false|none|AddressBase classification code|
+|addressLevel|string|false|none|Address level classification (e.g., E, U (signifying Establishment and Unit))|
+|addressLine1|string|false|none|First address line|
+|addressLine2|string|false|none|Second address line|
+|addressLine3|string|false|none|Third address line|
+|addressType|string|false|none|Residential address frame type (e.g., HH, CE)|
 |caseRef|integer(int64)|true|none|Unique numeric reference for the case|
-|caseType|string|false|none|Case type classification|
+|caseType|string|false|none|Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.|
 |ceActualResponses|integer(int32)|false|none|Actual number of responses received for Communal Establishment|
-|ceExpectedCapacity|integer(int32)|false|none|Expected capacity for Communal Establishment|
+|ceExpectedCapacity|integer(int32)|false|none|Expected resident capacity (bedspaces) of communal establishments (CE) without unit level addresses.|
 |collectionExerciseId|string(uuid)|false|none|Collection Exercise UUID identifier|
 |createdDateTime|string(date-time)|false|none|Date and time when the case was created|
-|estabType|string|false|none|Establishment type code|
+|estabType|string|false|none|Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)|
 |estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |events|[[CaseDetailsEventDTO](#schemacasedetailseventdto)]|false|none|List of events associated with this case|
 |fieldCoordinatorId|string|false|none|Field Coordinator identifier for the assigned case|
 |fieldOfficerId|string|false|none|Field Officer identifier for the assigned case|
-|htcDigital|string|false|none|Household Telephone Contact digital indicator|
-|htcWillingness|string|false|none|Household Telephone Contact willingness indicator|
+|htcDigital|string|false|none|Hard to Count Index - Digital (1-5) indicator, where 1 is least digital and 5 is most digital|
+|htcWillingness|string|false|none|Hard to Count Index - Willingness (1-5) indicator, where 1 is least willing and 5 is most willing|
 |id|string(uuid)|true|none|Unique case UUID identifier|
 |invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
 |lad|string|false|none|Local Authority District code|
 |lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
 |latitude|string|false|none|Geographic latitude coordinate|
 |longitude|string|false|none|Geographic longitude coordinate|
-|lsoa|string|false|none|Lower Layer Super Output Area code|
-|msoa|string|false|none|Middle Layer Super Output Area code|
-|oa|string|false|none|Output Area code|
-|organisationName|string|false|none|Name of organization for establishment addresses|
+|lsoa|string|false|none|Lower Layer Super Output Area grid reference|
+|msoa|string|false|none|Middle Layer Super Output Area grid reference|
+|oa|string|false|none|Output Area grid reference|
+|organisationName|string|false|none|Name of the organisation at the address|
 |postcode|string|false|none|UK postal code|
-|printBatch|string|false|none|Print batch identifier for printed case materials|
+|printBatch|string|false|none|Print batch identifier for household initial contact material|
 |receiptReceived|boolean|false|none|Flag indicating if receipt has been received from respondent|
 |refusalReceived|string|false|none|Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)|
 |region|string|false|none|Administrative region code|
 |surveyLaunched|boolean|false|none|Flag indicating if survey has been launched to respondent|
 |townName|string|false|none|Town or city name|
-|treatmentCode|string|false|none|Treatment code indicating special handling|
+|treatmentCode|string|false|none|Treatment code (one of the appropriate ones for the region (e.g., HH_PSCE, HH_PSLE, HH_PNCE, HH_PNLE, HH_OSCE, HH_OSLE, HH_ONCE, HH_ONLE, HH_PSCW, HH_PSLW, HH_PNCW, HH_PN, HH_OSCW, HH_OSLW, HH_ONCW, HH_ONLW, HH_OGXS, HH_OSXS, HH_PBXN, HH_OAXN, HH_OBXN)) indicating special handling or processing instructions for the case|
 |uprn|string|false|none|Unique Property Reference Number|
 
 #### Enumerated Values

@@ -28,88 +28,117 @@ public class CaseDetailsDTO {
       requiredMode = Schema.RequiredMode.REQUIRED)
   private Long caseRef;
 
-  @Schema(description = "Unique Property Reference Number", example = "123456789")
+  @Schema(description = "Unique Property Reference Number", example = "10008677190")
   private String uprn;
 
-  @Schema(description = "Establishment UPRN for non-household establishments")
+  @Schema(
+      description = "Establishment UPRN for non-household establishments",
+      example = "10008677190")
   private String estabUprn;
 
-  @Schema(description = "Case type classification")
+  @Schema(
+      description =
+          "Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.",
+      example = "HH")
   private String caseType;
 
-  @Schema(description = "Type of address (e.g., HOUSEHOLD, COMMUNAL)")
+  @Schema(description = "Residential address frame type (e.g., HH, CE)", example = "HH")
   private String addressType;
 
-  @Schema(description = "Establishment type code")
+  @Schema(
+      description =
+          "Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)",
+      example = "HOUSEHOLD")
   private String estabType;
 
-  @Schema(description = "Address level classification")
+  @Schema(
+      description = "Address level classification (e.g., E, U (signifying Establishment and Unit))",
+      example = "U")
   private String addressLevel;
 
-  @Schema(description = "Address Based Priority code")
+  @Schema(description = "AddressBase classification code", example = "RD06")
   private String abpCode;
 
-  @Schema(description = "Name of organization for establishment addresses")
+  @Schema(description = "Name of the organisation at the address", example = "Acme Corporation")
   private String organisationName;
 
-  @Schema(description = "First line of street address")
+  @Schema(description = "First address line", example = "Flat 51 Francombe House")
   private String addressLine1;
 
-  @Schema(description = "Second line of street address")
+  @Schema(description = "Second address line", example = "Commercial Road")
   private String addressLine2;
 
-  @Schema(description = "Third line of street address")
+  @Schema(description = "Third address line")
   private String addressLine3;
 
-  @Schema(description = "Town or city name")
+  @Schema(description = "Town or city name", example = "Windleybury")
   private String townName;
 
-  @Schema(description = "UK postal code", example = "AB12CD")
+  @Schema(description = "UK postal code", example = "XX1 0XX")
   private String postcode;
 
-  @Schema(description = "Geographic latitude coordinate")
+  @Schema(description = "Geographic latitude coordinate", example = "51.5074")
   private String latitude;
 
-  @Schema(description = "Geographic longitude coordinate")
+  @Schema(description = "Geographic longitude coordinate", example = "-0.1278")
   private String longitude;
 
-  @Schema(description = "Output Area code")
+  @Schema(description = "Output Area grid reference", example = "E00073438")
   private String oa;
 
-  @Schema(description = "Lower Layer Super Output Area code")
+  @Schema(description = "Lower Layer Super Output Area grid reference", example = "E01014540")
   private String lsoa;
 
-  @Schema(description = "Middle Layer Super Output Area code")
+  @Schema(description = "Middle Layer Super Output Area grid reference", example = "E02003043")
   private String msoa;
 
-  @Schema(description = "Local Authority District code")
+  @Schema(description = "Local Authority District code", example = "E06000023")
   private String lad;
 
-  @Schema(description = "Administrative region code")
+  @Schema(description = "Administrative region code", example = "E12000009")
   private String region;
 
-  @Schema(description = "Household Telephone Contact willingness indicator")
+  @Schema(
+      description =
+          "Hard to Count Index - Willingness (1-5) indicator, where 1 is least willing and 5 is most willing",
+      example = "3")
   private String htcWillingness;
 
-  @Schema(description = "Household Telephone Contact digital indicator")
+  @Schema(
+      description =
+          "Hard to Count Index - Digital (1-5) indicator, where 1 is least digital and 5 is most digital",
+      example = "4")
   private String htcDigital;
 
-  @Schema(description = "Field Coordinator identifier for the assigned case")
+  @Schema(description = "Field Coordinator identifier for the assigned case", example = "FC12344")
   private String fieldCoordinatorId;
 
-  @Schema(description = "Field Officer identifier for the assigned case")
+  @Schema(description = "Field Officer identifier for the assigned case", example = "FO12345")
   private String fieldOfficerId;
 
-  @Schema(description = "Treatment code indicating special handling")
+  @Schema(
+      description =
+          "Treatment code (one of the appropriate ones for the region (e.g., HH_PSCE, HH_PSLE, HH_PNCE, HH_PNLE, HH_OSCE, HH_OSLE, HH_ONCE, HH_ONLE, HH_PSCW, HH_PSLW, HH_PNCW, HH_PN, HH_OSCW, HH_OSLW, HH_ONCW, HH_ONLW, HH_OGXS, HH_OSXS, HH_PBXN, HH_OAXN, HH_OBXN)) indicating special handling or processing instructions for the case",
+      example = "HH_PSCE")
   private String treatmentCode;
 
-  @Schema(description = "Expected capacity for Communal Establishment")
+  @Schema(
+      description =
+          "Expected resident capacity (bedspaces) of communal establishments (CE) without unit level addresses.",
+      example = "1505")
   private Integer ceExpectedCapacity;
 
-  @Schema(description = "Actual number of responses received for Communal Establishment")
+  @Schema(
+      description = "Actual number of responses received for Communal Establishment",
+      example = "1504")
   private int ceActualResponses;
 
-  @Schema(description = "Collection Exercise UUID identifier")
+  // TODO: As per the Sample spec 2027, CE_SECURE (Flag denoting address is a Secure CE) needs to be
+  // added to the CaseDetailsDTO. This will be a boolean field.
+
+  @Schema(
+      description = "Collection Exercise UUID identifier",
+      example = "b22e3456-e89b-12d3-a456-426614174000")
   private UUID collectionExerciseId;
 
   @Schema(description = "Date and time when the case was created", example = "2024-01-15T10:30:00Z")
@@ -118,7 +147,9 @@ public class CaseDetailsDTO {
   @Schema(description = "List of events associated with this case")
   private List<CaseDetailsEventDTO> events;
 
-  @Schema(description = "Flag indicating if receipt has been received from respondent")
+  @Schema(
+      description = "Flag indicating if receipt has been received from respondent",
+      example = "true")
   private boolean receiptReceived;
 
   @Schema(
@@ -126,7 +157,9 @@ public class CaseDetailsDTO {
       example = "SOFT_REFUSAL")
   private RefusalType refusalReceived;
 
-  @Schema(description = "Flag indicating if the case record is marked as invalid")
+  @Schema(
+      description = "Flag indicating if the case record is marked as invalid",
+      example = "false")
   private boolean invalid;
 
   @Schema(
@@ -134,9 +167,13 @@ public class CaseDetailsDTO {
       example = "2024-01-20T14:45:00Z")
   private OffsetDateTime lastUpdated;
 
-  @Schema(description = "Print batch identifier for printed case materials")
+  @Schema(
+      description = "Print batch identifier for household initial contact material",
+      example = "15")
   private String printBatch;
 
-  @Schema(description = "Flag indicating if survey has been launched to respondent")
+  @Schema(
+      description = "Flag indicating if survey has been launched to respondent",
+      example = "true")
   private boolean surveyLaunched;
 }

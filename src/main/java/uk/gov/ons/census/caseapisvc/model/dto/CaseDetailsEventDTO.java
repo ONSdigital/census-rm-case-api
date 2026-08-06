@@ -43,7 +43,9 @@ public class CaseDetailsEventDTO {
       requiredMode = Schema.RequiredMode.REQUIRED)
   private String eventChannel = "RM";
 
-  @Schema(description = "Unique transaction identifier for this event")
+  @Schema(
+      description = "Unique transaction identifier for this event",
+      example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
   private UUID eventTransactionId;
 
   @Schema(
@@ -51,7 +53,9 @@ public class CaseDetailsEventDTO {
       example = "2024-01-15T10:35:00Z")
   private OffsetDateTime rmEventProcessed;
 
-  @Schema(description = "Source system that generated the event (e.g., UAC_SERVICE, PRINT_SERVICE)")
+  @Schema(
+      description = "Source system that generated the event (e.g., UAC_SERVICE, PRINT_SERVICE)",
+      example = "UAC_SERVICE")
   private String eventSource;
 
   @Schema(description = "JSON payload containing event-specific data")
