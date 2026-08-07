@@ -559,9 +559,42 @@ Retrieves complete detailed case attributes for a given case UUID.
 {
   "id": "a11e3456-e89b-12d3-a456-426614174000",
   "caseRef": 100000000000001,
-  "uprn": "123456789",
-  "postcode": "AB12CD",
-  "caseType": "NEW"
+  "uprn": "10008677190",
+  "estabUprn": "10008677190",
+  "caseType": "HH",
+  "addressType": "HH",
+  "estabType": "HOUSEHOLD",
+  "addressLevel": "U",
+  "abpCode": "RD06",
+  "organisationName": "Acme Corporation",
+  "addressLine1": "Flat 51 Francombe House",
+  "addressLine2": "Commercial Road",
+  "addressLine3": "Suite 3",
+  "townName": "Windleybury",
+  "postcode": "XX1 0XX",
+  "latitude": "51.5074",
+  "longitude": "-0.1278",
+  "oa": "E00073438",
+  "lsoa": "E01014540",
+  "msoa": "E02003043",
+  "lad": "E06000023",
+  "region": "E12000009",
+  "htcWillingness": "3",
+  "htcDigital": "4",
+  "fieldCoordinatorId": "FC12344",
+  "fieldOfficerId": "FO12345",
+  "treatmentCode": "HH_PSCE",
+  "ceExpectedCapacity": 1505,
+  "ceActualResponses": 1504,
+  "collectionExerciseId": "b22e3456-e89b-12d3-a456-426614174000",
+  "createdDateTime": "2024-01-15T10:30:00Z",
+  "events": [],
+  "receiptReceived": true,
+  "refusalReceived": "SOFT_REFUSAL",
+  "invalid": false,
+  "lastUpdated": "2024-01-20T14:45:00Z",
+  "printBatch": "15",
+  "surveyLaunched": true
 }
 ```
 
@@ -738,9 +771,33 @@ Retrieves all cases located within the specified postcode area.
   {
     "caseRef": "100000000000001",
     "id": "a11e3456-e89b-12d3-a456-426614174000",
-    "uprn": "123456789",
-    "postcode": "AB12CD",
-    "addressType": "HH"
+    "estabType": "HOUSEHOLD",
+    "uprn": "10008677190",
+    "estabUprn": "10008677190",
+    "collectionExerciseId": "b22e3456-e89b-12d3-a456-426614174000",
+    "surveyType": "CENSUS",
+    "addressType": "HH",
+    "caseType": "HH",
+    "createdDateTime": "2024-01-15T10:30:00Z",
+    "addressLine1": "Flat 51 Francombe House",
+    "addressLine2": "Commercial Road",
+    "addressLine3": "Suite 3",
+    "townName": "Windleybury",
+    "postcode": "XX1 0XX",
+    "organisationName": "Acme Corporation",
+    "addressLevel": "U",
+    "abpCode": "RD06",
+    "region": "E12000007",
+    "latitude": "51.5074",
+    "longitude": "-0.1278",
+    "oa": "E00073438",
+    "lsoa": "E01014540",
+    "msoa": "E02003043",
+    "lad": "E06000023",
+    "lastUpdated": "2024-01-20T14:45:00Z",
+    "caseEvents": [],
+    "secureEstablishment": false,
+    "invalid": false
   }
 ]
 ```
@@ -777,16 +834,16 @@ Status Code **200**
 |» estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |» id|string(uuid)|true|none|Unique case UUID identifier|
 |» invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
-|» lad|string|false|none|Local Authority District code|
+|» lad|string|false|none|Local Authority District code (e.g., N06000023, S06000023, E06000023, W06000023)|
 |» lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
 |» latitude|string|false|none|Geographic latitude coordinate|
 |» longitude|string|false|none|Geographic longitude coordinate|
-|» lsoa|string|false|none|Lower Layer Super Output Area grid reference|
-|» msoa|string|false|none|Middle Layer Super Output Area grid reference|
-|» oa|string|false|none|Output Area grid reference|
+|» lsoa|string|false|none|Lower Layer Super Output Area grid reference (e.g., N01014540, S01014540, E01014540, W01014540)|
+|» msoa|string|false|none|Middle Layer Super Output Area grid reference (e.g., N02003043, S02003043, E02003043, W02003043)|
+|» oa|string|false|none|Output Area grid reference (e.g., N00073438, S00073438, E00073438, W00073438)|
 |» organisationName|string|false|none|Name of the organisation at the address|
 |» postcode|string|false|none|UK postal code|
-|» region|string|false|none|Administrative region code|
+|» region|string|false|none|Administrative region code (e.g., N12000007, S12000007, E12000007, W12000007)|
 |» secureEstablishment|boolean|false|none|Indicator whether address is a secure establishment|
 |» surveyType|string|false|none|Type of survey (e.g., CENSUS, CCS)|
 |» townName|string|false|none|Town or city name|
@@ -980,9 +1037,33 @@ Retrieves minimal case details linked to a specific questionnaire ID.
 {
   "caseRef": "100000000000001",
   "id": "a11e3456-e89b-12d3-a456-426614174000",
-  "uprn": "123456789",
-  "postcode": "AB12CD",
-  "addressType": "HH"
+  "estabType": "HOUSEHOLD",
+  "uprn": "10008677190",
+  "estabUprn": "10008677190",
+  "collectionExerciseId": "b22e3456-e89b-12d3-a456-426614174000",
+  "surveyType": "CENSUS",
+  "addressType": "HH",
+  "caseType": "HH",
+  "createdDateTime": "2024-01-15T10:30:00Z",
+  "addressLine1": "Flat 51 Francombe House",
+  "addressLine2": "Commercial Road",
+  "addressLine3": "Suite 3",
+  "townName": "Windleybury",
+  "postcode": "XX1 0XX",
+  "organisationName": "Acme Corporation",
+  "addressLevel": "U",
+  "abpCode": "RD06",
+  "region": "E12000007",
+  "latitude": "51.5074",
+  "longitude": "-0.1278",
+  "oa": "E00073438",
+  "lsoa": "E01014540",
+  "msoa": "E02003043",
+  "lad": "E06000023",
+  "lastUpdated": "2024-01-20T14:45:00Z",
+  "caseEvents": [],
+  "secureEstablishment": false,
+  "invalid": false
 }
 ```
 
@@ -1159,9 +1240,33 @@ Retrieves a single case container record using the numeric case reference.
 {
   "caseRef": "100000000000001",
   "id": "a11e3456-e89b-12d3-a456-426614174000",
-  "uprn": "123456789",
-  "postcode": "AB12CD",
-  "addressType": "HH"
+  "estabType": "HOUSEHOLD",
+  "uprn": "10008677190",
+  "estabUprn": "10008677190",
+  "collectionExerciseId": "b22e3456-e89b-12d3-a456-426614174000",
+  "surveyType": "CENSUS",
+  "addressType": "HH",
+  "caseType": "HH",
+  "createdDateTime": "2024-01-15T10:30:00Z",
+  "addressLine1": "Flat 51 Francombe House",
+  "addressLine2": "Commercial Road",
+  "addressLine3": "Suite 3",
+  "townName": "Windleybury",
+  "postcode": "XX1 0XX",
+  "organisationName": "Acme Corporation",
+  "addressLevel": "U",
+  "abpCode": "RD06",
+  "region": "E12000007",
+  "latitude": "51.5074",
+  "longitude": "-0.1278",
+  "oa": "E00073438",
+  "lsoa": "E01014540",
+  "msoa": "E02003043",
+  "lad": "E06000023",
+  "lastUpdated": "2024-01-20T14:45:00Z",
+  "caseEvents": [],
+  "secureEstablishment": false,
+  "invalid": false
 }
 ```
 
@@ -1340,9 +1445,33 @@ Retrieves all cases associated with a Unique Property Reference Number.
   {
     "caseRef": "100000000000001",
     "id": "a11e3456-e89b-12d3-a456-426614174000",
-    "uprn": "123456789",
-    "postcode": "AB12CD",
-    "addressType": "HH"
+    "estabType": "HOUSEHOLD",
+    "uprn": "10008677190",
+    "estabUprn": "10008677190",
+    "collectionExerciseId": "b22e3456-e89b-12d3-a456-426614174000",
+    "surveyType": "CENSUS",
+    "addressType": "HH",
+    "caseType": "HH",
+    "createdDateTime": "2024-01-15T10:30:00Z",
+    "addressLine1": "Flat 51 Francombe House",
+    "addressLine2": "Commercial Road",
+    "addressLine3": "Suite 3",
+    "townName": "Windleybury",
+    "postcode": "XX1 0XX",
+    "organisationName": "Acme Corporation",
+    "addressLevel": "U",
+    "abpCode": "RD06",
+    "region": "E12000007",
+    "latitude": "51.5074",
+    "longitude": "-0.1278",
+    "oa": "E00073438",
+    "lsoa": "E01014540",
+    "msoa": "E02003043",
+    "lad": "E06000023",
+    "lastUpdated": "2024-01-20T14:45:00Z",
+    "caseEvents": [],
+    "secureEstablishment": false,
+    "invalid": false
   }
 ]
 ```
@@ -1379,16 +1508,16 @@ Status Code **200**
 |» estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |» id|string(uuid)|true|none|Unique case UUID identifier|
 |» invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
-|» lad|string|false|none|Local Authority District code|
+|» lad|string|false|none|Local Authority District code (e.g., N06000023, S06000023, E06000023, W06000023)|
 |» lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
 |» latitude|string|false|none|Geographic latitude coordinate|
 |» longitude|string|false|none|Geographic longitude coordinate|
-|» lsoa|string|false|none|Lower Layer Super Output Area grid reference|
-|» msoa|string|false|none|Middle Layer Super Output Area grid reference|
-|» oa|string|false|none|Output Area grid reference|
+|» lsoa|string|false|none|Lower Layer Super Output Area grid reference (e.g., N01014540, S01014540, E01014540, W01014540)|
+|» msoa|string|false|none|Middle Layer Super Output Area grid reference (e.g., N02003043, S02003043, E02003043, W02003043)|
+|» oa|string|false|none|Output Area grid reference (e.g., N00073438, S00073438, E00073438, W00073438)|
 |» organisationName|string|false|none|Name of the organisation at the address|
 |» postcode|string|false|none|UK postal code|
-|» region|string|false|none|Administrative region code|
+|» region|string|false|none|Administrative region code (e.g., N12000007, S12000007, E12000007, W12000007)|
 |» secureEstablishment|boolean|false|none|Indicator whether address is a secure establishment|
 |» surveyType|string|false|none|Type of survey (e.g., CENSUS, CCS)|
 |» townName|string|false|none|Town or city name|
@@ -1583,9 +1712,33 @@ Retrieves a single case container record matching the specified UUID.
 {
   "caseRef": "100000000000001",
   "id": "a11e3456-e89b-12d3-a456-426614174000",
-  "uprn": "123456789",
-  "postcode": "AB12CD",
-  "addressType": "HH"
+  "estabType": "HOUSEHOLD",
+  "uprn": "10008677190",
+  "estabUprn": "10008677190",
+  "collectionExerciseId": "b22e3456-e89b-12d3-a456-426614174000",
+  "surveyType": "CENSUS",
+  "addressType": "HH",
+  "caseType": "HH",
+  "createdDateTime": "2024-01-15T10:30:00Z",
+  "addressLine1": "Flat 51 Francombe House",
+  "addressLine2": "Commercial Road",
+  "addressLine3": "Suite 3",
+  "townName": "Windleybury",
+  "postcode": "XX1 0XX",
+  "organisationName": "Acme Corporation",
+  "addressLevel": "U",
+  "abpCode": "RD06",
+  "region": "E12000007",
+  "latitude": "51.5074",
+  "longitude": "-0.1278",
+  "oa": "E00073438",
+  "lsoa": "E01014540",
+  "msoa": "E02003043",
+  "lad": "E06000023",
+  "lastUpdated": "2024-01-20T14:45:00Z",
+  "caseEvents": [],
+  "secureEstablishment": false,
+  "invalid": false
 }
 ```
 
@@ -1614,9 +1767,33 @@ This operation does not require authentication
 {
   "caseRef": "100000000000001",
   "id": "a11e3456-e89b-12d3-a456-426614174000",
-  "uprn": "123456789",
-  "postcode": "AB12CD",
-  "addressType": "HH"
+  "estabType": "HOUSEHOLD",
+  "uprn": "10008677190",
+  "estabUprn": "10008677190",
+  "collectionExerciseId": "b22e3456-e89b-12d3-a456-426614174000",
+  "surveyType": "CENSUS",
+  "addressType": "HH",
+  "caseType": "HH",
+  "createdDateTime": "2024-01-15T10:30:00Z",
+  "addressLine1": "Flat 51 Francombe House",
+  "addressLine2": "Commercial Road",
+  "addressLine3": "Suite 3",
+  "townName": "Windleybury",
+  "postcode": "XX1 0XX",
+  "organisationName": "Acme Corporation",
+  "addressLevel": "U",
+  "abpCode": "RD06",
+  "region": "E12000007",
+  "latitude": "51.5074",
+  "longitude": "-0.1278",
+  "oa": "E00073438",
+  "lsoa": "E01014540",
+  "msoa": "E02003043",
+  "lad": "E06000023",
+  "lastUpdated": "2024-01-20T14:45:00Z",
+  "caseEvents": [],
+  "secureEstablishment": false,
+  "invalid": false
 }
 
 ```
@@ -1642,16 +1819,16 @@ Data Transfer Object representing a census case container
 |estabUprn|string|false|none|Establishment UPRN for non-household establishments|
 |id|string(uuid)|true|none|Unique case UUID identifier|
 |invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
-|lad|string|false|none|Local Authority District code|
+|lad|string|false|none|Local Authority District code (e.g., N06000023, S06000023, E06000023, W06000023)|
 |lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
 |latitude|string|false|none|Geographic latitude coordinate|
 |longitude|string|false|none|Geographic longitude coordinate|
-|lsoa|string|false|none|Lower Layer Super Output Area grid reference|
-|msoa|string|false|none|Middle Layer Super Output Area grid reference|
-|oa|string|false|none|Output Area grid reference|
+|lsoa|string|false|none|Lower Layer Super Output Area grid reference (e.g., N01014540, S01014540, E01014540, W01014540)|
+|msoa|string|false|none|Middle Layer Super Output Area grid reference (e.g., N02003043, S02003043, E02003043, W02003043)|
+|oa|string|false|none|Output Area grid reference (e.g., N00073438, S00073438, E00073438, W00073438)|
 |organisationName|string|false|none|Name of the organisation at the address|
 |postcode|string|false|none|UK postal code|
-|region|string|false|none|Administrative region code|
+|region|string|false|none|Administrative region code (e.g., N12000007, S12000007, E12000007, W12000007)|
 |secureEstablishment|boolean|false|none|Indicator whether address is a secure establishment|
 |surveyType|string|false|none|Type of survey (e.g., CENSUS, CCS)|
 |townName|string|false|none|Town or city name|
@@ -1668,9 +1845,42 @@ Data Transfer Object representing a census case container
 {
   "id": "a11e3456-e89b-12d3-a456-426614174000",
   "caseRef": 100000000000001,
-  "uprn": "123456789",
-  "postcode": "AB12CD",
-  "caseType": "NEW"
+  "uprn": "10008677190",
+  "estabUprn": "10008677190",
+  "caseType": "HH",
+  "addressType": "HH",
+  "estabType": "HOUSEHOLD",
+  "addressLevel": "U",
+  "abpCode": "RD06",
+  "organisationName": "Acme Corporation",
+  "addressLine1": "Flat 51 Francombe House",
+  "addressLine2": "Commercial Road",
+  "addressLine3": "Suite 3",
+  "townName": "Windleybury",
+  "postcode": "XX1 0XX",
+  "latitude": "51.5074",
+  "longitude": "-0.1278",
+  "oa": "E00073438",
+  "lsoa": "E01014540",
+  "msoa": "E02003043",
+  "lad": "E06000023",
+  "region": "E12000009",
+  "htcWillingness": "3",
+  "htcDigital": "4",
+  "fieldCoordinatorId": "FC12344",
+  "fieldOfficerId": "FO12345",
+  "treatmentCode": "HH_PSCE",
+  "ceExpectedCapacity": 1505,
+  "ceActualResponses": 1504,
+  "collectionExerciseId": "b22e3456-e89b-12d3-a456-426614174000",
+  "createdDateTime": "2024-01-15T10:30:00Z",
+  "events": [],
+  "receiptReceived": true,
+  "refusalReceived": "SOFT_REFUSAL",
+  "invalid": false,
+  "lastUpdated": "2024-01-20T14:45:00Z",
+  "printBatch": "15",
+  "surveyLaunched": true
 }
 
 ```
@@ -1690,7 +1900,7 @@ Comprehensive Data Transfer Object containing detailed case attributes
 |caseRef|integer(int64)|true|none|Unique numeric reference for the case|
 |caseType|string|false|none|Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.|
 |ceActualResponses|integer(int32)|false|none|Actual number of responses received for Communal Establishment|
-|ceExpectedCapacity|integer(int32)|false|none|Expected resident capacity (bedspaces) of communal establishments (CE) without unit level addresses.|
+|ceExpectedCapacity|integer(int32)|false|none|Expected resident capacity (bedspaces) of communal establishments (CE)|
 |collectionExerciseId|string(uuid)|false|none|Collection Exercise UUID identifier|
 |createdDateTime|string(date-time)|false|none|Date and time when the case was created|
 |estabType|string|false|none|Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)|
@@ -1698,23 +1908,23 @@ Comprehensive Data Transfer Object containing detailed case attributes
 |events|[[CaseDetailsEventDTO](#schemacasedetailseventdto)]|false|none|List of events associated with this case|
 |fieldCoordinatorId|string|false|none|Field Coordinator identifier for the assigned case|
 |fieldOfficerId|string|false|none|Field Officer identifier for the assigned case|
-|htcDigital|string|false|none|Hard to Count Index - Digital (1-5) indicator, where 1 is least digital and 5 is most digital|
-|htcWillingness|string|false|none|Hard to Count Index - Willingness (1-5) indicator, where 1 is least willing and 5 is most willing|
+|htcDigital|string|false|none|Hard to Count Index - Digital (1-5) indicator|
+|htcWillingness|string|false|none|Hard to Count Index - Willingness (1-5) indicator|
 |id|string(uuid)|true|none|Unique case UUID identifier|
 |invalid|boolean|false|none|Flag indicating if the case record is marked as invalid|
-|lad|string|false|none|Local Authority District code|
+|lad|string|false|none|Local Authority District code (e.g., N06000023, S06000023, E06000023, W06000023)|
 |lastUpdated|string(date-time)|false|none|Date and time when the case was last updated|
 |latitude|string|false|none|Geographic latitude coordinate|
 |longitude|string|false|none|Geographic longitude coordinate|
-|lsoa|string|false|none|Lower Layer Super Output Area grid reference|
-|msoa|string|false|none|Middle Layer Super Output Area grid reference|
-|oa|string|false|none|Output Area grid reference|
+|lsoa|string|false|none|Lower Layer Super Output Area grid reference (e.g., N01014540, S01014540, E01014540, W01014540)|
+|msoa|string|false|none|Middle Layer Super Output Area grid reference (e.g., N02003043, S02003043, E02003043, W02003043)|
+|oa|string|false|none|Output Area grid reference (e.g., N00073438, S00073438, E00073438, W00073438)|
 |organisationName|string|false|none|Name of the organisation at the address|
 |postcode|string|false|none|UK postal code|
 |printBatch|string|false|none|Print batch identifier for household initial contact material|
 |receiptReceived|boolean|false|none|Flag indicating if receipt has been received from respondent|
 |refusalReceived|string|false|none|Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)|
-|region|string|false|none|Administrative region code|
+|region|string|false|none|Administrative region code (e.g., N12000009, S12000009, E12000009, W12000009)|
 |surveyLaunched|boolean|false|none|Flag indicating if survey has been launched to respondent|
 |townName|string|false|none|Town or city name|
 |treatmentCode|string|false|none|Treatment code (one of the appropriate ones for the region (e.g., HH_PSCE, HH_PSLE, HH_PNCE, HH_PNLE, HH_OSCE, HH_OSLE, HH_ONCE, HH_ONLE, HH_PSCW, HH_PSLW, HH_PNCW, HH_PN, HH_OSCW, HH_OSLW, HH_ONCW, HH_ONLW, HH_OGXS, HH_OSXS, HH_PBXN, HH_OAXN, HH_OBXN)) indicating special handling or processing instructions for the case|
@@ -1740,9 +1950,14 @@ Comprehensive Data Transfer Object containing detailed case attributes
 {
   "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "eventType": "NEW_CASE",
-  "eventDescription": "Case created",
+  "eventDescription": "Case created for collection exercise",
   "eventDate": "2024-01-15T10:30:00Z",
-  "eventChannel": "RM"
+  "eventChannel": "RM",
+  "eventTransactionId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "rmEventProcessed": "2024-01-15T10:35:00Z",
+  "eventSource": "UAC_SERVICE",
+  "eventPayload": "{\"caseRef\":\"100000000000001\"}",
+  "messageTimestamp": "2024-01-15T10:30:00Z"
 }
 
 ```
@@ -1775,7 +1990,7 @@ Detailed Data Transfer Object containing event attributes for case details respo
 {
   "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "eventType": "NEW_CASE",
-  "description": "Case created",
+  "description": "Case created for collection exercise",
   "createdDateTime": "2024-01-15T10:30:00Z"
 }
 

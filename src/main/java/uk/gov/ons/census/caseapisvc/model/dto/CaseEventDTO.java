@@ -10,7 +10,7 @@ import lombok.Data;
 @Schema(
     description = "Data Transfer Object representing an event associated with a case",
     example =
-        "{\"id\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\"eventType\":\"NEW_CASE\",\"description\":\"Case created\",\"createdDateTime\":\"2024-01-15T10:30:00Z\"}")
+        "{\"id\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\"eventType\":\"NEW_CASE\",\"description\":\"Case created for collection exercise\",\"createdDateTime\":\"2024-01-15T10:30:00Z\"}")
 public class CaseEventDTO {
 
   @Schema(

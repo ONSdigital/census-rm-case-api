@@ -12,7 +12,7 @@ import uk.gov.ons.census.common.model.entity.RefusalType;
 @Schema(
     description = "Comprehensive Data Transfer Object containing detailed case attributes",
     example =
-        "{\"id\":\"a11e3456-e89b-12d3-a456-426614174000\",\"caseRef\":100000000000001,\"uprn\":\"123456789\",\"postcode\":\"AB12CD\",\"caseType\":\"NEW\"}")
+        "{\"id\":\"a11e3456-e89b-12d3-a456-426614174000\",\"caseRef\":100000000000001,\"uprn\":\"10008677190\",\"estabUprn\":\"10008677190\",\"caseType\":\"HH\",\"addressType\":\"HH\",\"estabType\":\"HOUSEHOLD\",\"addressLevel\":\"U\",\"abpCode\":\"RD06\",\"organisationName\":\"Acme Corporation\",\"addressLine1\":\"Flat 51 Francombe House\",\"addressLine2\":\"Commercial Road\",\"addressLine3\":\"Suite 3\",\"townName\":\"Windleybury\",\"postcode\":\"XX1 0XX\",\"latitude\":\"51.5074\",\"longitude\":\"-0.1278\",\"oa\":\"E00073438\",\"lsoa\":\"E01014540\",\"msoa\":\"E02003043\",\"lad\":\"E06000023\",\"region\":\"E12000009\",\"htcWillingness\":\"3\",\"htcDigital\":\"4\",\"fieldCoordinatorId\":\"FC12344\",\"fieldOfficerId\":\"FO12345\",\"treatmentCode\":\"HH_PSCE\",\"ceExpectedCapacity\":1505,\"ceActualResponses\":1504,\"collectionExerciseId\":\"b22e3456-e89b-12d3-a456-426614174000\",\"createdDateTime\":\"2024-01-15T10:30:00Z\",\"events\":[],\"receiptReceived\":true,\"refusalReceived\":\"SOFT_REFUSAL\",\"invalid\":false,\"lastUpdated\":\"2024-01-20T14:45:00Z\",\"printBatch\":\"15\",\"surveyLaunched\":true}")
 public class CaseDetailsDTO {
 
   @JsonProperty("id")
@@ -83,31 +83,38 @@ public class CaseDetailsDTO {
   @Schema(description = "Geographic longitude coordinate", example = "-0.1278")
   private String longitude;
 
-  @Schema(description = "Output Area grid reference", example = "E00073438")
+  @Schema(
+      description = "Output Area grid reference (e.g., N00073438, S00073438, E00073438, W00073438)",
+      example = "E00073438")
   private String oa;
 
-  @Schema(description = "Lower Layer Super Output Area grid reference", example = "E01014540")
+  @Schema(
+      description =
+          "Lower Layer Super Output Area grid reference (e.g., N01014540, S01014540, E01014540, W01014540)",
+      example = "E01014540")
   private String lsoa;
 
-  @Schema(description = "Middle Layer Super Output Area grid reference", example = "E02003043")
+  @Schema(
+      description =
+          "Middle Layer Super Output Area grid reference (e.g., N02003043, S02003043, E02003043, W02003043)",
+      example = "E02003043")
   private String msoa;
 
-  @Schema(description = "Local Authority District code", example = "E06000023")
+  @Schema(
+      description =
+          "Local Authority District code (e.g., N06000023, S06000023, E06000023, W06000023)",
+      example = "E06000023")
   private String lad;
 
-  @Schema(description = "Administrative region code", example = "E12000009")
+  @Schema(
+      description = "Administrative region code (e.g., N12000009, S12000009, E12000009, W12000009)",
+      example = "E12000009")
   private String region;
 
-  @Schema(
-      description =
-          "Hard to Count Index - Willingness (1-5) indicator, where 1 is least willing and 5 is most willing",
-      example = "3")
+  @Schema(description = "Hard to Count Index - Willingness (1-5) indicator", example = "3")
   private String htcWillingness;
 
-  @Schema(
-      description =
-          "Hard to Count Index - Digital (1-5) indicator, where 1 is least digital and 5 is most digital",
-      example = "4")
+  @Schema(description = "Hard to Count Index - Digital (1-5) indicator", example = "4")
   private String htcDigital;
 
   @Schema(description = "Field Coordinator identifier for the assigned case", example = "FC12344")
@@ -123,8 +130,7 @@ public class CaseDetailsDTO {
   private String treatmentCode;
 
   @Schema(
-      description =
-          "Expected resident capacity (bedspaces) of communal establishments (CE) without unit level addresses.",
+      description = "Expected resident capacity (bedspaces) of communal establishments (CE)",
       example = "1505")
   private Integer ceExpectedCapacity;
 

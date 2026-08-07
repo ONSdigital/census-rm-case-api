@@ -12,7 +12,7 @@ import lombok.Data;
     description =
         "Data Transfer Object representing a UAC (Unique Access Code) and its associated questionnaire details",
     example =
-        "{\"uacHash\":\"abc123def456\",\"uac\":\"U123456\",\"questionnaireId\":\"Q123456\",\"caseId\":\"a11e3456-e89b-12d3-a456-426614174000\",\"caseType\":\"HH\",\"active\":true}")
+        "{\"uacHash\":\"abc123def456\",\"uac\":\"U123456\",\"active\":true,\"questionnaireId\":\"Q123456\",\"caseType\":\"HH\",\"region\":\"E12000009\",\"caseId\":\"a11e3456-e89b-12d3-a456-426614174000\",\"collectionExerciseId\":\"b22e3456-e89b-12d3-a456-426614174000\",\"formType\":\"H\",\"individualCaseId\":\"c33e3456-e89b-12d3-a456-426614\"}")
 public class UacDTO {
   // Uac block for QUESTIONNAIRE_LINKED events
 

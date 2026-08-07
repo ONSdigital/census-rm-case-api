@@ -402,7 +402,7 @@
           },
           "lad" : {
             "type" : "string",
-            "description" : "Local Authority District code",
+            "description" : "Local Authority District code (e.g., N06000023, S06000023, E06000023, W06000023)",
             "example" : "E06000023"
           },
           "lastUpdated" : {
@@ -423,17 +423,17 @@
           },
           "lsoa" : {
             "type" : "string",
-            "description" : "Lower Layer Super Output Area grid reference",
+            "description" : "Lower Layer Super Output Area grid reference (e.g., N01014540, S01014540, E01014540, W01014540)",
             "example" : "E01014540"
           },
           "msoa" : {
             "type" : "string",
-            "description" : "Middle Layer Super Output Area grid reference",
+            "description" : "Middle Layer Super Output Area grid reference (e.g., N02003043, S02003043, E02003043, W02003043)",
             "example" : "E02003043"
           },
           "oa" : {
             "type" : "string",
-            "description" : "Output Area grid reference",
+            "description" : "Output Area grid reference (e.g., N00073438, S00073438, E00073438, W00073438)",
             "example" : "E00073438"
           },
           "organisationName" : {
@@ -448,7 +448,8 @@
           },
           "region" : {
             "type" : "string",
-            "description" : "Administrative region code"
+            "description" : "Administrative region code (e.g., N12000007, S12000007, E12000007, W12000007)",
+            "example" : "E12000007"
           },
           "secureEstablishment" : {
             "type" : "boolean",
@@ -475,9 +476,33 @@
         "example" : {
           "caseRef" : "100000000000001",
           "id" : "a11e3456-e89b-12d3-a456-426614174000",
-          "uprn" : "123456789",
-          "postcode" : "AB12CD",
-          "addressType" : "HH"
+          "estabType" : "HOUSEHOLD",
+          "uprn" : "10008677190",
+          "estabUprn" : "10008677190",
+          "collectionExerciseId" : "b22e3456-e89b-12d3-a456-426614174000",
+          "surveyType" : "CENSUS",
+          "addressType" : "HH",
+          "caseType" : "HH",
+          "createdDateTime" : "2024-01-15T10:30:00Z",
+          "addressLine1" : "Flat 51 Francombe House",
+          "addressLine2" : "Commercial Road",
+          "addressLine3" : "Suite 3",
+          "townName" : "Windleybury",
+          "postcode" : "XX1 0XX",
+          "organisationName" : "Acme Corporation",
+          "addressLevel" : "U",
+          "abpCode" : "RD06",
+          "region" : "E12000007",
+          "latitude" : "51.5074",
+          "longitude" : "-0.1278",
+          "oa" : "E00073438",
+          "lsoa" : "E01014540",
+          "msoa" : "E02003043",
+          "lad" : "E06000023",
+          "lastUpdated" : "2024-01-20T14:45:00Z",
+          "caseEvents" : [ ],
+          "secureEstablishment" : false,
+          "invalid" : false
         }
       },
       "CaseDetailsDTO" : {
@@ -532,7 +557,7 @@
           },
           "ceExpectedCapacity" : {
             "type" : "integer",
-            "description" : "Expected resident capacity (bedspaces) of communal establishments (CE) without unit level addresses.",
+            "description" : "Expected resident capacity (bedspaces) of communal establishments (CE)",
             "format" : "int32",
             "example" : 1505
           },
@@ -577,12 +602,12 @@
           },
           "htcDigital" : {
             "type" : "string",
-            "description" : "Hard to Count Index - Digital (1-5) indicator, where 1 is least digital and 5 is most digital",
+            "description" : "Hard to Count Index - Digital (1-5) indicator",
             "example" : "4"
           },
           "htcWillingness" : {
             "type" : "string",
-            "description" : "Hard to Count Index - Willingness (1-5) indicator, where 1 is least willing and 5 is most willing",
+            "description" : "Hard to Count Index - Willingness (1-5) indicator",
             "example" : "3"
           },
           "id" : {
@@ -598,7 +623,7 @@
           },
           "lad" : {
             "type" : "string",
-            "description" : "Local Authority District code",
+            "description" : "Local Authority District code (e.g., N06000023, S06000023, E06000023, W06000023)",
             "example" : "E06000023"
           },
           "lastUpdated" : {
@@ -619,17 +644,17 @@
           },
           "lsoa" : {
             "type" : "string",
-            "description" : "Lower Layer Super Output Area grid reference",
+            "description" : "Lower Layer Super Output Area grid reference (e.g., N01014540, S01014540, E01014540, W01014540)",
             "example" : "E01014540"
           },
           "msoa" : {
             "type" : "string",
-            "description" : "Middle Layer Super Output Area grid reference",
+            "description" : "Middle Layer Super Output Area grid reference (e.g., N02003043, S02003043, E02003043, W02003043)",
             "example" : "E02003043"
           },
           "oa" : {
             "type" : "string",
-            "description" : "Output Area grid reference",
+            "description" : "Output Area grid reference (e.g., N00073438, S00073438, E00073438, W00073438)",
             "example" : "E00073438"
           },
           "organisationName" : {
@@ -660,7 +685,7 @@
           },
           "region" : {
             "type" : "string",
-            "description" : "Administrative region code",
+            "description" : "Administrative region code (e.g., N12000009, S12000009, E12000009, W12000009)",
             "example" : "E12000009"
           },
           "surveyLaunched" : {
@@ -688,9 +713,42 @@
         "example" : {
           "id" : "a11e3456-e89b-12d3-a456-426614174000",
           "caseRef" : 100000000000001,
-          "uprn" : "123456789",
-          "postcode" : "AB12CD",
-          "caseType" : "NEW"
+          "uprn" : "10008677190",
+          "estabUprn" : "10008677190",
+          "caseType" : "HH",
+          "addressType" : "HH",
+          "estabType" : "HOUSEHOLD",
+          "addressLevel" : "U",
+          "abpCode" : "RD06",
+          "organisationName" : "Acme Corporation",
+          "addressLine1" : "Flat 51 Francombe House",
+          "addressLine2" : "Commercial Road",
+          "addressLine3" : "Suite 3",
+          "townName" : "Windleybury",
+          "postcode" : "XX1 0XX",
+          "latitude" : "51.5074",
+          "longitude" : "-0.1278",
+          "oa" : "E00073438",
+          "lsoa" : "E01014540",
+          "msoa" : "E02003043",
+          "lad" : "E06000023",
+          "region" : "E12000009",
+          "htcWillingness" : "3",
+          "htcDigital" : "4",
+          "fieldCoordinatorId" : "FC12344",
+          "fieldOfficerId" : "FO12345",
+          "treatmentCode" : "HH_PSCE",
+          "ceExpectedCapacity" : 1505,
+          "ceActualResponses" : 1504,
+          "collectionExerciseId" : "b22e3456-e89b-12d3-a456-426614174000",
+          "createdDateTime" : "2024-01-15T10:30:00Z",
+          "events" : [ ],
+          "receiptReceived" : true,
+          "refusalReceived" : "SOFT_REFUSAL",
+          "invalid" : false,
+          "lastUpdated" : "2024-01-20T14:45:00Z",
+          "printBatch" : "15",
+          "surveyLaunched" : true
         }
       },
       "CaseDetailsEventDTO" : {
@@ -756,9 +814,14 @@
         "example" : {
           "id" : "f47ac10b-58cc-4372-a567-0e02b2c3d479",
           "eventType" : "NEW_CASE",
-          "eventDescription" : "Case created",
+          "eventDescription" : "Case created for collection exercise",
           "eventDate" : "2024-01-15T10:30:00Z",
-          "eventChannel" : "RM"
+          "eventChannel" : "RM",
+          "eventTransactionId" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+          "rmEventProcessed" : "2024-01-15T10:35:00Z",
+          "eventSource" : "UAC_SERVICE",
+          "eventPayload" : "{\"caseRef\":\"100000000000001\"}",
+          "messageTimestamp" : "2024-01-15T10:30:00Z"
         }
       },
       "CaseEventDTO" : {
@@ -790,7 +853,7 @@
         "example" : {
           "id" : "f47ac10b-58cc-4372-a567-0e02b2c3d479",
           "eventType" : "NEW_CASE",
-          "description" : "Case created",
+          "description" : "Case created for collection exercise",
           "createdDateTime" : "2024-01-15T10:30:00Z"
         }
       },
