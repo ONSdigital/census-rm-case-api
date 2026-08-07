@@ -65,13 +65,6 @@ GitHub Actions artifacts for easier consumption.
 - Human-readable: [api-docs/openapi.md](api-docs/openapi.md)
 - Interactive browser: [api-docs/openapi.html](api-docs/openapi.html)
 
-**CI/CD (main branch):**
-
-- Download from GitHub Actions: `rm-case-api-openapi-specs` artifact
-- Retained for 90 days
-- Contract gate: CI fails if generated `api-docs/openapi.json` differs from
-  the committed file
-
 ---
 
 ## Configuration
