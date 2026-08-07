@@ -1,0 +1,918 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "description" : "RESTful API for managing census case data. Provides endpoints for querying and retrieving case information by various identifiers (UUID, reference, UPRN, postcode, QID). Returns comprehensive case details including address information, case status, and associated events.",
+    "license" : {
+      "name" : "Office for National Statistics",
+      "url" : "https://www.ons.gov.uk"
+    },
+    "title" : "Case API Service",
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8161",
+    "description" : "Case API Service"
+  } ],
+  "tags" : [ {
+    "description" : "Services for retrieving and managing questionnaire ID (QID) and UAC link information",
+    "name" : "QID Endpoint"
+  }, {
+    "description" : "Services for querying and retrieving census cases",
+    "name" : "Case Endpoint"
+  } ],
+  "paths" : {
+    "/cases/case-details/{caseId}" : {
+      "get" : {
+        "description" : "Retrieves complete detailed case attributes for a given case UUID.",
+        "operationId" : "getAllCaseDetailsByCaseId",
+        "parameters" : [ {
+          "description" : "Unique UUID of the case",
+          "in" : "path",
+          "name" : "caseId",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CaseDetailsDTO"
+                }
+              }
+            },
+            "description" : "Detailed case record retrieved successfully"
+          },
+          "404" : {
+            "description" : "Case ID not found"
+          }
+        },
+        "summary" : "Get full case details by Case ID",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/postcode/{postcode}" : {
+      "get" : {
+        "description" : "Retrieves all cases located within the specified postcode area.",
+        "operationId" : "getCasesByPostcode",
+        "parameters" : [ {
+          "description" : "Postal code identifier",
+          "in" : "path",
+          "name" : "postcode",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CaseContainerDTO"
+                  }
+                }
+              }
+            },
+            "description" : "Matching cases retrieved successfully"
+          }
+        },
+        "summary" : "Find cases by Postcode",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/qid/{qid}" : {
+      "get" : {
+        "description" : "Retrieves minimal case details linked to a specific questionnaire ID.",
+        "operationId" : "findCaseByQid",
+        "parameters" : [ {
+          "description" : "Questionnaire Identifier",
+          "in" : "path",
+          "name" : "qid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CaseContainerDTO"
+                }
+              }
+            },
+            "description" : "Case retrieved successfully"
+          },
+          "404" : {
+            "description" : "QID not found"
+          }
+        },
+        "summary" : "Find case by Questionnaire ID (QID)",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/ref/{reference}" : {
+      "get" : {
+        "description" : "Retrieves a single case container record using the numeric case reference.",
+        "operationId" : "findCaseByReference",
+        "parameters" : [ {
+          "description" : "Unique numeric case reference identifier",
+          "in" : "path",
+          "name" : "reference",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "description" : "Flag indicating whether to include case events",
+          "in" : "query",
+          "name" : "caseEvents",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CaseContainerDTO"
+                }
+              }
+            },
+            "description" : "Case record found successfully"
+          },
+          "404" : {
+            "description" : "Case reference not found"
+          }
+        },
+        "summary" : "Find case by Reference",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/uprn/{uprn}" : {
+      "get" : {
+        "description" : "Retrieves all cases associated with a Unique Property Reference Number.",
+        "operationId" : "findCasesByUPRN",
+        "parameters" : [ {
+          "description" : "Unique Property Reference Number",
+          "in" : "path",
+          "name" : "uprn",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Flag indicating whether to include case events",
+          "in" : "query",
+          "name" : "caseEvents",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "description" : "Filter results to valid addresses only",
+          "in" : "query",
+          "name" : "validAddressOnly",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CaseContainerDTO"
+                  }
+                }
+              }
+            },
+            "description" : "Matching cases retrieved successfully"
+          }
+        },
+        "summary" : "Find cases by UPRN",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/cases/{id}" : {
+      "get" : {
+        "description" : "Retrieves a single case container record matching the specified UUID.",
+        "operationId" : "findCaseById",
+        "parameters" : [ {
+          "description" : "Unique UUID of the case",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "description" : "Flag indicating whether to include case events",
+          "in" : "query",
+          "name" : "caseEvents",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CaseContainerDTO"
+                }
+              }
+            },
+            "description" : "Case record found successfully"
+          },
+          "404" : {
+            "description" : "Case record not found"
+          },
+          "500" : {
+            "description" : "Internal server error occurred"
+          }
+        },
+        "summary" : "Find case by ID",
+        "tags" : [ "Case Endpoint" ]
+      }
+    },
+    "/qids/link" : {
+      "put" : {
+        "description" : "Links a questionnaire ID to a case. This endpoint is currently not implemented as the subscription for questionnaire links is not available.",
+        "operationId" : "putQidLinkToCase",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NewQidLink"
+              }
+            }
+          },
+          "description" : "QID link information to be created",
+          "required" : true
+        },
+        "responses" : {
+          "501" : {
+            "description" : "Not Implemented - Questionnaire link subscription not available"
+          }
+        },
+        "summary" : "Link QID to case",
+        "tags" : [ "QID Endpoint" ]
+      }
+    },
+    "/qids/{qid}" : {
+      "get" : {
+        "description" : "Retrieves the UAC-QID link information for a specified questionnaire ID, including associated case ID if available.",
+        "operationId" : "getUacQidLinkByQid",
+        "parameters" : [ {
+          "description" : "Questionnaire Identifier (QID) to retrieve",
+          "in" : "path",
+          "name" : "qid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QidLink"
+                }
+              }
+            },
+            "description" : "QID link details retrieved successfully"
+          },
+          "404" : {
+            "description" : "Questionnaire ID not found"
+          },
+          "500" : {
+            "description" : "Internal server error occurred"
+          }
+        },
+        "summary" : "Retrieve QID link details",
+        "tags" : [ "QID Endpoint" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "CaseContainerDTO" : {
+        "required" : [ "caseRef", "id" ],
+        "type" : "object",
+        "properties" : {
+          "abpCode" : {
+            "type" : "string",
+            "description" : "AddressBase classification code",
+            "example" : "RD06"
+          },
+          "addressLevel" : {
+            "type" : "string",
+            "description" : "Address level classification (e.g., E, U (signifying Establishment and Unit))",
+            "example" : "U"
+          },
+          "addressLine1" : {
+            "type" : "string",
+            "description" : "First address line",
+            "example" : "Flat 51 Francombe House"
+          },
+          "addressLine2" : {
+            "type" : "string",
+            "description" : "Second address line",
+            "example" : "Commercial Road"
+          },
+          "addressLine3" : {
+            "type" : "string",
+            "description" : "Third address line"
+          },
+          "addressType" : {
+            "type" : "string",
+            "description" : "Residential address frame type (e.g., HH, CE)",
+            "example" : "HH"
+          },
+          "caseEvents" : {
+            "type" : "array",
+            "description" : "List of events associated with the case",
+            "items" : {
+              "$ref" : "#/components/schemas/CaseEventDTO"
+            }
+          },
+          "caseRef" : {
+            "type" : "string",
+            "description" : "Unique numeric reference for the case",
+            "example" : "100000000000001"
+          },
+          "caseType" : {
+            "type" : "string",
+            "description" : "Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.",
+            "example" : "HH"
+          },
+          "collectionExerciseId" : {
+            "type" : "string",
+            "description" : "Collection Exercise UUID identifier",
+            "format" : "uuid",
+            "example" : "b22e3456-e89b-12d3-a456-426614174000"
+          },
+          "createdDateTime" : {
+            "type" : "string",
+            "description" : "Date and time when the case was created",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
+          },
+          "estabType" : {
+            "type" : "string",
+            "description" : "Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)",
+            "example" : "HOUSEHOLD"
+          },
+          "estabUprn" : {
+            "type" : "string",
+            "description" : "Establishment UPRN for non-household establishments",
+            "example" : "10008677190"
+          },
+          "id" : {
+            "type" : "string",
+            "description" : "Unique case UUID identifier",
+            "format" : "uuid",
+            "example" : "a11e3456-e89b-12d3-a456-426614174000"
+          },
+          "invalid" : {
+            "type" : "boolean",
+            "description" : "Flag indicating if the case record is marked as invalid",
+            "example" : false
+          },
+          "lad" : {
+            "type" : "string",
+            "description" : "Local Authority District code (e.g., N06000023, S06000023, E06000023, W06000023)",
+            "example" : "E06000023"
+          },
+          "lastUpdated" : {
+            "type" : "string",
+            "description" : "Date and time when the case was last updated",
+            "format" : "date-time",
+            "example" : "2024-01-20T14:45:00Z"
+          },
+          "latitude" : {
+            "type" : "string",
+            "description" : "Geographic latitude coordinate",
+            "example" : "51.5074"
+          },
+          "longitude" : {
+            "type" : "string",
+            "description" : "Geographic longitude coordinate",
+            "example" : "-0.1278"
+          },
+          "lsoa" : {
+            "type" : "string",
+            "description" : "Lower Layer Super Output Area grid reference (e.g., N01014540, S01014540, E01014540, W01014540)",
+            "example" : "E01014540"
+          },
+          "msoa" : {
+            "type" : "string",
+            "description" : "Middle Layer Super Output Area grid reference (e.g., N02003043, S02003043, E02003043, W02003043)",
+            "example" : "E02003043"
+          },
+          "oa" : {
+            "type" : "string",
+            "description" : "Output Area grid reference (e.g., N00073438, S00073438, E00073438, W00073438)",
+            "example" : "E00073438"
+          },
+          "organisationName" : {
+            "type" : "string",
+            "description" : "Name of the organisation at the address",
+            "example" : "Acme Corporation"
+          },
+          "postcode" : {
+            "type" : "string",
+            "description" : "UK postal code",
+            "example" : "XX1 0XX"
+          },
+          "region" : {
+            "type" : "string",
+            "description" : "Administrative region code (e.g., N12000007, S12000007, E12000007, W12000007)",
+            "example" : "E12000007"
+          },
+          "secureEstablishment" : {
+            "type" : "boolean",
+            "description" : "Indicator whether address is a secure establishment",
+            "example" : false
+          },
+          "surveyType" : {
+            "type" : "string",
+            "description" : "Type of survey (e.g., CENSUS, CCS)",
+            "example" : "CENSUS"
+          },
+          "townName" : {
+            "type" : "string",
+            "description" : "Town or city name",
+            "example" : "Windleybury"
+          },
+          "uprn" : {
+            "type" : "string",
+            "description" : "Unique Property Reference Number",
+            "example" : "10008677190"
+          }
+        },
+        "description" : "Data Transfer Object representing a census case container",
+        "example" : {
+          "caseRef" : "100000000000001",
+          "id" : "a11e3456-e89b-12d3-a456-426614174000",
+          "estabType" : "HOUSEHOLD",
+          "uprn" : "10008677190",
+          "estabUprn" : "10008677190",
+          "collectionExerciseId" : "b22e3456-e89b-12d3-a456-426614174000",
+          "surveyType" : "CENSUS",
+          "addressType" : "HH",
+          "caseType" : "HH",
+          "createdDateTime" : "2024-01-15T10:30:00Z",
+          "addressLine1" : "Flat 51 Francombe House",
+          "addressLine2" : "Commercial Road",
+          "addressLine3" : "Suite 3",
+          "townName" : "Windleybury",
+          "postcode" : "XX1 0XX",
+          "organisationName" : "Acme Corporation",
+          "addressLevel" : "U",
+          "abpCode" : "RD06",
+          "region" : "E12000007",
+          "latitude" : "51.5074",
+          "longitude" : "-0.1278",
+          "oa" : "E00073438",
+          "lsoa" : "E01014540",
+          "msoa" : "E02003043",
+          "lad" : "E06000023",
+          "lastUpdated" : "2024-01-20T14:45:00Z",
+          "caseEvents" : [ ],
+          "secureEstablishment" : false,
+          "invalid" : false
+        }
+      },
+      "CaseDetailsDTO" : {
+        "required" : [ "caseRef", "id" ],
+        "type" : "object",
+        "properties" : {
+          "abpCode" : {
+            "type" : "string",
+            "description" : "AddressBase classification code",
+            "example" : "RD06"
+          },
+          "addressLevel" : {
+            "type" : "string",
+            "description" : "Address level classification (e.g., E, U (signifying Establishment and Unit))",
+            "example" : "U"
+          },
+          "addressLine1" : {
+            "type" : "string",
+            "description" : "First address line",
+            "example" : "Flat 51 Francombe House"
+          },
+          "addressLine2" : {
+            "type" : "string",
+            "description" : "Second address line",
+            "example" : "Commercial Road"
+          },
+          "addressLine3" : {
+            "type" : "string",
+            "description" : "Third address line"
+          },
+          "addressType" : {
+            "type" : "string",
+            "description" : "Residential address frame type (e.g., HH, CE)",
+            "example" : "HH"
+          },
+          "caseRef" : {
+            "type" : "integer",
+            "description" : "Unique numeric reference for the case",
+            "format" : "int64",
+            "example" : 100000000000001
+          },
+          "caseType" : {
+            "type" : "string",
+            "description" : "Case type classification (e.g., HH, HI, CE). It will match addressType unless it is an individual (HI) case.",
+            "example" : "HH"
+          },
+          "ceActualResponses" : {
+            "type" : "integer",
+            "description" : "Actual number of responses received for Communal Establishment",
+            "format" : "int32",
+            "example" : 1504
+          },
+          "ceExpectedCapacity" : {
+            "type" : "integer",
+            "description" : "Expected resident capacity (bedspaces) of communal establishments (CE)",
+            "format" : "int32",
+            "example" : 1505
+          },
+          "collectionExerciseId" : {
+            "type" : "string",
+            "description" : "Collection Exercise UUID identifier",
+            "format" : "uuid",
+            "example" : "b22e3456-e89b-12d3-a456-426614174000"
+          },
+          "createdDateTime" : {
+            "type" : "string",
+            "description" : "Date and time when the case was created",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
+          },
+          "estabType" : {
+            "type" : "string",
+            "description" : "Establishment type (e.g., HALL OF RESIDENCE, HOUSEHOLD, SHELTERED ACCOMMODATION, RESIDENTIAL CARAVAN, RESIDENTIAL BOAT)",
+            "example" : "HOUSEHOLD"
+          },
+          "estabUprn" : {
+            "type" : "string",
+            "description" : "Establishment UPRN for non-household establishments",
+            "example" : "10008677190"
+          },
+          "events" : {
+            "type" : "array",
+            "description" : "List of events associated with this case",
+            "items" : {
+              "$ref" : "#/components/schemas/CaseDetailsEventDTO"
+            }
+          },
+          "fieldCoordinatorId" : {
+            "type" : "string",
+            "description" : "Field Coordinator identifier for the assigned case",
+            "example" : "FC12344"
+          },
+          "fieldOfficerId" : {
+            "type" : "string",
+            "description" : "Field Officer identifier for the assigned case",
+            "example" : "FO12345"
+          },
+          "htcDigital" : {
+            "type" : "string",
+            "description" : "Hard to Count Index - Digital (1-5) indicator",
+            "example" : "4"
+          },
+          "htcWillingness" : {
+            "type" : "string",
+            "description" : "Hard to Count Index - Willingness (1-5) indicator",
+            "example" : "3"
+          },
+          "id" : {
+            "type" : "string",
+            "description" : "Unique case UUID identifier",
+            "format" : "uuid",
+            "example" : "a11e3456-e89b-12d3-a456-426614174000"
+          },
+          "invalid" : {
+            "type" : "boolean",
+            "description" : "Flag indicating if the case record is marked as invalid",
+            "example" : false
+          },
+          "lad" : {
+            "type" : "string",
+            "description" : "Local Authority District code (e.g., N06000023, S06000023, E06000023, W06000023)",
+            "example" : "E06000023"
+          },
+          "lastUpdated" : {
+            "type" : "string",
+            "description" : "Date and time when the case was last updated",
+            "format" : "date-time",
+            "example" : "2024-01-20T14:45:00Z"
+          },
+          "latitude" : {
+            "type" : "string",
+            "description" : "Geographic latitude coordinate",
+            "example" : "51.5074"
+          },
+          "longitude" : {
+            "type" : "string",
+            "description" : "Geographic longitude coordinate",
+            "example" : "-0.1278"
+          },
+          "lsoa" : {
+            "type" : "string",
+            "description" : "Lower Layer Super Output Area grid reference (e.g., N01014540, S01014540, E01014540, W01014540)",
+            "example" : "E01014540"
+          },
+          "msoa" : {
+            "type" : "string",
+            "description" : "Middle Layer Super Output Area grid reference (e.g., N02003043, S02003043, E02003043, W02003043)",
+            "example" : "E02003043"
+          },
+          "oa" : {
+            "type" : "string",
+            "description" : "Output Area grid reference (e.g., N00073438, S00073438, E00073438, W00073438)",
+            "example" : "E00073438"
+          },
+          "organisationName" : {
+            "type" : "string",
+            "description" : "Name of the organisation at the address",
+            "example" : "Acme Corporation"
+          },
+          "postcode" : {
+            "type" : "string",
+            "description" : "UK postal code",
+            "example" : "XX1 0XX"
+          },
+          "printBatch" : {
+            "type" : "string",
+            "description" : "Print batch identifier for household initial contact material",
+            "example" : "15"
+          },
+          "receiptReceived" : {
+            "type" : "boolean",
+            "description" : "Flag indicating if receipt has been received from respondent",
+            "example" : true
+          },
+          "refusalReceived" : {
+            "type" : "string",
+            "description" : "Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)",
+            "example" : "SOFT_REFUSAL",
+            "enum" : [ "HARD_REFUSAL", "EXTRAORDINARY_REFUSAL", "SOFT_REFUSAL", "WITHDRAWAL_REFUSAL" ]
+          },
+          "region" : {
+            "type" : "string",
+            "description" : "Administrative region code (e.g., N12000009, S12000009, E12000009, W12000009)",
+            "example" : "E12000009"
+          },
+          "surveyLaunched" : {
+            "type" : "boolean",
+            "description" : "Flag indicating if survey has been launched to respondent",
+            "example" : true
+          },
+          "townName" : {
+            "type" : "string",
+            "description" : "Town or city name",
+            "example" : "Windleybury"
+          },
+          "treatmentCode" : {
+            "type" : "string",
+            "description" : "Treatment code (one of the appropriate ones for the region (e.g., HH_PSCE, HH_PSLE, HH_PNCE, HH_PNLE, HH_OSCE, HH_OSLE, HH_ONCE, HH_ONLE, HH_PSCW, HH_PSLW, HH_PNCW, HH_PN, HH_OSCW, HH_OSLW, HH_ONCW, HH_ONLW, HH_OGXS, HH_OSXS, HH_PBXN, HH_OAXN, HH_OBXN)) indicating special handling or processing instructions for the case",
+            "example" : "HH_PSCE"
+          },
+          "uprn" : {
+            "type" : "string",
+            "description" : "Unique Property Reference Number",
+            "example" : "10008677190"
+          }
+        },
+        "description" : "Comprehensive Data Transfer Object containing detailed case attributes",
+        "example" : {
+          "id" : "a11e3456-e89b-12d3-a456-426614174000",
+          "caseRef" : 100000000000001,
+          "uprn" : "10008677190",
+          "estabUprn" : "10008677190",
+          "caseType" : "HH",
+          "addressType" : "HH",
+          "estabType" : "HOUSEHOLD",
+          "addressLevel" : "U",
+          "abpCode" : "RD06",
+          "organisationName" : "Acme Corporation",
+          "addressLine1" : "Flat 51 Francombe House",
+          "addressLine2" : "Commercial Road",
+          "addressLine3" : "Suite 3",
+          "townName" : "Windleybury",
+          "postcode" : "XX1 0XX",
+          "latitude" : "51.5074",
+          "longitude" : "-0.1278",
+          "oa" : "E00073438",
+          "lsoa" : "E01014540",
+          "msoa" : "E02003043",
+          "lad" : "E06000023",
+          "region" : "E12000009",
+          "htcWillingness" : "3",
+          "htcDigital" : "4",
+          "fieldCoordinatorId" : "FC12344",
+          "fieldOfficerId" : "FO12345",
+          "treatmentCode" : "HH_PSCE",
+          "ceExpectedCapacity" : 1505,
+          "ceActualResponses" : 1504,
+          "collectionExerciseId" : "b22e3456-e89b-12d3-a456-426614174000",
+          "createdDateTime" : "2024-01-15T10:30:00Z",
+          "events" : [ ],
+          "receiptReceived" : true,
+          "refusalReceived" : "SOFT_REFUSAL",
+          "invalid" : false,
+          "lastUpdated" : "2024-01-20T14:45:00Z",
+          "printBatch" : "15",
+          "surveyLaunched" : true
+        }
+      },
+      "CaseDetailsEventDTO" : {
+        "required" : [ "eventChannel", "eventDate", "eventType", "id" ],
+        "type" : "object",
+        "properties" : {
+          "eventChannel" : {
+            "type" : "string",
+            "description" : "Channel through which the event was triggered (RM, CC, etc.)",
+            "example" : "RM"
+          },
+          "eventDate" : {
+            "type" : "string",
+            "description" : "Date and time when the event occurred",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
+          },
+          "eventDescription" : {
+            "type" : "string",
+            "description" : "Human-readable description of the event",
+            "example" : "Case created for collection exercise"
+          },
+          "eventPayload" : {
+            "type" : "string",
+            "description" : "JSON payload containing event-specific data"
+          },
+          "eventSource" : {
+            "type" : "string",
+            "description" : "Source system that generated the event (e.g., UAC_SERVICE, PRINT_SERVICE)",
+            "example" : "UAC_SERVICE"
+          },
+          "eventTransactionId" : {
+            "type" : "string",
+            "description" : "Unique transaction identifier for this event",
+            "format" : "uuid",
+            "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
+          },
+          "eventType" : {
+            "type" : "string",
+            "description" : "Type of event (e.g., NEW_CASE, RECEIPT, REFUSAL, EQ_LAUNCH, UAC_AUTHENTICATION)",
+            "example" : "NEW_CASE"
+          },
+          "id" : {
+            "type" : "string",
+            "description" : "Unique event identifier (UUID)",
+            "format" : "uuid",
+            "example" : "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "messageTimestamp" : {
+            "type" : "string",
+            "description" : "Message timestamp from the originating system",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
+          },
+          "rmEventProcessed" : {
+            "type" : "string",
+            "description" : "Date and time when the event was processed by RM",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:35:00Z"
+          }
+        },
+        "description" : "Detailed Data Transfer Object containing event attributes for case details response",
+        "example" : {
+          "id" : "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "eventType" : "NEW_CASE",
+          "eventDescription" : "Case created for collection exercise",
+          "eventDate" : "2024-01-15T10:30:00Z",
+          "eventChannel" : "RM",
+          "eventTransactionId" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+          "rmEventProcessed" : "2024-01-15T10:35:00Z",
+          "eventSource" : "UAC_SERVICE",
+          "eventPayload" : "{\"caseRef\":\"100000000000001\"}",
+          "messageTimestamp" : "2024-01-15T10:30:00Z"
+        }
+      },
+      "CaseEventDTO" : {
+        "required" : [ "createdDateTime", "eventType", "id" ],
+        "type" : "object",
+        "properties" : {
+          "createdDateTime" : {
+            "type" : "string",
+            "description" : "Date and time when the event was created",
+            "format" : "date-time",
+            "example" : "2024-01-15T10:30:00Z"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "Human-readable description of the event",
+            "example" : "Case created for collection exercise"
+          },
+          "eventType" : {
+            "$ref" : "#/components/schemas/EventTypeDTO"
+          },
+          "id" : {
+            "type" : "string",
+            "description" : "Unique event identifier (UUID)",
+            "format" : "uuid",
+            "example" : "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          }
+        },
+        "description" : "Data Transfer Object representing an event associated with a case",
+        "example" : {
+          "id" : "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "eventType" : "NEW_CASE",
+          "description" : "Case created for collection exercise",
+          "createdDateTime" : "2024-01-15T10:30:00Z"
+        }
+      },
+      "EventTypeDTO" : {
+        "type" : "string",
+        "description" : "Enumeration of all possible event types that can occur in the census RM system",
+        "example" : "NEW_CASE",
+        "enum" : [ "NEW_CASE", "RECEIPT", "REFUSAL", "INVALID_CASE", "EQ_LAUNCH", "UAC_AUTHENTICATION", "PRINT_FULFILMENT", "EXPORT_FILE", "DEACTIVATE_UAC", "UPDATE_SAMPLE", "UPDATE_SAMPLE_SENSITIVE", "SMS_FULFILMENT", "ACTION_RULE_SMS_REQUEST", "EMAIL_FULFILMENT", "ACTION_RULE_EMAIL_REQUEST", "ACTION_RULE_SMS_CONFIRMATION", "ACTION_RULE_EMAIL_CONFIRMATION", "ERASE_DATA" ]
+      },
+      "NewQidLink" : {
+        "type" : "object",
+        "properties" : {
+          "channel" : {
+            "type" : "string",
+            "description" : "Channel through which this link was created (e.g., CONTACT_CENTRE, PHONE, ONLINE)",
+            "example" : "CONTACT_CENTRE"
+          },
+          "qidLink" : {
+            "$ref" : "#/components/schemas/QidLink"
+          },
+          "transactionId" : {
+            "type" : "string",
+            "description" : "Transaction ID for tracing this QID link request",
+            "format" : "uuid",
+            "example" : "a11e3456-e89b-12d3-a456-426614174000"
+          }
+        },
+        "description" : "Data Transfer Object for creating a new QID link to a case",
+        "example" : {
+          "transactionId" : "a11e3456-e89b-12d3-a456-426614174000",
+          "channel" : "CONTACT_CENTRE",
+          "qidLink" : {
+            "questionnaireId" : "Q123456",
+            "caseId" : "a11e3456-e89b-12d3-a456-426614174000"
+          }
+        }
+      },
+      "QidLink" : {
+        "required" : [ "questionnaireId" ],
+        "type" : "object",
+        "properties" : {
+          "caseId" : {
+            "type" : "string",
+            "description" : "UUID of the census case associated with this QID",
+            "format" : "uuid",
+            "example" : "a11e3456-e89b-12d3-a456-426614174000"
+          },
+          "questionnaireId" : {
+            "type" : "string",
+            "description" : "Unique Questionnaire Identifier (QID) assigned to the respondent",
+            "example" : "Q123456"
+          }
+        },
+        "description" : "Data Transfer Object representing the link between a Questionnaire ID (QID) and a Case",
+        "example" : {
+          "questionnaireId" : "Q123456",
+          "caseId" : "a11e3456-e89b-12d3-a456-426614174000"
+        }
+      }
+    }
+  }
+}

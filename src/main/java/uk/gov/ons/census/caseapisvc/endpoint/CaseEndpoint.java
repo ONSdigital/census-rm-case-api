@@ -1,6 +1,14 @@
 package uk.gov.ons.census.caseapisvc.endpoint;
 
 import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +27,7 @@ import uk.gov.ons.census.common.model.entity.UacQidLink;
 @RestController
 @RequestMapping(value = "/cases")
 @Timed
+@Tag(name = "Case Endpoint", description = "Services for querying and retrieving census cases")
 public class CaseEndpoint {
   private final CaseService caseService;
 
@@ -28,29 +37,90 @@ public class CaseEndpoint {
   }
 
   @GetMapping(value = "/{id}")
+  @Operation(
+      summary = "Find case by ID",
+      description = "Retrieves a single case container record matching the specified UUID.")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Case record found successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = CaseContainerDTO.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Case record not found",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error occurred",
+            content = @Content)
+      })
   public CaseContainerDTO findCaseById(
-      @PathVariable("id") UUID id,
-      @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
+      @Parameter(description = "Unique UUID of the case", required = true) @PathVariable("id")
+          UUID id,
+      @Parameter(description = "Flag indicating whether to include case events")
+          @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           boolean caseEvents) {
 
     return buildCaseContainerDTO(caseService.findById(id), caseEvents);
   }
 
   @GetMapping(value = "/ref/{reference}")
+  @Operation(
+      summary = "Find case by Reference",
+      description = "Retrieves a single case container record using the numeric case reference.")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Case record found successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = CaseContainerDTO.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Case reference not found",
+            content = @Content)
+      })
   public CaseContainerDTO findCaseByReference(
-      @PathVariable("reference") long reference,
-      @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
+      @Parameter(description = "Unique numeric case reference identifier", required = true)
+          @PathVariable("reference")
+          long reference,
+      @Parameter(description = "Flag indicating whether to include case events")
+          @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           boolean caseEvents) {
 
     return buildCaseContainerDTO(caseService.findByReference(reference), caseEvents);
   }
 
   @GetMapping(value = "/uprn/{uprn}")
+  @Operation(
+      summary = "Find cases by UPRN",
+      description = "Retrieves all cases associated with a Unique Property Reference Number.")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Matching cases retrieved successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array =
+                        @ArraySchema(schema = @Schema(implementation = CaseContainerDTO.class))))
+      })
   public List<CaseContainerDTO> findCasesByUPRN(
-      @PathVariable("uprn") String uprn,
-      @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
+      @Parameter(description = "Unique Property Reference Number", required = true)
+          @PathVariable("uprn")
+          String uprn,
+      @Parameter(description = "Flag indicating whether to include case events")
+          @RequestParam(value = "caseEvents", required = false, defaultValue = "false")
           boolean caseEvents,
-      @RequestParam(value = "validAddressOnly", required = false, defaultValue = "false")
+      @Parameter(description = "Filter results to valid addresses only")
+          @RequestParam(value = "validAddressOnly", required = false, defaultValue = "false")
           boolean validAddressOnly) {
 
     List<CaseContainerDTO> caseContainerDTOs = new LinkedList<>();
@@ -63,7 +133,23 @@ public class CaseEndpoint {
   }
 
   @GetMapping(value = "/postcode/{postcode}")
-  public List<CaseContainerDTO> getCasesByPostcode(@PathVariable("postcode") String postcode) {
+  @Operation(
+      summary = "Find cases by Postcode",
+      description = "Retrieves all cases located within the specified postcode area.")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Matching cases retrieved successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array =
+                        @ArraySchema(schema = @Schema(implementation = CaseContainerDTO.class))))
+      })
+  public List<CaseContainerDTO> getCasesByPostcode(
+      @Parameter(description = "Postal code identifier", required = true) @PathVariable("postcode")
+          String postcode) {
     List<Case> cases = caseService.findByPostcode(postcode);
     List<CaseContainerDTO> caseContainerDTOs = new LinkedList<>();
     for (Case caze : cases) {
@@ -73,7 +159,23 @@ public class CaseEndpoint {
   }
 
   @GetMapping(value = "/qid/{qid}")
-  public CaseContainerDTO findCaseByQid(@PathVariable("qid") String qid) {
+  @Operation(
+      summary = "Find case by Questionnaire ID (QID)",
+      description = "Retrieves minimal case details linked to a specific questionnaire ID.")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Case retrieved successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = CaseContainerDTO.class))),
+        @ApiResponse(responseCode = "404", description = "QID not found", content = @Content)
+      })
+  public CaseContainerDTO findCaseByQid(
+      @Parameter(description = "Questionnaire Identifier", required = true) @PathVariable("qid")
+          String qid) {
     Case caze = caseService.findCaseByQid(qid);
     CaseContainerDTO caseContainerDTO = new CaseContainerDTO();
     caseContainerDTO.setCaseId(caze.getId());
@@ -83,7 +185,23 @@ public class CaseEndpoint {
   }
 
   @GetMapping(value = "/case-details/{caseId}")
-  public CaseDetailsDTO getAllCaseDetailsByCaseId(@PathVariable("caseId") UUID caseId) {
+  @Operation(
+      summary = "Get full case details by Case ID",
+      description = "Retrieves complete detailed case attributes for a given case UUID.")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Detailed case record retrieved successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = CaseDetailsDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Case ID not found", content = @Content)
+      })
+  public CaseDetailsDTO getAllCaseDetailsByCaseId(
+      @Parameter(description = "Unique UUID of the case", required = true) @PathVariable("caseId")
+          UUID caseId) {
     Case caze = caseService.findById(caseId);
     return buildCaseDetailsDTO(caze);
   }

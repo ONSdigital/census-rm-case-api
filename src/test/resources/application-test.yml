@@ -11,3 +11,10 @@ spring:
 uacservice:
   connection:
       port: 18165
+
+openapi:
+  server-url: http://localhost:8161
+
+springdoc:
+  writer-with-order-by-keys: true
+  writer-with-default-pretty-printer: true
