@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout Repository Code.
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up JDK 21 Runtime.
         uses: actions/setup-java@v5
@@ -30,12 +30,12 @@ jobs:
       # Pinned explicitly because @redocly/cli 2.x requires Node >= 22.12 — we no
       # longer rely on whatever happens to be preinstalled on the runner image.
       - name: Set up Node.js Runtime.
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "22"
 
       - name: Checkout common entity model.
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ONSdigital/census-rm-common-entity-model
           path: deps/census-rm-common-entity-model
@@ -44,7 +44,7 @@ jobs:
         run: mvn -B -f deps/census-rm-common-entity-model/pom.xml clean install -DskipTests
 
       - name: Checkout shared sample validation.
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ONSdigital/census-rm-shared-sample-validation
           path: deps/census-rm-shared-sample-validation
@@ -93,7 +93,7 @@ jobs:
           echo "Committed OpenAPI JSON is in sync with the code"
 
       - name: Publish Generated OpenAPI Specification Artifacts.
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: rm-case-api-openapi-specs
