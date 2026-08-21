@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout Repository Code.
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up JDK 21 Runtime.
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
@@ -37,6 +39,7 @@ jobs:
       - name: Checkout common entity model.
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          persist-credentials: false
           repository: ONSdigital/census-rm-common-entity-model
           path: deps/census-rm-common-entity-model
 
@@ -46,6 +49,7 @@ jobs:
       - name: Checkout shared sample validation.
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          persist-credentials: false
           repository: ONSdigital/census-rm-shared-sample-validation
           path: deps/census-rm-shared-sample-validation
 
