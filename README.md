@@ -70,8 +70,7 @@ GitHub Actions artifacts for easier consumption.
 ## Configuration
 
 By default settings in `src/main/resources/application.yml` are used to
-configure
-[census-rm-case-api](https://github.com/ONSdigital/census-rm-case-api).
+configure [census-rm-case-api](https://github.com/ONSdigital/census-rm-case-api).
 
 For production the configuration is overridden by the K8S apply script
 
