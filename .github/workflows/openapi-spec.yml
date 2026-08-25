@@ -17,10 +17,12 @@ jobs:
 
     steps:
       - name: Checkout Repository Code.
-        uses: actions/checkout@v5
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up JDK 21 Runtime.
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           java-version: "21"
           distribution: "temurin"
@@ -30,13 +32,14 @@ jobs:
       # Pinned explicitly because @redocly/cli 2.x requires Node >= 22.12 — we no
       # longer rely on whatever happens to be preinstalled on the runner image.
       - name: Set up Node.js Runtime.
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: "22"
 
       - name: Checkout common entity model.
-        uses: actions/checkout@v5
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          persist-credentials: false
           repository: ONSdigital/census-rm-common-entity-model
           path: deps/census-rm-common-entity-model
 
@@ -44,8 +47,9 @@ jobs:
         run: mvn -B -f deps/census-rm-common-entity-model/pom.xml clean install -DskipTests
 
       - name: Checkout shared sample validation.
-        uses: actions/checkout@v5
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          persist-credentials: false
           repository: ONSdigital/census-rm-shared-sample-validation
           path: deps/census-rm-shared-sample-validation
 
@@ -93,7 +97,7 @@ jobs:
           echo "Committed OpenAPI JSON is in sync with the code"
 
       - name: Publish Generated OpenAPI Specification Artifacts.
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         if: always()
         with:
           name: rm-case-api-openapi-specs
