@@ -20,7 +20,7 @@ public interface CaseRepository extends JpaRepository<Case, UUID> {
   Optional<List<Case>> findByUprnAndInvalidFalse(String uprn);
 
   @Query(
-      """
+"""
     SELECT c
     FROM Case c
     WHERE UPPER(REPLACE(c.postcode, ' ', '')) = UPPER(REPLACE(:postcode, ' ', ''))

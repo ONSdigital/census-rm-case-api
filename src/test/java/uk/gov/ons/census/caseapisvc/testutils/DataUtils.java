@@ -2,16 +2,16 @@ package uk.gov.ons.census.caseapisvc.testutils;
 
 import static java.time.OffsetDateTime.now;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.json.JSONArray;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.JsonNode;
+import kong.unirest.core.json.JSONArray;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.ons.census.caseapisvc.model.dto.CaseContainerDTO;
 import uk.gov.ons.census.caseapisvc.model.dto.UacQidCreatedPayloadDTO;
+import uk.gov.ons.census.caseapisvc.utility.ObjectMapperFactory;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.Event;
 import uk.gov.ons.census.common.model.entity.EventType;
@@ -31,11 +31,7 @@ public class DataUtils {
   public static final String CREATED_UAC = "created UAC";
   public static final String TEST_POSTCODE = "AB1 2BC";
 
-  public static final ObjectMapper mapper;
-
-  static {
-    mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-  }
+  public static final ObjectMapper mapper = ObjectMapperFactory.objectMapper();
 
   public static Case createSingleCaseWithEvents() {
     return createCase(TEST1_CASE_ID, TEST1_CASE_REFERENCE_ID);

@@ -1,5 +1,5 @@
 {
-  "openapi" : "3.0.1",
+  "openapi" : "3.1.0",
   "info" : {
     "description" : "RESTful API for managing census case data. Provides endpoints for querying and retrieving case information by various identifiers (UUID, reference, UPRN, postcode, QID). Returns comprehensive case details including address information, case status, and associated events.",
     "license" : {
@@ -318,8 +318,39 @@
   "components" : {
     "schemas" : {
       "CaseContainerDTO" : {
-        "required" : [ "caseRef", "id" ],
         "type" : "object",
+        "description" : "Data Transfer Object representing a census case container",
+        "example" : {
+          "caseRef" : "100000000000001",
+          "id" : "a11e3456-e89b-12d3-a456-426614174000",
+          "estabType" : "HOUSEHOLD",
+          "uprn" : "10008677190",
+          "estabUprn" : "10008677190",
+          "collectionExerciseId" : "b22e3456-e89b-12d3-a456-426614174000",
+          "surveyType" : "CENSUS",
+          "addressType" : "HH",
+          "caseType" : "HH",
+          "createdDateTime" : "2024-01-15T10:30:00Z",
+          "addressLine1" : "Flat 51 Francombe House",
+          "addressLine2" : "Commercial Road",
+          "addressLine3" : "Suite 3",
+          "townName" : "Windleybury",
+          "postcode" : "XX1 0XX",
+          "organisationName" : "Acme Corporation",
+          "addressLevel" : "U",
+          "abpCode" : "RD06",
+          "region" : "E12000007",
+          "latitude" : "51.5074",
+          "longitude" : "-0.1278",
+          "oa" : "E00073438",
+          "lsoa" : "E01014540",
+          "msoa" : "E02003043",
+          "lad" : "E06000023",
+          "lastUpdated" : "2024-01-20T14:45:00Z",
+          "caseEvents" : [ ],
+          "secureEstablishment" : false,
+          "invalid" : false
+        },
         "properties" : {
           "abpCode" : {
             "type" : "string",
@@ -369,14 +400,14 @@
           },
           "collectionExerciseId" : {
             "type" : "string",
-            "description" : "Collection Exercise UUID identifier",
             "format" : "uuid",
+            "description" : "Collection Exercise UUID identifier",
             "example" : "b22e3456-e89b-12d3-a456-426614174000"
           },
           "createdDateTime" : {
             "type" : "string",
-            "description" : "Date and time when the case was created",
             "format" : "date-time",
+            "description" : "Date and time when the case was created",
             "example" : "2024-01-15T10:30:00Z"
           },
           "estabType" : {
@@ -391,8 +422,8 @@
           },
           "id" : {
             "type" : "string",
-            "description" : "Unique case UUID identifier",
             "format" : "uuid",
+            "description" : "Unique case UUID identifier",
             "example" : "a11e3456-e89b-12d3-a456-426614174000"
           },
           "invalid" : {
@@ -407,8 +438,8 @@
           },
           "lastUpdated" : {
             "type" : "string",
-            "description" : "Date and time when the case was last updated",
             "format" : "date-time",
+            "description" : "Date and time when the case was last updated",
             "example" : "2024-01-20T14:45:00Z"
           },
           "latitude" : {
@@ -472,42 +503,51 @@
             "example" : "10008677190"
           }
         },
-        "description" : "Data Transfer Object representing a census case container",
+        "required" : [ "caseRef", "id" ]
+      },
+      "CaseDetailsDTO" : {
+        "type" : "object",
+        "description" : "Comprehensive Data Transfer Object containing detailed case attributes",
         "example" : {
-          "caseRef" : "100000000000001",
           "id" : "a11e3456-e89b-12d3-a456-426614174000",
-          "estabType" : "HOUSEHOLD",
+          "caseRef" : 100000000000001,
           "uprn" : "10008677190",
           "estabUprn" : "10008677190",
-          "collectionExerciseId" : "b22e3456-e89b-12d3-a456-426614174000",
-          "surveyType" : "CENSUS",
-          "addressType" : "HH",
           "caseType" : "HH",
-          "createdDateTime" : "2024-01-15T10:30:00Z",
+          "addressType" : "HH",
+          "estabType" : "HOUSEHOLD",
+          "addressLevel" : "U",
+          "abpCode" : "RD06",
+          "organisationName" : "Acme Corporation",
           "addressLine1" : "Flat 51 Francombe House",
           "addressLine2" : "Commercial Road",
           "addressLine3" : "Suite 3",
           "townName" : "Windleybury",
           "postcode" : "XX1 0XX",
-          "organisationName" : "Acme Corporation",
-          "addressLevel" : "U",
-          "abpCode" : "RD06",
-          "region" : "E12000007",
           "latitude" : "51.5074",
           "longitude" : "-0.1278",
           "oa" : "E00073438",
           "lsoa" : "E01014540",
           "msoa" : "E02003043",
           "lad" : "E06000023",
+          "region" : "E12000009",
+          "htcWillingness" : "3",
+          "htcDigital" : "4",
+          "fieldCoordinatorId" : "FC12344",
+          "fieldOfficerId" : "FO12345",
+          "treatmentCode" : "HH_PSCE",
+          "ceExpectedCapacity" : 1505,
+          "ceActualResponses" : 1504,
+          "collectionExerciseId" : "b22e3456-e89b-12d3-a456-426614174000",
+          "createdDateTime" : "2024-01-15T10:30:00Z",
+          "events" : [ ],
+          "receiptReceived" : true,
+          "refusalReceived" : "SOFT_REFUSAL",
+          "invalid" : false,
           "lastUpdated" : "2024-01-20T14:45:00Z",
-          "caseEvents" : [ ],
-          "secureEstablishment" : false,
-          "invalid" : false
-        }
-      },
-      "CaseDetailsDTO" : {
-        "required" : [ "caseRef", "id" ],
-        "type" : "object",
+          "printBatch" : "15",
+          "surveyLaunched" : true
+        },
         "properties" : {
           "abpCode" : {
             "type" : "string",
@@ -540,8 +580,8 @@
           },
           "caseRef" : {
             "type" : "integer",
-            "description" : "Unique numeric reference for the case",
             "format" : "int64",
+            "description" : "Unique numeric reference for the case",
             "example" : 100000000000001
           },
           "caseType" : {
@@ -551,26 +591,26 @@
           },
           "ceActualResponses" : {
             "type" : "integer",
-            "description" : "Actual number of responses received for Communal Establishment",
             "format" : "int32",
+            "description" : "Actual number of responses received for Communal Establishment",
             "example" : 1504
           },
           "ceExpectedCapacity" : {
             "type" : "integer",
-            "description" : "Expected resident capacity (bedspaces) of communal establishments (CE)",
             "format" : "int32",
+            "description" : "Expected resident capacity (bedspaces) of communal establishments (CE)",
             "example" : 1505
           },
           "collectionExerciseId" : {
             "type" : "string",
-            "description" : "Collection Exercise UUID identifier",
             "format" : "uuid",
+            "description" : "Collection Exercise UUID identifier",
             "example" : "b22e3456-e89b-12d3-a456-426614174000"
           },
           "createdDateTime" : {
             "type" : "string",
-            "description" : "Date and time when the case was created",
             "format" : "date-time",
+            "description" : "Date and time when the case was created",
             "example" : "2024-01-15T10:30:00Z"
           },
           "estabType" : {
@@ -612,8 +652,8 @@
           },
           "id" : {
             "type" : "string",
-            "description" : "Unique case UUID identifier",
             "format" : "uuid",
+            "description" : "Unique case UUID identifier",
             "example" : "a11e3456-e89b-12d3-a456-426614174000"
           },
           "invalid" : {
@@ -628,8 +668,8 @@
           },
           "lastUpdated" : {
             "type" : "string",
-            "description" : "Date and time when the case was last updated",
             "format" : "date-time",
+            "description" : "Date and time when the case was last updated",
             "example" : "2024-01-20T14:45:00Z"
           },
           "latitude" : {
@@ -680,8 +720,8 @@
           "refusalReceived" : {
             "type" : "string",
             "description" : "Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)",
-            "example" : "SOFT_REFUSAL",
-            "enum" : [ "HARD_REFUSAL", "EXTRAORDINARY_REFUSAL", "SOFT_REFUSAL", "WITHDRAWAL_REFUSAL" ]
+            "enum" : [ "HARD_REFUSAL", "EXTRAORDINARY_REFUSAL", "SOFT_REFUSAL", "WITHDRAWAL_REFUSAL" ],
+            "example" : "SOFT_REFUSAL"
           },
           "region" : {
             "type" : "string",
@@ -709,51 +749,23 @@
             "example" : "10008677190"
           }
         },
-        "description" : "Comprehensive Data Transfer Object containing detailed case attributes",
-        "example" : {
-          "id" : "a11e3456-e89b-12d3-a456-426614174000",
-          "caseRef" : 100000000000001,
-          "uprn" : "10008677190",
-          "estabUprn" : "10008677190",
-          "caseType" : "HH",
-          "addressType" : "HH",
-          "estabType" : "HOUSEHOLD",
-          "addressLevel" : "U",
-          "abpCode" : "RD06",
-          "organisationName" : "Acme Corporation",
-          "addressLine1" : "Flat 51 Francombe House",
-          "addressLine2" : "Commercial Road",
-          "addressLine3" : "Suite 3",
-          "townName" : "Windleybury",
-          "postcode" : "XX1 0XX",
-          "latitude" : "51.5074",
-          "longitude" : "-0.1278",
-          "oa" : "E00073438",
-          "lsoa" : "E01014540",
-          "msoa" : "E02003043",
-          "lad" : "E06000023",
-          "region" : "E12000009",
-          "htcWillingness" : "3",
-          "htcDigital" : "4",
-          "fieldCoordinatorId" : "FC12344",
-          "fieldOfficerId" : "FO12345",
-          "treatmentCode" : "HH_PSCE",
-          "ceExpectedCapacity" : 1505,
-          "ceActualResponses" : 1504,
-          "collectionExerciseId" : "b22e3456-e89b-12d3-a456-426614174000",
-          "createdDateTime" : "2024-01-15T10:30:00Z",
-          "events" : [ ],
-          "receiptReceived" : true,
-          "refusalReceived" : "SOFT_REFUSAL",
-          "invalid" : false,
-          "lastUpdated" : "2024-01-20T14:45:00Z",
-          "printBatch" : "15",
-          "surveyLaunched" : true
-        }
+        "required" : [ "caseRef", "id" ]
       },
       "CaseDetailsEventDTO" : {
-        "required" : [ "eventChannel", "eventDate", "eventType", "id" ],
         "type" : "object",
+        "description" : "Detailed Data Transfer Object containing event attributes for case details response",
+        "example" : {
+          "id" : "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "eventType" : "NEW_CASE",
+          "eventDescription" : "Case created for collection exercise",
+          "eventDate" : "2024-01-15T10:30:00Z",
+          "eventChannel" : "RM",
+          "eventTransactionId" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+          "rmEventProcessed" : "2024-01-15T10:35:00Z",
+          "eventSource" : "UAC_SERVICE",
+          "eventPayload" : "{\"caseRef\":\"100000000000001\"}",
+          "messageTimestamp" : "2024-01-15T10:30:00Z"
+        },
         "properties" : {
           "eventChannel" : {
             "type" : "string",
@@ -762,8 +774,8 @@
           },
           "eventDate" : {
             "type" : "string",
-            "description" : "Date and time when the event occurred",
             "format" : "date-time",
+            "description" : "Date and time when the event occurred",
             "example" : "2024-01-15T10:30:00Z"
           },
           "eventDescription" : {
@@ -782,8 +794,8 @@
           },
           "eventTransactionId" : {
             "type" : "string",
-            "description" : "Unique transaction identifier for this event",
             "format" : "uuid",
+            "description" : "Unique transaction identifier for this event",
             "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
           },
           "eventType" : {
@@ -793,45 +805,39 @@
           },
           "id" : {
             "type" : "string",
-            "description" : "Unique event identifier (UUID)",
             "format" : "uuid",
+            "description" : "Unique event identifier (UUID)",
             "example" : "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "messageTimestamp" : {
             "type" : "string",
-            "description" : "Message timestamp from the originating system",
             "format" : "date-time",
+            "description" : "Message timestamp from the originating system",
             "example" : "2024-01-15T10:30:00Z"
           },
           "rmEventProcessed" : {
             "type" : "string",
-            "description" : "Date and time when the event was processed by RM",
             "format" : "date-time",
+            "description" : "Date and time when the event was processed by RM",
             "example" : "2024-01-15T10:35:00Z"
           }
         },
-        "description" : "Detailed Data Transfer Object containing event attributes for case details response",
+        "required" : [ "eventChannel", "eventDate", "eventType", "id" ]
+      },
+      "CaseEventDTO" : {
+        "type" : "object",
+        "description" : "Data Transfer Object representing an event associated with a case",
         "example" : {
           "id" : "f47ac10b-58cc-4372-a567-0e02b2c3d479",
           "eventType" : "NEW_CASE",
-          "eventDescription" : "Case created for collection exercise",
-          "eventDate" : "2024-01-15T10:30:00Z",
-          "eventChannel" : "RM",
-          "eventTransactionId" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
-          "rmEventProcessed" : "2024-01-15T10:35:00Z",
-          "eventSource" : "UAC_SERVICE",
-          "eventPayload" : "{\"caseRef\":\"100000000000001\"}",
-          "messageTimestamp" : "2024-01-15T10:30:00Z"
-        }
-      },
-      "CaseEventDTO" : {
-        "required" : [ "createdDateTime", "eventType", "id" ],
-        "type" : "object",
+          "description" : "Case created for collection exercise",
+          "createdDateTime" : "2024-01-15T10:30:00Z"
+        },
         "properties" : {
           "createdDateTime" : {
             "type" : "string",
-            "description" : "Date and time when the event was created",
             "format" : "date-time",
+            "description" : "Date and time when the event was created",
             "example" : "2024-01-15T10:30:00Z"
           },
           "description" : {
@@ -840,47 +846,27 @@
             "example" : "Case created for collection exercise"
           },
           "eventType" : {
-            "$ref" : "#/components/schemas/EventTypeDTO"
+            "$ref" : "#/components/schemas/EventTypeDTO",
+            "description" : "Type of event that occurred on the case (e.g., NEW_CASE, RECEIPT, REFUSAL, INVALID_CASE, EQ_LAUNCH)",
+            "example" : "NEW_CASE"
           },
           "id" : {
             "type" : "string",
-            "description" : "Unique event identifier (UUID)",
             "format" : "uuid",
+            "description" : "Unique event identifier (UUID)",
             "example" : "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           }
         },
-        "description" : "Data Transfer Object representing an event associated with a case",
-        "example" : {
-          "id" : "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-          "eventType" : "NEW_CASE",
-          "description" : "Case created for collection exercise",
-          "createdDateTime" : "2024-01-15T10:30:00Z"
-        }
+        "required" : [ "createdDateTime", "eventType", "id" ]
       },
       "EventTypeDTO" : {
         "type" : "string",
         "description" : "Enumeration of all possible event types that can occur in the census RM system",
-        "example" : "NEW_CASE",
-        "enum" : [ "NEW_CASE", "RECEIPT", "REFUSAL", "INVALID_CASE", "EQ_LAUNCH", "UAC_AUTHENTICATION", "PRINT_FULFILMENT", "EXPORT_FILE", "DEACTIVATE_UAC", "UPDATE_SAMPLE", "UPDATE_SAMPLE_SENSITIVE", "SMS_FULFILMENT", "ACTION_RULE_SMS_REQUEST", "EMAIL_FULFILMENT", "ACTION_RULE_EMAIL_REQUEST", "ACTION_RULE_SMS_CONFIRMATION", "ACTION_RULE_EMAIL_CONFIRMATION", "ERASE_DATA" ]
+        "enum" : [ "NEW_CASE", "RECEIPT", "REFUSAL", "INVALID_CASE", "EQ_LAUNCH", "UAC_AUTHENTICATION", "PRINT_FULFILMENT", "EXPORT_FILE", "DEACTIVATE_UAC", "UPDATE_SAMPLE", "UPDATE_SAMPLE_SENSITIVE", "SMS_FULFILMENT", "ACTION_RULE_SMS_REQUEST", "EMAIL_FULFILMENT", "ACTION_RULE_EMAIL_REQUEST", "ACTION_RULE_SMS_CONFIRMATION", "ACTION_RULE_EMAIL_CONFIRMATION", "ERASE_DATA" ],
+        "example" : "NEW_CASE"
       },
       "NewQidLink" : {
         "type" : "object",
-        "properties" : {
-          "channel" : {
-            "type" : "string",
-            "description" : "Channel through which this link was created (e.g., CONTACT_CENTRE, PHONE, ONLINE)",
-            "example" : "CONTACT_CENTRE"
-          },
-          "qidLink" : {
-            "$ref" : "#/components/schemas/QidLink"
-          },
-          "transactionId" : {
-            "type" : "string",
-            "description" : "Transaction ID for tracing this QID link request",
-            "format" : "uuid",
-            "example" : "a11e3456-e89b-12d3-a456-426614174000"
-          }
-        },
         "description" : "Data Transfer Object for creating a new QID link to a case",
         "example" : {
           "transactionId" : "a11e3456-e89b-12d3-a456-426614174000",
@@ -889,16 +875,37 @@
             "questionnaireId" : "Q123456",
             "caseId" : "a11e3456-e89b-12d3-a456-426614174000"
           }
+        },
+        "properties" : {
+          "channel" : {
+            "type" : "string",
+            "description" : "Channel through which this link was created (e.g., CONTACT_CENTRE, PHONE, ONLINE)",
+            "example" : "CONTACT_CENTRE"
+          },
+          "qidLink" : {
+            "$ref" : "#/components/schemas/QidLink",
+            "description" : "QID link details containing questionnaire ID and case ID"
+          },
+          "transactionId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "description" : "Transaction ID for tracing this QID link request",
+            "example" : "a11e3456-e89b-12d3-a456-426614174000"
+          }
         }
       },
       "QidLink" : {
-        "required" : [ "questionnaireId" ],
         "type" : "object",
+        "description" : "Data Transfer Object representing the link between a Questionnaire ID (QID) and a Case",
+        "example" : {
+          "questionnaireId" : "Q123456",
+          "caseId" : "a11e3456-e89b-12d3-a456-426614174000"
+        },
         "properties" : {
           "caseId" : {
             "type" : "string",
-            "description" : "UUID of the census case associated with this QID",
             "format" : "uuid",
+            "description" : "UUID of the census case associated with this QID",
             "example" : "a11e3456-e89b-12d3-a456-426614174000"
           },
           "questionnaireId" : {
@@ -907,11 +914,7 @@
             "example" : "Q123456"
           }
         },
-        "description" : "Data Transfer Object representing the link between a Questionnaire ID (QID) and a Case",
-        "example" : {
-          "questionnaireId" : "Q123456",
-          "caseId" : "a11e3456-e89b-12d3-a456-426614174000"
-        }
+        "required" : [ "questionnaireId" ]
       }
     }
   }

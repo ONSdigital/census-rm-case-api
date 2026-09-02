@@ -2,42 +2,46 @@ package uk.gov.ons.census.caseapisvc.endpoint;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.ons.census.caseapisvc.model.dto.NewQidLink;
 import uk.gov.ons.census.caseapisvc.model.dto.QidLink;
 import uk.gov.ons.census.caseapisvc.service.CaseService;
 import uk.gov.ons.census.caseapisvc.service.UacQidService;
+import uk.gov.ons.census.caseapisvc.utility.ObjectMapperFactory;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.UacQidLink;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(QidEndpoint.class)
-@ActiveProfiles("test")
 class QidEndpointIT {
 
-  @Autowired private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
-  @MockBean private UacQidService uacQidService;
+  private UacQidService uacQidService;
 
-  @MockBean private CaseService caseService;
+  private CaseService caseService;
 
-  @Autowired private ObjectMapper objectMapper;
+  private final JsonMapper objectMapper = (JsonMapper) ObjectMapperFactory.objectMapper();
+
+  @BeforeEach
+  void setUp() {
+    uacQidService = mock(UacQidService.class);
+    caseService = mock(CaseService.class);
+    mockMvc =
+        MockMvcBuilders.standaloneSetup(new QidEndpoint(uacQidService, caseService))
+            .setMessageConverters(new JacksonJsonHttpMessageConverter(objectMapper))
+            .build();
+  }
 
   // -------------------------------------------------------------------------
   // GET /qids/{qid}
