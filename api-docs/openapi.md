@@ -590,7 +590,7 @@ Retrieves complete detailed case attributes for a given case UUID.
   "createdDateTime": "2024-01-15T10:30:00Z",
   "events": [],
   "receiptReceived": true,
-  "refusalReceived": "SOFT_REFUSAL",
+  "refusalReceived": "HARD_REFUSAL",
   "invalid": false,
   "lastUpdated": "2024-01-20T14:45:00Z",
   "printBatch": "15",
@@ -1876,7 +1876,7 @@ Data Transfer Object representing a census case container
   "createdDateTime": "2024-01-15T10:30:00Z",
   "events": [],
   "receiptReceived": true,
-  "refusalReceived": "SOFT_REFUSAL",
+  "refusalReceived": "HARD_REFUSAL",
   "invalid": false,
   "lastUpdated": "2024-01-20T14:45:00Z",
   "printBatch": "15",
@@ -1923,7 +1923,7 @@ Comprehensive Data Transfer Object containing detailed case attributes
 |postcode|string|false|none|UK postal code|
 |printBatch|string|false|none|Print batch identifier for household initial contact material|
 |receiptReceived|boolean|false|none|Flag indicating if receipt has been received from respondent|
-|refusalReceived|string|false|none|Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)|
+|refusalReceived|string|false|none|Type of refusal received (HARD_REFUSAL, EXTRAORDINARY_REFUSAL, or null)|
 |region|string|false|none|Administrative region code (e.g., N12000009, S12000009, E12000009, W12000009)|
 |surveyLaunched|boolean|false|none|Flag indicating if survey has been launched to respondent|
 |townName|string|false|none|Town or city name|

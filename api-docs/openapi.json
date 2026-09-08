@@ -679,8 +679,8 @@
           },
           "refusalReceived" : {
             "type" : "string",
-            "description" : "Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)",
-            "example" : "SOFT_REFUSAL",
+            "description" : "Type of refusal received (HARD_REFUSAL, EXTRAORDINARY_REFUSAL, or null)",
+            "example" : "EXTRAORDINARY_REFUSAL",
             "enum" : [ "HARD_REFUSAL", "EXTRAORDINARY_REFUSAL" ]
           },
           "region" : {
@@ -744,7 +744,7 @@
           "createdDateTime" : "2024-01-15T10:30:00Z",
           "events" : [ ],
           "receiptReceived" : true,
-          "refusalReceived" : "SOFT_REFUSAL",
+          "refusalReceived" : "HARD_REFUSAL",
           "invalid" : false,
           "lastUpdated" : "2024-01-20T14:45:00Z",
           "printBatch" : "15",
