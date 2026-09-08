@@ -681,7 +681,7 @@
             "type" : "string",
             "description" : "Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)",
             "example" : "SOFT_REFUSAL",
-            "enum" : [ "HARD_REFUSAL", "EXTRAORDINARY_REFUSAL", "SOFT_REFUSAL", "WITHDRAWAL_REFUSAL" ]
+            "enum" : [ "HARD_REFUSAL", "EXTRAORDINARY_REFUSAL" ]
           },
           "region" : {
             "type" : "string",

@@ -1936,8 +1936,6 @@ Comprehensive Data Transfer Object containing detailed case attributes
 |---|---|
 |refusalReceived|HARD_REFUSAL|
 |refusalReceived|EXTRAORDINARY_REFUSAL|
-|refusalReceived|SOFT_REFUSAL|
-|refusalReceived|WITHDRAWAL_REFUSAL|
 
 <h2 id="tocS_CaseDetailsEventDTO">CaseDetailsEventDTO</h2>
 <!-- backwards compatibility -->
