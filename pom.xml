@@ -6,12 +6,13 @@
 
     <groupId>uk.gov.ons.census</groupId>
     <artifactId>census-rm-case-api</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <properties>
         <java.version>21</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
-        <census-rm-shared.version>1.0-SNAPSHOT</census-rm-shared.version>
+        <census-rm-common-entity-model.version>1.0.0-SNAPSHOT</census-rm-common-entity-model.version>
+        <census-rm-shared-sample-validation.version>1.0.0-SNAPSHOT</census-rm-shared-sample-validation.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <container.cli>docker</container.cli>
 
@@ -68,12 +69,12 @@
             <dependency>
                 <groupId>uk.gov.ons.census</groupId>
                 <artifactId>census-rm-common-entity-model</artifactId>
-                <version>${census-rm-shared.version}</version>
+                <version>${census-rm-common-entity-model.version}</version>
             </dependency>
             <dependency>
                 <groupId>uk.gov.ons.census</groupId>
                 <artifactId>census-rm-shared-sample-validation</artifactId>
-                <version>${census-rm-shared.version}</version>
+                <version>${census-rm-shared-sample-validation.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.cloud</groupId>
@@ -140,10 +141,6 @@
             <artifactId>spring-cloud-gcp-starter-pubsub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>${swagger-annotations.version}</version>
@@ -174,10 +171,6 @@
             <groupId>io.hypersistence</groupId>
             <artifactId>hypersistence-utils-hibernate-73</artifactId>
             <version>${hypersistence-utils.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
 
         <!--    Test Dependencies below this point -->
@@ -247,16 +240,6 @@
                     <dependency>
                         <groupId>net.sourceforge.pmd</groupId>
                         <artifactId>pmd-java</artifactId>
-                        <version>${pmd.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>net.sourceforge.pmd</groupId>
-                        <artifactId>pmd-javascript</artifactId>
-                        <version>${pmd.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>net.sourceforge.pmd</groupId>
-                        <artifactId>pmd-jsp</artifactId>
                         <version>${pmd.version}</version>
                     </dependency>
                 </dependencies>
