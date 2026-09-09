@@ -26,7 +26,7 @@
 
         <!-- Test dependency versions -->
         <unirest.version>4.10.1</unirest.version>
-        <easy-random-core.version>7.1.1</easy-random-core.version>
+        <easy-random.version>6.0.1</easy-random.version>
         <springdoc-openapi.version>3.1.0</springdoc-openapi.version>
         <spring-retry.version>2.0.13</spring-retry.version>
 
@@ -204,9 +204,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.dvgaba</groupId>
-            <artifactId>easy-random-core</artifactId>
-            <version>${easy-random-core.version}</version>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random</artifactId>
+            <version>${easy-random.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
