@@ -70,12 +70,12 @@
             <dependency>
                 <groupId>uk.gov.ons.census</groupId>
                 <artifactId>census-rm-common-entity-model</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>0.0.2</version>
             </dependency>
             <dependency>
                 <groupId>uk.gov.ons.census</groupId>
                 <artifactId>census-rm-shared-sample-validation</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.cloud</groupId>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>uk.gov.ons.census</groupId>
             <artifactId>census-rm-common-entity-model</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
         <dependency>
             <groupId>uk.gov.ons.census</groupId>
