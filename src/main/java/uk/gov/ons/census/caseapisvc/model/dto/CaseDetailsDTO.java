@@ -12,7 +12,7 @@ import uk.gov.ons.census.common.model.entity.RefusalType;
 @Schema(
     description = "Comprehensive Data Transfer Object containing detailed case attributes",
     example =
-        "{\"id\":\"a11e3456-e89b-12d3-a456-426614174000\",\"caseRef\":100000000000001,\"uprn\":\"10008677190\",\"estabUprn\":\"10008677190\",\"caseType\":\"HH\",\"addressType\":\"HH\",\"estabType\":\"HOUSEHOLD\",\"addressLevel\":\"U\",\"abpCode\":\"RD06\",\"organisationName\":\"Acme Corporation\",\"addressLine1\":\"Flat 51 Francombe House\",\"addressLine2\":\"Commercial Road\",\"addressLine3\":\"Suite 3\",\"townName\":\"Windleybury\",\"postcode\":\"XX1 0XX\",\"latitude\":\"51.5074\",\"longitude\":\"-0.1278\",\"oa\":\"E00073438\",\"lsoa\":\"E01014540\",\"msoa\":\"E02003043\",\"lad\":\"E06000023\",\"region\":\"E12000009\",\"htcWillingness\":\"3\",\"htcDigital\":\"4\",\"fieldCoordinatorId\":\"FC12344\",\"fieldOfficerId\":\"FO12345\",\"treatmentCode\":\"HH_PSCE\",\"ceExpectedCapacity\":1505,\"ceActualResponses\":1504,\"collectionExerciseId\":\"b22e3456-e89b-12d3-a456-426614174000\",\"createdDateTime\":\"2024-01-15T10:30:00Z\",\"events\":[],\"receiptReceived\":true,\"refusalReceived\":\"SOFT_REFUSAL\",\"invalid\":false,\"lastUpdated\":\"2024-01-20T14:45:00Z\",\"printBatch\":\"15\",\"surveyLaunched\":true}")
+        "{\"id\":\"a11e3456-e89b-12d3-a456-426614174000\",\"caseRef\":100000000000001,\"uprn\":\"10008677190\",\"estabUprn\":\"10008677190\",\"caseType\":\"HH\",\"addressType\":\"HH\",\"estabType\":\"HOUSEHOLD\",\"addressLevel\":\"U\",\"abpCode\":\"RD06\",\"organisationName\":\"Acme Corporation\",\"addressLine1\":\"Flat 51 Francombe House\",\"addressLine2\":\"Commercial Road\",\"addressLine3\":\"Suite 3\",\"townName\":\"Windleybury\",\"postcode\":\"XX1 0XX\",\"latitude\":\"51.5074\",\"longitude\":\"-0.1278\",\"oa\":\"E00073438\",\"lsoa\":\"E01014540\",\"msoa\":\"E02003043\",\"lad\":\"E06000023\",\"region\":\"E12000009\",\"htcWillingness\":\"3\",\"htcDigital\":\"4\",\"fieldCoordinatorId\":\"FC12344\",\"fieldOfficerId\":\"FO12345\",\"treatmentCode\":\"HH_PSCE\",\"ceExpectedCapacity\":1505,\"ceActualResponses\":1504,\"collectionExerciseId\":\"b22e3456-e89b-12d3-a456-426614174000\",\"createdDateTime\":\"2024-01-15T10:30:00Z\",\"events\":[],\"receiptReceived\":true,\"refusalReceived\":\"HARD_REFUSAL\",\"invalid\":false,\"lastUpdated\":\"2024-01-20T14:45:00Z\",\"printBatch\":\"15\",\"surveyLaunched\":true}")
 public class CaseDetailsDTO {
 
   @JsonProperty("id")
@@ -159,8 +159,8 @@ public class CaseDetailsDTO {
   private boolean receiptReceived;
 
   @Schema(
-      description = "Type of refusal received (HARD_REFUSAL, SOFT_REFUSAL, or null)",
-      example = "SOFT_REFUSAL")
+      description = "Type of refusal received (HARD_REFUSAL, EXTRAORDINARY_REFUSAL, or null)",
+      example = "EXTRAORDINARY_REFUSAL")
   private RefusalType refusalReceived;
 
   @Schema(
