@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.census.caseapisvc.model.repository.CaseRepository;
 import uk.gov.ons.census.caseapisvc.model.repository.UacQidLinkRepository;
 import uk.gov.ons.census.common.model.entity.Case;
+import uk.gov.ons.census.common.model.entity.UacQidLink;
 
 @ExtendWith(MockitoExtension.class)
 class CaseServiceTest {
@@ -161,5 +162,41 @@ class CaseServiceTest {
     List<Case> result = caseService.findByPostcode(postcode);
 
     assertEquals(cases, result);
+  }
+
+  // ----------------------------------------------------------------------
+  // findCaseByQid
+  // ----------------------------------------------------------------------
+  @Test
+  void findCaseByQid_returnsCase() {
+    Case caze = new Case();
+    UacQidLink uacQidLink = new UacQidLink();
+    uacQidLink.setCaze(caze);
+    when(uacQidLinkRepository.findByQid(TEST_QID)).thenReturn(Optional.of(uacQidLink));
+
+    Case result = caseService.findCaseByQid(TEST_QID);
+
+    assertSame(caze, result);
+  }
+
+  @Test
+  void findCaseByQid_throwsWhenQidNotFound() {
+    when(uacQidLinkRepository.findByQid(TEST_QID)).thenReturn(Optional.empty());
+
+    ResponseStatusException ex =
+        assertThrows(ResponseStatusException.class, () -> caseService.findCaseByQid(TEST_QID));
+
+    assertTrue(ex.getReason().contains(TEST_QID));
+  }
+
+  @Test
+  void findCaseByQid_throwsWhenCaseNotLinked() {
+    UacQidLink uacQidLink = new UacQidLink();
+    when(uacQidLinkRepository.findByQid(TEST_QID)).thenReturn(Optional.of(uacQidLink));
+
+    ResponseStatusException ex =
+        assertThrows(ResponseStatusException.class, () -> caseService.findCaseByQid(TEST_QID));
+
+    assertTrue(ex.getReason().contains(TEST_QID));
   }
 }

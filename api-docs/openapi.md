@@ -2002,7 +2002,7 @@ Data Transfer Object representing an event associated with a case
 |---|---|---|---|---|
 |createdDateTime|string(date-time)|true|none|Date and time when the event was created|
 |description|string|false|none|Human-readable description of the event|
-|eventType|[EventTypeDTO](#schemaeventtypedto)|true|none|Enumeration of all possible event types that can occur in the census RM system|
+|eventType|[EventTypeDTO](#schemaeventtypedto)|true|none|Type of event that occurred on the case (e.g., NEW_CASE, RECEIPT, REFUSAL, INVALID_CASE, EQ_LAUNCH)|
 |id|string(uuid)|true|none|Unique event identifier (UUID)|
 
 <h2 id="tocS_EventTypeDTO">EventTypeDTO</h2>
@@ -2074,7 +2074,7 @@ Data Transfer Object for creating a new QID link to a case
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |channel|string|false|none|Channel through which this link was created (e.g., CONTACT_CENTRE, PHONE, ONLINE)|
-|qidLink|[QidLink](#schemaqidlink)|false|none|Data Transfer Object representing the link between a Questionnaire ID (QID) and a Case|
+|qidLink|[QidLink](#schemaqidlink)|false|none|QID link details containing questionnaire ID and case ID|
 |transactionId|string(uuid)|false|none|Transaction ID for tracing this QID link request|
 
 <h2 id="tocS_QidLink">QidLink</h2>

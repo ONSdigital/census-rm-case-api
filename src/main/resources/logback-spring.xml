@@ -29,7 +29,7 @@
                     <fieldName>created</fieldName>
                 </timestamp>
                 <globalCustomFields>
-                    <customFields>{"service":"Case Api"}</customFields>
+                    <customFields>{"service":"Case API"}</customFields>
                 </globalCustomFields>
                 <message>
                     <fieldName>event</fieldName>
